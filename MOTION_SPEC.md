@@ -87,14 +87,15 @@ Each step: wave `p 0→1` over .85 (`power1.inOut`, amp 7); word `yPercent 35→
 - Foam-to-abyss wave seam at the top (CSS mask)
 
 ### 04 Scenes — pinned film ("The Thirst")
-Trigger `.scenes`, `top top` → `+= scenes × innerHeight`, `scrub: 1`.
+Trigger `.scenes`, `top top` → `+= 0.8 × innerHeight × (scenes − 0.4)` (≈2.9 screens for 4 scenes), `scrub: .35`, `anticipatePin: 1`.
+Scrub is short on purpose: Lenis already smooths the wheel, and a long scrub on top of it feels sticky. Scene grain overlay is off (`.scene-ph::after`) because blending it over full-screen video every frame cost frames.
 | Scene | Clip | At | Washes in from | Inner video | Previous scene |
 |---|---|---|---|---|---|
-| 01 The Heat | `heat` | 0 | — | `scale 1.15→1` | — |
-| 02 The Craving | `condensation` | 1.1 | **right** | `scale 1.28→1` | `scale .9`, `xPercent −8` |
-| 03 The First Drop | `drop` | 2.2 | **top** | same | `scale .9`, `yPercent 8` |
-| 04 The Relief | `stones` | 3.3 | **left** | same | `scale .9`, `xPercent 8` |
-Subtitle and meta fade in at +.55. Each scene has its own letterbox bars and `isolation: isolate` (important: otherwise z-indexed children leak above later scenes). Dots track the scene whose wave is past .5.
+| 01 The Heat | `heat` | 0 | — | `scale 1.12→1` | — |
+| 02 The Craving | `condensation` | .3 | **right** | `scale 1.2→1` over 1 | `scale .92`, `xPercent −8` |
+| 03 The First Drop | `drop` | 1.3 | **top** | same | `scale .92`, `yPercent 8` |
+| 04 The Relief | `stones` | 2.3 | **left** | same | `scale .92`, `xPercent 8` |
+Each wave takes .75 (`power2.inOut`); hold .2 at the end. No subtitles; the scene meta bar fades in at +.45. Each scene has its own letterbox bars and `isolation: isolate` (important: otherwise z-indexed children leak above later scenes). Dots track the scene whose wave is past .5.
 Playback: only the active scene and the one currently washing in (wave `0 < p < 1`) play; the rest pause. An IntersectionObserver on `.scenes` pauses all four once the section leaves the screen.
 
 ### 04b Spring — pinned knockout
@@ -142,7 +143,7 @@ Word rises and fade-ups only. The join button fills with a curved water shape on
 | Choppier water edges | raise `amp` in `makeWave` calls (hero 7, tides 7, scenes 8) |
 | More crests | raise `freq` (1.2 default) |
 | Longer tides sequence | `innerHeight * 3.4` in C5 |
-| Slower film | `innerHeight * scenes.length` in C7 |
+| Slower film | the `.8` multiplier in C7's `end` (and `scrub` for more/less lag) |
 | Snappier smoothing | Lenis `lerp` up (.12) |
 | Shorter intro | counter duration 1.8 → 1.2 |
 | Bottle slosh | the sine amplitudes 3.2 / 1.8 in `renderBottle` |

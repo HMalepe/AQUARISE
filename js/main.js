@@ -417,20 +417,21 @@
   }
   let scenesLive = false;
   new IntersectionObserver(([e]) => { scenesLive = e.isIntersecting; syncScenes(scenesLive); }).observe($('.scenes'));
-  const stl = gsap.timeline({ scrollTrigger: {
-    trigger: '.scenes', start: 'top top', end: () => '+=' + innerHeight * scenes.length, pin: true, scrub: 1, invalidateOnRefresh: true,
-    onUpdate: () => syncScenes(scenesLive)
+  // one timeline unit per scene change; transitions overlap the next hold so the film never sits still.
+  // Lenis already smooths the wheel, so the scrub lag stays short (.35s) to avoid a sticky double-smoothing feel.
+  const stl = gsap.timeline({ onUpdate: () => syncScenes(scenesLive), scrollTrigger: {
+    trigger: '.scenes', start: 'top top', end: () => '+=' + innerHeight * .8 * (scenes.length - .4), pin: true, anticipatePin: 1, scrub: .35, invalidateOnRefresh: true
   } });
   scenes.forEach((s, i) => {
     const ph = $('.scene-ph', s);
-    if (!i) { stl.fromTo(ph, { scale: 1.15 }, { scale: 1, duration: 1.2, ease: 'none' }, 0); return; }
-    const at = i * 1.1, dir = s.dataset.dir, prevPh = $('.scene-ph', scenes[i - 1]);
-    stl.to(sceneWaves[i], { p: 1, duration: .9, ease: 'power2.inOut' }, at)
-      .fromTo(ph, { scale: 1.28 }, { scale: 1, duration: 1.3, ease: 'none' }, at)
-      .fromTo($$('.scene-sub, .scene-meta', s), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: .3, stagger: .05 }, at + .55)
-      .to(prevPh, { scale: .9, xPercent: dir === 'right' ? -8 : dir === 'left' ? 8 : 0, yPercent: dir === 'top' ? 8 : 0, duration: .9, ease: 'power2.inOut' }, at);
+    if (!i) { stl.fromTo(ph, { scale: 1.12 }, { scale: 1, duration: 1.1, ease: 'none' }, 0); return; }
+    const at = .3 + (i - 1), dir = s.dataset.dir, prevPh = $('.scene-ph', scenes[i - 1]);
+    stl.to(sceneWaves[i], { p: 1, duration: .75, ease: 'power2.inOut' }, at)
+      .fromTo(ph, { scale: 1.2 }, { scale: 1, duration: 1, ease: 'none' }, at)
+      .fromTo($('.scene-meta', s), { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .25 }, at + .45)
+      .to(prevPh, { scale: .92, xPercent: dir === 'right' ? -8 : dir === 'left' ? 8 : 0, yPercent: dir === 'top' ? 8 : 0, duration: .75, ease: 'power2.inOut' }, at);
   });
-  stl.to({}, { duration: .3 });
+  stl.to({}, { duration: .2 });
 
   /* ── C7b · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
   const sWord = $('.spring-word'), sI = $('.spring-i');

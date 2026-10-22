@@ -255,13 +255,13 @@ video { background: var(--deep); }
 .scene-head .h-lg { font-size: clamp(1.4rem, 2.6vw, 2.4rem); }
 .scene-label { font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: var(--sun); border: 1px solid currentColor; border-radius: 999px; padding: 6px 12px; }
 .scene-stage { position: absolute; inset: 0; }
-.scene { position: absolute; inset: 0; overflow: hidden; isolation: isolate; }
+.scene { position: absolute; inset: 0; overflow: hidden; isolation: isolate; will-change: clip-path; }
 .scene::before, .scene::after { content: ""; position: absolute; left: 0; right: 0; height: 12svh; background: #000; z-index: 2; }
 .scene::before { top: 0; } .scene::after { bottom: 0; }
-.scene-ph { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.scene-ph { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.scene-ph::after { content: none; } /* the clips carry their own grain; blending it over full-screen video every frame costs smoothness */
 .scene-meta { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0; height: 12svh; z-index: 3; display: flex; align-items: center; gap: 28px; font-size: .78rem; font-weight: 700; letter-spacing: .26em; color: rgba(255,255,255,.75); }
 .scene-meta span:first-child { color: var(--sun); }
-.scene-sub { position: absolute; left: 50%; bottom: calc(12svh + 4svh); transform: translateX(-50%); z-index: 3; max-width: 90%; text-align: center; font-size: clamp(1rem, 1.7vw, 1.5rem); font-weight: 600; color: #fff; background: rgba(0,0,0,.45); padding: .35em .8em; border-radius: 6px; }
 .scene-dots { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); z-index: 10; display: grid; gap: 10px; }
 .scene-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.3); transition: background-color .3s, transform .3s; }
 .scene-dots i.on { background: var(--sun); transform: scale(1.4); }
