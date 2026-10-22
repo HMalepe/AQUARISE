@@ -36,7 +36,7 @@ aquarise-site/
 | Clip | Where it plays | What it is |
 |---|---|---|
 | `hero` | Hero background | Your sunrise bottle photo brought to life: the sea rolls in, sand glints, bubbles rise inside the bottle, spray drifts through the light |
-| `heat` | Scene 01 · The Heat | A person in profile against a blazing sun, heat haze, sweat beading on the brow, running down the nose and dripping off the nose and chin |
+| `heat` | Scene 01 · The Heat | Real AI-generated footage (OpenArt, Seedance 2.5): a woman in profile at sunset, sweat dripping from her chin. Not rendered by tools/footage — re-running `render.mjs` without arguments would overwrite it, so render other films by name |
 | `condensation` | Scene 02 · The Craving, Source card "The Seal" | A cold bottle fogged over; drops slide down and clear streaks through to the sunrise |
 | `drop` | Scene 03 · The First Drop, Join background | One drop hits still water at sunrise: crown, rebound jet, rings |
 | `stones` | Scene 04 · The Relief, Source card "The Stone" | Looking down through a clear stream at river stones, caustics moving over them |
