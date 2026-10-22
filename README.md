@@ -40,7 +40,7 @@ aquarise-site/
 | `condensation` | Scene 02 · The Craving, Source card "The Seal" | A cold bottle fogged over; drops slide down and clear streaks through to the sunrise |
 | `drop` | Scene 03 · The First Drop, Join background | One drop hits still water at sunrise: crown, rebound jet, rings |
 | `stones` | Scene 04 · The Relief, Source card "The Stone" | Looking down through a clear stream at river stones, caustics moving over them |
-| `waterfall` | The SPRING knockout section, Source card "The Spring" | A spring falls into a mossy gorge, sun shafts through the mist |
+| `waterfall` | The SPRING knockout section, Source card "The Spring" | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
 Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
 

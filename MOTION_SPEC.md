@@ -105,7 +105,7 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 | Timeline pos | Tween |
 |---|---|
 | .12 → 1.12 | `.spring-word` `scale 1 → 48`, `power3.in` — the camera flies through the I's stem |
-| .12 → 1.07 | video `filter brightness(1.9) saturate(1.25) → normal` (letters read brighter while small) |
+| .12 → 1.07 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
 | 1.04 | mask `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
 | end | hold .3 |

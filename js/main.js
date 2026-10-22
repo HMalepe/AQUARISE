@@ -440,7 +440,7 @@
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
   gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: 1, invalidateOnRefresh: true } })
     .fromTo(sWord, { scale: 1 }, { scale: 48, ease: 'power3.in', duration: 1 }, .12)
-    .fromTo('.spring-video', { filter: 'brightness(1.9) saturate(1.25)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: .95 }, .12)
+    .fromTo('.spring-video', { filter: 'brightness(1.25) saturate(1.15)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: .95 }, .12)
     .fromTo('.spring-mask', { autoAlpha: 1 }, { autoAlpha: 0, duration: .08, immediateRender: false }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
     .to({}, { duration: .3 });
