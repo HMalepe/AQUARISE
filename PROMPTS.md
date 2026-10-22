@@ -6,10 +6,11 @@ Open this folder in your IDE first so the assistant reads `CLAUDE.md` / `.cursor
 
 ## 1 · Real photos and video
 ```
-I've added my real media to assets/: [list files]. Replace every .ph placeholder with the matching file
-(see the shot list in README.md). Use <video autoplay muted loop playsinline preload="metadata" poster="..."> for
-scenes and <img loading="lazy" decoding="async" width height> elsewhere, with WebP + JPG fallback via <picture>.
-Delete each .ph-note after swapping. Keep the .ph wrapper so the grain overlay and drift animations still work.
+I've added real footage/photos to assets/: [list files]. Each rendered clip in assets/video/ (hero, heat,
+condensation, drop, stones, waterfall) can be replaced by a real one with the same name: give me .webm + .mp4 +
+a .jpg poster, muted, under ~4 MB. Keep the existing <video data-video muted loop playsinline poster> markup so
+on-screen-only playback and reduced motion still work. Photos go in <img loading="lazy" decoding="async" width height>
+with WebP + JPG via <picture>. Keep the .ph wrapper so the grain overlay and drift animations still work.
 Replace the SVG bottles in the slider with my transparent packshots, but keep the sink/rise/splash animation.
 Test at 390px and 1280px, no console errors, reduced-motion still works.
 ```

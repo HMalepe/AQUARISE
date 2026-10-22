@@ -3,6 +3,8 @@
 ## Stack
 - Static HTML + CSS + vanilla JS. GSAP 3 + ScrollTrigger + Lenis, vendored in `js/vendor/`. No build step, no framework (unless porting via PROMPTS.md #2).
 - Fonts are self-hosted in `assets/fonts/` (Anton display, Manrope body). Don't add Google Fonts links.
+- Logo: the `#aq-mark` / `#aq-word` symbols in the sprite at the top of `index.html` (traced from the real logo). Use `<svg><use href="#aq-mark"/></svg>`; colour with `--mark-sun`, `--mark-wave` and `color`. Don't redraw it.
+- Video: clips live in `assets/video/` as `.webm` + `.mp4` + `.jpg` poster, rendered by `tools/footage/` (see README). Every `<video>` is `muted loop playsinline`, has `data-video` (so it only plays on screen) and a poster.
 - `MOTION_SPEC.md` is the source of truth for animation. Update it whenever you change motion.
 
 ## Structure rules
@@ -11,7 +13,7 @@
 - `js/main.js`: Part A basics (work without GSAP) → Part B static gate (`return`) → Part C motion blocks **in DOM order**. Pinned sections must be created in the order they appear on the page. Keep `ScrollTrigger.sort()` and the refreshes at the end.
 
 ## Colour
-- Use tokens only (`var(--abyss)`, `--deep`, `--tide`, `--wave`, `--aqua`, `--mist`, `--foam`, `--sun`, `--coral`, `--ink`). Don't add raw hex values in sections; add a token first.
+- Use tokens only (`var(--abyss)`, `--deep`, `--tide`, `--wave`, `--aqua`, `--mist`, `--foam`, `--sun`, `--coral`, `--ink`, brand `--lemon`, `--navy`). Don't add raw hex values in sections; add a token first.
 
 ## Motion gotchas
 - Never hide content with CSS start states. Set start states with `gsap.set` or `fromTo` so static mode and no-JS still show everything.
@@ -29,4 +31,4 @@
 - Widths: 390×844 and 1280×800 (also 1440+). No horizontal scroll: `document.documentElement.scrollWidth - innerWidth === 0`.
 - Zero console errors.
 - Emulate `prefers-reduced-motion: reduce`: page must render fully in `.static` with no loader.
-- Scroll through each pinned section (hero, tides, scenes) and check text is never clipped.
+- Scroll through each pinned section (hero, tides, scenes, spring) and check text is never clipped.

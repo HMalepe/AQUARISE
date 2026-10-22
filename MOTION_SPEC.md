@@ -11,6 +11,7 @@ The source of truth for every animation. If you port to Next.js or another stack
 | Signature eases | `expo.out` (entrances), `expo.inOut` (curtains), `power2.inOut` (water floods), `none` (scrubbed parallax) |
 | Units | Sections use `svh`; pinned durations are functions of `innerHeight` with `invalidateOnRefresh: true` |
 | Static mode | `html.static` when reduced motion is on or GSAP is missing; JS returns before any motion code |
+| Video | Every `video[data-video]` plays only while within 200px of the viewport (IntersectionObserver, A11) and pauses otherwise. `preload="none"` flips to `auto` on first play. Reduced motion: never plays, posters only. The pinned film's clips are driven by C7 instead (see 04). |
 
 ## Reusable primitives
 
@@ -47,6 +48,8 @@ Each `.bottle[data-liquid][data-level]` gets an SVG body. The liquid surface is 
 | t (s) | What |
 |---|---|
 | 0.2 | Counter 0→100 and loader water `p 0→1` (bottom), 1.8s `power2.inOut` |
+| 0.2 | Logo sun rises over the wave: `.lm-sun` `y 95 → 0`, 1.7s `power3.out`, clipped at the wave line (`#sunClip`) |
+| 1.35 | Sun rays `scale .2 → 1`, fade in, `back.out(2.4)`, `svgOrigin 374 192` (sun centre in logo units) |
 | 2.15 | Loader slides up `yPercent −100`, 1.1s `expo.inOut`, then `display:none` |
 | 2.5 | Hero image `scale 1.3 → 1`, 2.4s `expo.out` |
 | 2.7 | Letterbox bars `scaleY 1 → 0`, 1.4s `expo.inOut` |
@@ -54,6 +57,7 @@ Each `.bottle[data-liquid][data-level]` gets an SVG body. The liquid surface is 
 | end | `lenis.start()` (scroll is locked during the intro) |
 
 ### 01 Hero — pinned
+Background is `assets/video/hero.mp4` (8s seamless loop, poster = the original photo). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
 Trigger `.hero`, `top top` → `+=130%`, `scrub: 1`.
 | Timeline pos | Tween |
 |---|---|
@@ -82,15 +86,29 @@ Each step: wave `p 0→1` over .85 (`power1.inOut`, amp 7); word `yPercent 35→
 - Stickers and droplets: `[data-speed]` parallax
 - Foam-to-abyss wave seam at the top (CSS mask)
 
-### 04 Scenes — pinned film
+### 04 Scenes — pinned film ("The Thirst")
 Trigger `.scenes`, `top top` → `+= scenes × innerHeight`, `scrub: 1`.
-| Scene | At | Washes in from | Inner image | Previous scene |
-|---|---|---|---|---|
-| 01 The Run | 0 | — | `scale 1.15→1` | — |
-| 02 Deep Work | 1.1 | **right** | `scale 1.28→1` | `scale .9`, `xPercent −8` |
-| 03 The Set | 2.2 | **top** | same | `scale .9`, `yPercent 8` |
-| 04 Golden Hour | 3.3 | **left** | same | `scale .9`, `xPercent 8` |
+| Scene | Clip | At | Washes in from | Inner video | Previous scene |
+|---|---|---|---|---|---|
+| 01 The Heat | `heat` | 0 | — | `scale 1.15→1` | — |
+| 02 The Craving | `condensation` | 1.1 | **right** | `scale 1.28→1` | `scale .9`, `xPercent −8` |
+| 03 The First Drop | `drop` | 2.2 | **top** | same | `scale .9`, `yPercent 8` |
+| 04 The Relief | `stones` | 3.3 | **left** | same | `scale .9`, `xPercent 8` |
 Subtitle and meta fade in at +.55. Each scene has its own letterbox bars and `isolation: isolate` (important: otherwise z-indexed children leak above later scenes). Dots track the scene whose wave is past .5.
+Playback: only the active scene and the one currently washing in (wave `0 < p < 1`) play; the rest pause. An IntersectionObserver on `.scenes` pauses all four once the section leaves the screen.
+
+### 04b Spring — pinned knockout
+Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `invalidateOnRefresh`.
+- The waterfall video plays behind `.spring-mask`, an abyss layer with white text in `mix-blend-mode: multiply`, so the video only shows through the letters of SPRING.
+- `transform-origin` is the centre of the **I** (measured with `offsetLeft/Top` on every `refreshInit`, so it ignores the current scale).
+| Timeline pos | Tween |
+|---|---|
+| .12 → 1.12 | `.spring-word` `scale 1 → 48`, `power3.in` — the camera flies through the I's stem |
+| .12 → 1.07 | video `filter brightness(1.9) saturate(1.25) → normal` (letters read brighter while small) |
+| 1.04 | mask `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
+| 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
+| end | hold .3 |
+Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
 
 ### 05 Shop
 - Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`
@@ -109,11 +127,14 @@ Subtitle and meta fade in at +.55. Each scene has its own letterbox bars and `is
 ### 08 Source
 Primitive 7, batched with stagger .14; text fades up after .3.
 
+### 08 Source cards
+Each `.ph` now holds a looping clip (waterfall, stones, condensation); the clip reveal and drift above apply unchanged.
+
 ### 09 FAQ / 10 Join
-Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS).
+Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). Join has the `drop` clip behind it at .55 opacity under an abyss gradient.
 
 ### 11 Footer
-`.foot-mark` `yPercent 100 → 0`, scrubbed from `top bottom` to `bottom bottom`, rising behind two drifting wave strips.
+`.foot-mark` (the traced Aquarise wordmark, SVG) `yPercent 100 → 0`, scrubbed from `top bottom` to `bottom bottom`, rising behind two drifting wave strips.
 
 ## Tuning knobs
 
@@ -126,3 +147,6 @@ Word rises and fade-ups only. The join button fills with a curved water shape on
 | Snappier smoothing | Lenis `lerp` up (.12) |
 | Shorter intro | counter duration 1.8 → 1.2 |
 | Bottle slosh | the sine amplitudes 3.2 / 1.8 in `renderBottle` |
+| Longer/shorter fly-through | `innerHeight * 1.8` in C7b; final `scale` 48 (must stay big enough for the I's stem to cover the screen) |
+| Faster marquee | `animation` duration on `.marquee-track` (30s) |
+| Footage look | edit the GLSL in `tools/footage/films.js`, re-render (see README) |

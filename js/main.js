@@ -1,9 +1,9 @@
 /* ==========================================================================
    AQUARISE — main.js
-   Part A: basics that work in every mode (cart, slider, menu, forms, bottles)
+   Part A: basics that work in every mode (cart, slider, menu, forms, bottles, videos)
    Part B: early return into .static if reduced motion / GSAP missing
    Part C: motion blocks in DOM order (loader → hero → tides → feature →
-           scenes → shop → bundles → compare → source → footer)
+           scenes → spring → shop → bundles → compare → source → footer)
    ========================================================================== */
 (() => {
   'use strict';
@@ -227,9 +227,20 @@
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
   $$('[data-year]').forEach(n => n.textContent = new Date().getFullYear());
 
-  /* ── B · STATIC MODE GATE ── */
+  /* ── A11 · videos: play only while on screen; reduced motion keeps the posters ── */
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduce || !window.gsap || !window.ScrollTrigger) {
+  const motion = !reduce && !!(window.gsap && window.ScrollTrigger);
+  const playV = v => { if (v.preload === 'none') v.preload = 'auto'; const pr = v.play(); pr && pr.catch(() => {}); };
+  const videos = $$('video[data-video]');
+  if (reduce) videos.forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
+  else if ('IntersectionObserver' in window) {
+    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? playV(e.target) : e.target.pause()), { rootMargin: '200px 0px' });
+    // in motion mode the pinned film (C7) decides which scene plays
+    videos.filter(v => !(motion && v.closest('.scene'))).forEach(v => vio.observe(v));
+  }
+
+  /* ── B · STATIC MODE GATE ── */
+  if (!motion) {
     html.classList.add('static');
     return;
   }
@@ -297,11 +308,15 @@
   gsap.set('[data-hero-meta]', { autoAlpha: 0, y: 20 });
   gsap.set('.nav', { autoAlpha: 0, y: -20 });
   gsap.set('.hero-img', { scale: 1.3 });
+  gsap.set('.lm-sun', { y: 95 });
+  gsap.set('.lm-rays', { scale: .2, autoAlpha: 0, svgOrigin: '374 192' });
   lenis && lenis.stop();
   const counter = { v: 0 }, num = $('.loader-num');
   gsap.timeline({ delay: .2 })
     .to(counter, { v: 100, duration: 1.8, ease: 'power2.inOut', onUpdate: () => { num.textContent = Math.round(counter.v); } })
     .to(loaderWave, { p: 1, duration: 1.8, ease: 'power2.inOut' }, 0)
+    .to('.lm-sun', { y: 0, duration: 1.7, ease: 'power3.out' }, 0)                 // the sun rises over the wave: AQUA·RISE
+    .to('.lm-rays', { scale: 1, autoAlpha: 1, duration: .7, ease: 'back.out(2.4)' }, 1.15)
     .to('.loader', { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '+=.15')
     .set('.loader', { display: 'none' })
     .to('.hero-img', { scale: 1, duration: 2.4, ease: 'expo.out' }, '-=.75')
@@ -389,9 +404,22 @@
   const scenes = $$('.scene'), dots = $$('.scene-dots i');
   const sceneWaves = scenes.map((s, i) => i ? makeWave(s, s.dataset.dir, { amp: 8, freq: 1 }) : null);
   dots[0] && dots[0].classList.add('on');
+  const sceneVids = scenes.map(s => $('video', s));
+  // play the scene on screen plus the one washing in; pause the rest
+  function syncScenes(live) {
+    let a = 0; sceneWaves.forEach((w, i) => { if (w && w.p > .5) a = i; });
+    dots.forEach((d, i) => d.classList.toggle('on', i === a));
+    sceneVids.forEach((v, i) => {
+      if (!v) return;
+      const on = live && (i === a || (sceneWaves[i] && sceneWaves[i].p > 0 && sceneWaves[i].p < 1));
+      if (on && v.paused) playV(v); else if (!on && !v.paused) v.pause();
+    });
+  }
+  let scenesLive = false;
+  new IntersectionObserver(([e]) => { scenesLive = e.isIntersecting; syncScenes(scenesLive); }).observe($('.scenes'));
   const stl = gsap.timeline({ scrollTrigger: {
     trigger: '.scenes', start: 'top top', end: () => '+=' + innerHeight * scenes.length, pin: true, scrub: 1, invalidateOnRefresh: true,
-    onUpdate() { let a = 0; sceneWaves.forEach((w, i) => { if (w && w.p > .5) a = i; }); dots.forEach((d, i) => d.classList.toggle('on', i === a)); }
+    onUpdate: () => syncScenes(scenesLive)
   } });
   scenes.forEach((s, i) => {
     const ph = $('.scene-ph', s);
@@ -403,6 +431,18 @@
       .to(prevPh, { scale: .9, xPercent: dir === 'right' ? -8 : dir === 'left' ? 8 : 0, yPercent: dir === 'top' ? 8 : 0, duration: .9, ease: 'power2.inOut' }, at);
   });
   stl.to({}, { duration: .3 });
+
+  /* ── C7b · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
+  const sWord = $('.spring-word'), sI = $('.spring-i');
+  const springOrigin = () => { sWord.style.transformOrigin = `${sI.offsetLeft - sWord.offsetLeft + sI.offsetWidth / 2}px ${sI.offsetTop - sWord.offsetTop + sI.offsetHeight * .52}px`; };
+  springOrigin();
+  ScrollTrigger.addEventListener('refreshInit', springOrigin);
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: 1, invalidateOnRefresh: true } })
+    .fromTo(sWord, { scale: 1 }, { scale: 48, ease: 'power3.in', duration: 1 }, .12)
+    .fromTo('.spring-video', { filter: 'brightness(1.9) saturate(1.25)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: .95 }, .12)
+    .fromTo('.spring-mask', { autoAlpha: 1 }, { autoAlpha: 0, duration: .08, immediateRender: false }, 1.04)
+    .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
+    .to({}, { duration: .3 });
 
   /* ── C8 · SHOP: arch straightens; bottles sink/rise through the pool ── */
   gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: 1 } });

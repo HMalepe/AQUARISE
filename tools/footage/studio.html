@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aquarise footage studio</title>
+<style>
+  body { margin: 0; background: #04121F; color: #E8F6FB; font: 14px system-ui, sans-serif; }
+  canvas { display: block; max-width: 100%; height: auto; }
+  .bar { display: flex; gap: 8px; align-items: center; padding: 10px; flex-wrap: wrap; }
+  button { background: #E8F6FB; color: #04121F; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+<!-- Open via a local server (npx serve . → /tools/footage/studio.html) to preview films live.
+     render.mjs drives this same page to export MP4s. -->
+<div class="bar" id="bar"></div>
+<canvas id="c"></canvas>
+<script src="films.js"></script>
+<script>
+(() => {
+  const cv = document.getElementById('c');
+  const gl = cv.getContext('webgl2', { preserveDrawingBuffer: true, antialias: false });
+  const VERT = `#version 300 es
+in vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`;
+  const HEAD = `#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform float uTime, uLoop, uBlend;
+uniform sampler2D uTex0, uTex1, uTex2;
+out vec4 outColor;
+#define TAU 6.28318530718
+float hash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+vec2 hash22(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }
+float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3. - 2. * f);
+  return mix(mix(hash12(i), hash12(i + vec2(1, 0)), u.x), mix(hash12(i + vec2(0, 1)), hash12(i + vec2(1, 1)), u.x), u.y); }
+float fbm(vec2 p){ float a = .5, s = 0.; mat2 m = mat2(1.6, 1.2, -1.2, 1.6); for (int i = 0; i < 5; i++) { s += a * noise(p); p = m * p; a *= .5; } return s; }
+float fbm3(vec2 p){ float a = .5, s = 0.; mat2 m = mat2(1.6, 1.2, -1.2, 1.6); for (int i = 0; i < 3; i++) { s += a * noise(p); p = m * p; a *= .5; } return s / .875; }
+vec3 grade(vec3 c, vec2 uv, float t){
+  float v = smoothstep(1.25, .35, length((uv - .5) * vec2(1.15, 1.)));
+  c *= mix(.62, 1., v);
+  c += (hash12(uv * uRes + fract(t * 7.13) * 400.) - .5) * .035;
+  return clamp(c, 0., 1.);
+}
+`;
+  const FOOT = `
+void main(){
+  vec2 frag = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+  vec3 c = scene(frag, uTime);
+  if (uBlend > 0.) { float w = smoothstep(uLoop - uBlend, uLoop, uTime); if (w > 0.) c = mix(c, scene(frag, uTime - uLoop), w); }
+  outColor = vec4(grade(c, frag / uRes, uTime), 1.);
+}`;
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  let prog = null, film = null, extra = null;
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+  const img = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+  const helpers = { img, canvas };
+
+  window.loadFilm = async name => {
+    film = window.FILMS[name];
+    cv.width = film.w; cv.height = film.h;
+    gl.viewport(0, 0, film.w, film.h);
+    prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, HEAD + film.frag + FOOT));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    gl.useProgram(prog);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const texSrcs = film.textures ? await film.textures(helpers) : [];
+    texSrcs.forEach((src, i) => {
+      const t = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+      gl.uniform1i(gl.getUniformLocation(prog, 'uTex' + i), i);
+    });
+    extra = film.setup ? await film.setup(helpers) : null;
+    gl.uniform2f(gl.getUniformLocation(prog, 'uRes'), film.w, film.h);
+    gl.uniform1f(gl.getUniformLocation(prog, 'uLoop'), film.loop);
+    gl.uniform1f(gl.getUniformLocation(prog, 'uBlend'), film.blend || 0);
+    return { w: film.w, h: film.h, fps: film.fps, loop: film.loop };
+  };
+  const draw = t => {
+    gl.uniform1f(gl.getUniformLocation(prog, 'uTime'), t);
+    if (film.uniforms) for (const [k, v] of Object.entries(film.uniforms(t, extra))) {
+      const l = gl.getUniformLocation(prog, k); if (!l) continue;
+      if (v.length % 4 === 0 && v.length >= 4) gl.uniform4fv(l, v); else if (typeof v === 'number') gl.uniform1f(l, v); else gl.uniform2fv(l, v);
+    }
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+  window.renderFrame = (t, type = 'image/jpeg') => { draw(t); return cv.toDataURL(type, .95).split(',')[1]; };
+
+  // live preview UI
+  const bar = document.getElementById('bar');
+  let raf = 0;
+  Object.keys(window.FILMS).forEach(n => {
+    const b = document.createElement('button'); b.textContent = n; bar.appendChild(b);
+    b.onclick = async () => { cancelAnimationFrame(raf); await window.loadFilm(n); const s = performance.now();
+      const loop = () => { draw(((performance.now() - s) / 1000) % film.loop); raf = requestAnimationFrame(loop); }; loop(); };
+  });
+})();
+</script>
+</body>
+</html>
