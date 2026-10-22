@@ -472,17 +472,13 @@
       .fromTo('[data-slide-desc], .slide-buy', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .6, stagger: .06 }, .3);
   };
 
-  /* ── C9 · BUNDLES: cards fill with water; glass pours on scroll ── */
+  /* ── C9 · BUNDLES: cards fill with water ── */
   $$('[data-reveal-wave]').forEach(card => {
     const w = makeWave(card, 'bottom', { amp: 6 });
     gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
       .to(w, { p: 1, duration: 1.6, ease: 'power2.out' })
       .fromTo(card.children, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
   });
-  gsap.timeline({ scrollTrigger: { trigger: '.wide', start: 'top 80%', end: 'bottom 45%', scrub: 1 } })
-    .fromTo('.pour-stream', { scaleY: 0 }, { scaleY: 1, duration: .25, ease: 'none' })
-    .fromTo('.glass-fill', { scaleY: 0 }, { scaleY: 1, duration: .65, ease: 'none' }, .15)
-    .to('.pour-stream', { scaleY: 0, transformOrigin: 'bottom', duration: .15, ease: 'none' }, .85);
 
   /* ── C10 · COMPARE: Aquarise column floods from the bottom ── */
   const usFill = $('.us-fill');

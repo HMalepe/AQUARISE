@@ -118,7 +118,6 @@ Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0
 
 ### 06 Bundles
 - Each card fills with water from the bottom (`p 0→1`, 1.6s `power2.out`, trigger `top 85%`, once), children fade up from .35
-- Wide card pour, scrubbed `top 80%` → `bottom 45%`: stream `scaleY 0→1` (0–.25), glass fill `scaleY 0→1` (.15–.8), stream drains from the top (.85–1)
 
 ### 07 Compare
 - `.us-fill` sized to the Aquarise column on every `refreshInit`; wave `p 0→1` scrubbed `top 70%` → `bottom 55%` (amp 4, freq .6)
