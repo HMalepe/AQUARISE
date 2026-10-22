@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aquarise — Rise With Every Sip</title>
+  <meta name="description" content="Aquarise premium still and sparkling water. Bottled at first light, delivered to your door.">
+  <meta name="theme-color" content="#04121F">
+  <!-- TODO before launch: OG tags (og:title, og:description, og:image = assets/og.jpg 1200x630), favicon, canonical URL -->
+  <script>document.documentElement.classList.add('js')</script>
+  <link rel="preload" href="assets/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- 00 · LOADER — water fills the screen, then the curtain lifts -->
+<div class="loader" aria-hidden="true">
+  <div class="loader-water"><div class="loader-water-inner"></div></div>
+  <div class="loader-count"><span class="loader-num">0</span><small>%</small></div>
+  <div class="loader-brand">Aquarise</div>
+</div>
+
+<!-- Cinematic letterbox bars (open after the loader) -->
+<div class="letterbox" aria-hidden="true"><i class="lb-top"></i><i class="lb-bot"></i></div>
+
+<!-- 00 · NAV -->
+<header class="nav">
+  <a href="#top" class="logo" aria-label="Aquarise home">
+    <svg viewBox="0 0 24 32" aria-hidden="true"><path d="M12 1C12 1 2 13.5 2 20a10 10 0 0 0 20 0C22 13.5 12 1 12 1Z" fill="currentColor"/><path d="M7 21a5 5 0 0 0 5 5" stroke="var(--abyss)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    <span>AQUARISE</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#shop">Shop</a><a href="#bundles">Bundles</a><a href="#source">Source</a><a href="#faq">FAQ</a>
+  </nav>
+  <div class="nav-actions">
+    <button class="cart-btn" type="button" aria-label="Open cart" data-cart-open>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+      <span class="cart-count" data-cart-count>0</span>
+    </button>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" data-menu-toggle><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- Full-screen menu -->
+<div class="menu" id="menu" aria-hidden="true">
+  <nav aria-label="Menu">
+    <a href="#shop" data-menu-link>Shop the range</a>
+    <a href="#scenes" data-menu-link>Moments</a>
+    <a href="#bundles" data-menu-link>Bundles &amp; subscriptions</a>
+    <a href="#source" data-menu-link>The source</a>
+    <a href="#faq" data-menu-link>Questions</a>
+  </nav>
+  <p class="menu-foot">Hydration, delivered. <a href="mailto:hello@aquarise.example">hello@aquarise.example</a></p>
+</div>
+
+<main id="top">
+
+<!-- 01 · HERO — pinned; title parts, image pushes in, water floods up from below -->
+<section class="hero" id="hero">
+  <div class="hero-media">
+    <!-- REAL PHOTO: replace assets/hero-bottle.jpg (your Aquarise sunrise shot). Keep it ≥ 2400px wide. A muted looping <video> can sit here instead. -->
+    <img src="assets/hero-bottle.jpg" alt="Aquarise bottle standing on wet sand at sunrise" class="hero-img" fetchpriority="high">
+  </div>
+  <div class="hero-shade"></div>
+  <canvas class="hero-ripples" aria-hidden="true"></canvas>
+  <div class="hero-copy">
+    <h1 class="hero-title">
+      <span class="hl hl-1" data-split>RISE WITH</span>
+      <span class="hl hl-2"><a href="#shop" class="pill pill-dark hero-pill">Shop</a><span data-split>EVERY SIP.</span></span>
+    </h1>
+  </div>
+  <div class="hero-meta" data-hero-meta>
+    <span>Still &amp; sparkling</span><span>Bottled at first light</span><span>Free delivery over R350*</span>
+  </div>
+  <div class="hero-cue" data-hero-meta><span>Scroll to dive</span><i></i></div>
+  <!-- water rises from the bottom as you scroll out of the hero -->
+  <div class="hero-flood flood" data-wave="bottom">
+    <div class="caustics"></div>
+    <p class="hero-flood-line">Drawn from the deep.<br>Bottled at first light.</p>
+  </div>
+</section>
+
+<!-- 02 · TIDES — pinned; four floods arrive from left, right, top and bottom -->
+<section class="tides" id="tides" aria-label="Where Aquarise comes from">
+  <div class="tides-base">
+    <p class="tides-intro">Four tides.<br>One bottle.</p>
+  </div>
+  <div class="tide tide-1 flood" data-wave="left">
+    <div class="caustics"></div><div class="bubbles" data-bubbles="18"></div>
+    <div class="tide-copy"><span class="tide-no">01 / Source</span><h2 class="tide-word">SOURCE</h2><p>Born deep underground, where nothing rushes.</p></div>
+  </div>
+  <div class="tide tide-2 flood" data-wave="right">
+    <div class="caustics"></div><div class="bubbles" data-bubbles="18"></div>
+    <div class="tide-copy"><span class="tide-no">02 / Filter</span><h2 class="tide-word">STONE</h2><p>Slow-filtered through rock for a clean, crisp finish.</p></div>
+  </div>
+  <div class="tide tide-3 flood" data-wave="top">
+    <div class="caustics"></div><div class="bubbles" data-bubbles="18"></div>
+    <div class="tide-copy"><span class="tide-no">03 / Balance</span><h2 class="tide-word">BALANCE</h2><p>Naturally mineral-balanced. Nothing added, nothing hidden.</p></div>
+  </div>
+  <div class="tide tide-4 flood" data-wave="bottom">
+    <div class="caustics"></div><div class="bubbles" data-bubbles="18"></div>
+    <div class="tide-copy"><span class="tide-no">04 / You</span><h2 class="tide-word">YOU</h2><p>Sealed at sunrise. Opened whenever you are ready.</p></div>
+  </div>
+  <div class="tides-progress" aria-hidden="true"><i></i></div>
+</section>
+
+<!-- 03 · FEATURE — tilted bottle with level-holding water, floating stickers -->
+<section class="feature" id="feature">
+  <div class="container feature-grid">
+    <div class="feature-visual">
+      <div class="bottle feature-bottle" data-liquid="#3FB8E8" data-label="Aquarise" data-level="0.22"></div>
+      <span class="sticker s1" data-speed="-0.25">0g<br>SUGAR</span>
+      <span class="sticker s2" data-speed="0.18">0<br>KCAL</span>
+      <span class="sticker s3" data-speed="-0.12">BPA<br>FREE*</span>
+      <span class="sticker s4" data-speed="0.3">MINERAL<br>RICH*</span>
+      <i class="drop d1" data-speed="0.5"></i><i class="drop d2" data-speed="-0.4"></i><i class="drop d3" data-speed="0.7"></i><i class="drop d4" data-speed="-0.6"></i>
+    </div>
+    <div class="feature-copy">
+      <h2 class="h-xl" data-split>PURE. CRISP. ALIVE.</h2>
+      <p class="lead" data-fade>Water the way it should taste — cold, clean and quietly mineral. No sugar, no flavourings, no story you have to squint at.</p>
+      <ul class="pills" data-fade>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s-6 7.5-6 11a6 6 0 0 0 12 0c0-3.5-6-11-6-11Z" fill="currentColor"/></svg>Naturally sourced</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 12h8" stroke="currentColor" stroke-width="2"/></svg>Zero sugar</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="2"/></svg>Recyclable bottle*</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4" fill="none" stroke="currentColor" stroke-width="2"/></svg>Everyday hydration</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · SCENES — pinned film of people drinking Aquarise; each scene washes in from a new direction -->
+<section class="scenes" id="scenes" aria-label="Moments with Aquarise">
+  <div class="scene-head"><span class="scene-label">Now showing</span><h2 class="h-lg" data-split>MOMENTS OF RISE</h2></div>
+  <div class="scene-stage">
+    <!-- REAL FOOTAGE: each .ph accepts --img:url(...) or an <img>/<video autoplay muted loop playsinline> inside .ph -->
+    <article class="scene" data-dir="none">
+      <div class="ph scene-ph" style="--ph-a:#F6B26B;--ph-b:#1B4E7A;--ph-c:#04121F"><span class="ph-note">PHOTO/VIDEO · Runner on a beach road at sunrise, stopping mid-stride, head tilted back, drinking from an Aquarise bottle. Backlit, warm flare.</span></div>
+      <div class="scene-meta"><span>SCENE 01</span><span>05:48</span><span>THE RUN</span></div>
+      <p class="scene-sub">“Five kilometres in. First sip.”</p>
+    </article>
+    <article class="scene" data-dir="right">
+      <div class="ph scene-ph" style="--ph-a:#9FC9E0;--ph-b:#2D4F6B;--ph-c:#0A1C2C"><span class="ph-note">PHOTO/VIDEO · Designer at a sunlit studio desk, laptop open, unscrewing the cap and drinking. Cool daylight, shallow depth of field.</span></div>
+      <div class="scene-meta"><span>SCENE 02</span><span>10:15</span><span>THE DEEP WORK</span></div>
+      <p class="scene-sub">“Clear water. Clear head.”</p>
+    </article>
+    <article class="scene" data-dir="top">
+      <div class="ph scene-ph" style="--ph-a:#3FB8E8;--ph-b:#0E3B5C;--ph-c:#020A12"><span class="ph-note">PHOTO/VIDEO · Athlete in a dark gym between sets, condensation on the bottle, drinking in slow motion. Hard rim light, teal grade.</span></div>
+      <div class="scene-meta"><span>SCENE 03</span><span>18:30</span><span>THE SET</span></div>
+      <p class="scene-sub">“One more. Then water.”</p>
+    </article>
+    <article class="scene" data-dir="left">
+      <div class="ph scene-ph" style="--ph-a:#FFB38A;--ph-b:#5A6FA0;--ph-c:#141A33"><span class="ph-note">PHOTO/VIDEO · Friends on a rooftop at golden hour, bottles clinking, one person drinking and laughing. Warm, candid, handheld.</span></div>
+      <div class="scene-meta"><span>SCENE 04</span><span>19:02</span><span>THE GOLDEN HOUR</span></div>
+      <p class="scene-sub">“Everyone brought one.”</p>
+    </article>
+  </div>
+  <div class="scene-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+</section>
+
+<!-- 05 · SHOP — arched heading straightens on scroll; product slider rises out of a pool -->
+<section class="shop" id="shop">
+  <div class="arch-wrap">
+    <svg class="arch" viewBox="0 0 1000 260" role="img" aria-label="The range">
+      <path id="archPath" d="M 80 230 Q 500 -10 920 230" fill="none"/>
+      <text><textPath href="#archPath" startOffset="50%" text-anchor="middle">THE RANGE</textPath></text>
+    </svg>
+  </div>
+
+  <div class="slider" data-slider>
+    <div class="slide-name-wrap"><h3 class="slide-name" data-slide-name>STILL 500ML</h3></div>
+    <p class="slide-desc" data-slide-desc></p>
+    <div class="slide-buy">
+      <span class="slide-price" data-slide-price></span>
+      <button class="pill pill-light" type="button" data-slide-add>Add to cart</button>
+    </div>
+    <div class="slide-stage">
+      <button class="round-btn prev" type="button" aria-label="Previous product" data-slide-prev><svg viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+      <div class="slide-bottles" data-slide-bottles></div>
+      <button class="round-btn next" type="button" aria-label="Next product" data-slide-next><svg viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+      <div class="pool" aria-hidden="true"><i></i><i></i></div>
+    </div>
+    <div class="slide-tabs" role="tablist" aria-label="Products" data-slide-tabs></div>
+  </div>
+</section>
+
+<!-- 06 · BUNDLES — cards fill with water as they enter -->
+<section class="bundles" id="bundles">
+  <div class="container">
+    <header class="sec-head">
+      <h2 class="h-xl" data-split>STAY TOPPED UP</h2>
+      <p class="lead" data-fade>Stock the fridge once. We’ll keep it full.</p>
+    </header>
+    <div class="bundle-grid">
+      <article class="bundle b-aqua" data-reveal-wave>
+        <h3>THE DAILY RITUAL</h3>
+        <p class="bundle-sub">24 × Still 500ml</p>
+        <div class="bundle-bottles"><div class="bottle mini" data-liquid="#9BE1FF" data-level="0.2"></div><div class="bottle mini" data-liquid="#9BE1FF" data-level="0.2"></div><div class="bottle mini" data-liquid="#9BE1FF" data-level="0.2"></div></div>
+        <p class="bundle-price">R289<small>*</small></p>
+        <button class="pill pill-dark" type="button" data-add="ritual-24">Add bundle</button>
+      </article>
+      <article class="bundle b-deep" data-reveal-wave>
+        <h3>NEVER RUN DRY</h3>
+        <p class="bundle-sub">A mixed case on repeat. Pause or skip anytime.</p>
+        <fieldset class="freq">
+          <legend class="sr">Delivery frequency</legend>
+          <label><input type="radio" name="freq" value="weekly" checked><span>Weekly</span></label>
+          <label><input type="radio" name="freq" value="monthly"><span>Monthly</span></label>
+        </fieldset>
+        <p class="bundle-price" data-sub-price>R249<small>/week*</small></p>
+        <button class="pill pill-light" type="button" data-add="sub-weekly" data-sub-btn>Subscribe</button>
+      </article>
+      <article class="bundle b-sun wide" data-reveal-wave>
+        <div class="wide-copy">
+          <span class="tag">New</span>
+          <h3>SPARKLING SUNRISE</h3>
+          <p class="bundle-sub">Our water with a fine, lively bubble. Built for the first warm day.</p>
+          <button class="pill pill-dark" type="button" data-add="sparkling-500">Try it — R24*</button>
+        </div>
+        <div class="pour" aria-hidden="true">
+          <i class="pour-stream"></i>
+          <div class="glass"><div class="glass-fill"><i></i><i></i><i></i><i></i><i></i></div></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · COMPARISON — the Aquarise column fills from the bottom -->
+<section class="compare" id="compare">
+  <div class="container">
+    <header class="sec-head center">
+      <h2 class="h-xl" data-split>THE CLARITY TEST</h2>
+      <p class="lead" data-fade>What you’re actually drinking, side by side.</p>
+    </header>
+    <!-- VERIFY every claim in this table with your lab sheet / supplier before launch -->
+    <div class="table-wrap" data-fade>
+      <table class="cmp">
+        <thead><tr><th scope="col"><span class="sr">Attribute</span></th><th scope="col" class="us">AQUARISE</th><th scope="col">Soft drink</th><th scope="col">“Flavoured water”</th><th scope="col">Tap on the go</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Sugar / 500ml</th><td class="us">0g</td><td>~50g</td><td>Varies</td><td>0g</td></tr>
+          <tr><th scope="row">Sweeteners</th><td class="us">None</td><td>Often</td><td>Often</td><td>None</td></tr>
+          <tr><th scope="row">Consistent taste</th><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Depends</td></tr>
+          <tr><th scope="row">Grab-and-go</th><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+        </tbody>
+      </table>
+      <div class="us-fill flood" data-wave="bottom" aria-hidden="true"><div class="caustics"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 · SOURCE — staggered cards with clip reveals and image drift -->
+<section class="source" id="source">
+  <div class="container">
+    <header class="sec-head split">
+      <h2 class="h-xl" data-split>WHAT’S INSIDE? ALMOST NOTHING.</h2>
+      <p class="lead" data-fade>Three things make Aquarise. Two of them are time and patience.</p>
+    </header>
+    <div class="src-grid">
+      <article class="src-card">
+        <div class="src-media"><div class="ph drift" style="--ph-a:#7FD3F7;--ph-b:#1F6FA8;--ph-c:#04121F"><span class="ph-note">PHOTO · Cupped hands holding clear spring water, droplets falling, macro.</span></div></div>
+        <h3>THE SPRING</h3><p>Sourced from one protected source, not whatever is closest. <em>[Add your source location]</em></p>
+      </article>
+      <article class="src-card offset">
+        <div class="src-media"><div class="ph drift" style="--ph-a:#C9D6DF;--ph-b:#56707F;--ph-c:#1A2630"><span class="ph-note">PHOTO · Smooth river stones under moving water, top-down, cool tones.</span></div></div>
+        <h3>THE STONE</h3><p>Natural filtration through rock gives the soft, mineral finish.</p>
+      </article>
+      <article class="src-card">
+        <div class="src-media"><div class="ph drift" style="--ph-a:#FFD1A1;--ph-b:#3E7CB1;--ph-c:#0A1C2C"><span class="ph-note">PHOTO · Single droplet crowning off a bottle cap at sunrise, high-speed shot.</span></div></div>
+        <h3>THE SEAL</h3><p>Bottled and sealed the same morning. Then nothing else touches it.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 09 · FAQ — honest Q&A instead of reviews -->
+<section class="faq" id="faq">
+  <div class="container faq-grid">
+    <header class="faq-head">
+      <h2 class="h-xl" data-split>QUESTIONS WE GET ASKED</h2>
+      <p class="lead" data-fade>Something else? <a href="mailto:hello@aquarise.example">hello@aquarise.example</a></p>
+    </header>
+    <div class="faq-list">
+      <details><summary>Where does Aquarise come from?</summary><div class="faq-a"><p>[Add your source and bottling details here.] We bottle at a single source so every case tastes the same.</p></div></details>
+      <details><summary>Do you deliver nationwide?</summary><div class="faq-a"><p>[Add delivery zones and lead times.] Orders over R350* ship free.</p></div></details>
+      <details><summary>Can I pause or skip my subscription?</summary><div class="faq-a"><p>Yes — skip a delivery, change frequency or cancel from your account at any time.</p></div></details>
+      <details><summary>Is the bottle recyclable?</summary><div class="faq-a"><p>[Confirm packaging material and recycling code.] Rinse, cap on, and drop it in your recycling.</p></div></details>
+      <details><summary>Do you supply offices, gyms and events?</summary><div class="faq-a"><p>Yes. Ask about volume pricing and branded orders on <a href="mailto:hello@aquarise.example">hello@aquarise.example</a>.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · JOIN — newsletter; button fills with water on hover -->
+<section class="join" id="join">
+  <div class="container join-inner">
+    <h2 class="h-xxl" data-split>JOIN THE TIDE</h2>
+    <p class="lead" data-fade>New drops, restock alerts and the occasional free case. No spam.</p>
+    <form class="join-form" data-newsletter novalidate>
+      <label class="sr" for="email">Email address</label>
+      <input id="email" name="email" type="email" placeholder="you@email.com" required autocomplete="email">
+      <button type="submit" class="pill pill-light fill-btn"><span>Sign me up</span></button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- 11 · FOOTER — wordmark rises out of the water -->
+<footer class="footer">
+  <div class="container foot-grid">
+    <div>
+      <p class="foot-tag">Rise with every sip.</p>
+      <div class="socials">
+        <a href="#" aria-label="Instagram (add link)">IG</a><a href="#" aria-label="TikTok (add link)">TT</a><a href="#" aria-label="WhatsApp (add link)">WA</a>
+      </div>
+    </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div><h4>Shop</h4><a href="#shop">The range</a><a href="#bundles">Bundles</a><a href="#bundles">Subscriptions</a></div>
+      <div><h4>Brand</h4><a href="#source">Source</a><a href="#scenes">Moments</a><a href="#compare">Clarity test</a></div>
+      <div><h4>Help</h4><a href="#faq">FAQ</a><a href="mailto:hello@aquarise.example">Contact</a><a href="#">Shipping &amp; returns</a></div>
+    </nav>
+  </div>
+  <div class="foot-mark-wrap" aria-hidden="true">
+    <div class="foot-mark">AQUARISE</div>
+    <div class="foot-water"><i></i><i></i></div>
+  </div>
+  <div class="container foot-bottom"><span>© <span data-year>2026</span> Aquarise</span><span>* Prices and claims are placeholders — confirm before launch.</span></div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" data-cart-close></div>
+<aside class="cart" aria-label="Cart" aria-hidden="true" data-lenis-prevent>
+  <header class="cart-head"><h2>Your cart</h2><button type="button" class="cart-x" aria-label="Close cart" data-cart-close>×</button></header>
+  <div class="ship-meter"><p data-ship-msg>Add R350 for free delivery</p><div class="meter"><i data-ship-bar></i></div></div>
+  <ul class="cart-items" data-cart-items></ul>
+  <footer class="cart-foot">
+    <div class="cart-total"><span>Subtotal</span><strong data-cart-total>R0</strong></div>
+    <!-- TODO: wire to Shopify / Yoco / PayFast / Stripe checkout (see PROMPTS.md #3) -->
+    <button type="button" class="pill pill-light checkout" data-checkout>Checkout</button>
+  </footer>
+</aside>
+<div class="toast" role="status" aria-live="polite" data-toast></div>
+
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/vendor/ScrollTrigger.min.js"></script>
+<script src="js/vendor/lenis.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
