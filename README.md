@@ -71,7 +71,7 @@ Then delete the `<span class="ph-note">`.
 |---|---|
 | Hero | Now a rendered loop of the sunrise bottle shot. A real 6–10s loop of waves around the bottle at ≥1920px would beat it. |
 | Source cards | The waterfall and sip clips, framed differently per card. Real alternatives: cupped hands with spring water · river stones under water · droplet crowning off the cap. |
-| Product bottles | The SVG bottles are original placeholders. Swap for transparent PNG/WebP packshots inside each `.bottle`. The liquid wave is optional after that. |
+| Product bottles | The real bottle, cut out of the sunrise photo (`assets/bottle.webp` + `.png`). Every product uses it for now; shoot a transparent packshot per size (500ml, 1L, glass…) and point each product at its own file. |
 
 
 ## Before launch checklist

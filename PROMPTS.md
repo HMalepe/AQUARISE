@@ -11,7 +11,7 @@ condensation, drop, stones, waterfall) can be replaced by a real one with the sa
 a .jpg poster, muted, under ~4 MB. Keep the existing <video data-video muted loop playsinline poster> markup so
 on-screen-only playback and reduced motion still work. Photos go in <img loading="lazy" decoding="async" width height>
 with WebP + JPG via <picture>. Keep the .ph wrapper so the grain overlay and drift animations still work.
-Replace the SVG bottles in the slider with my transparent packshots, but keep the sink/rise/splash animation.
+Use a separate transparent packshot per product (each size/variant) instead of the shared assets/bottle.webp, but keep the sink/rise/splash animation.
 Test at 390px and 1280px, no console errors, reduced-motion still works.
 ```
 
@@ -20,7 +20,7 @@ Test at 390px and 1280px, no console errors, reduced-motion still works.
 Port this site to Next.js 15 App Router + TypeScript. Use MOTION_SPEC.md as the source of truth for every animation.
 - Lenis in a client <SmoothScroll> provider (lenis/react), synced to ScrollTrigger and gsap.ticker.
 - Each section is a component; motion lives in useGSAP from @gsap/react with scope refs and automatic cleanup.
-- Port makeWave() into a hook (useWaveClip) with a shared ticker; port the SVG bottle into <Bottle color level />.
+- Port makeWave() into a hook (useWaveClip) with a shared ticker; port the packshot bottle into <Bottle src />.
 - Cart state in a Zustand store persisted to localStorage; products in /data/products.ts.
 - Fonts via next/font/local from assets/fonts. Images via next/image.
 - Keep the .static fallback: if prefers-reduced-motion, skip all GSAP setup and render final states.

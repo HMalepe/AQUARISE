@@ -30,8 +30,8 @@ The source of truth for every animation. If you port to Next.js or another stack
 ### 3. Fade-up
 `[data-fade]`: `y 40 → 0`, `autoAlpha 0 → 1`, `expo.out`, 1.1s, trigger `top 90%`, once.
 
-### 4. SVG bottle with live liquid
-Each `.bottle[data-liquid][data-level]` gets an SVG body. The liquid surface is a path rebuilt each frame from two sines (amplitudes 3.2 and 1.8 units). The liquid group is counter-rotated by the bottle's rotation, so the water stays level while the bottle tilts. Only bottles in view (IntersectionObserver) update.
+### 4. Bottle packshot
+Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cut out of the sunrise photo) with a drop shadow. It moves only through the slider and splash animations below; no per-frame work.
 
 ### 5. Parallax float
 `[data-speed]`: `y = speed·180 → −speed·180` px across its section, scrubbed (`scrub: true`).
@@ -132,7 +132,6 @@ Word rises and fade-ups only. The join button fills with a curved water shape on
 | Slower film | the `.8` multiplier in C7's `end` (and `scrub` for more/less lag) |
 | Snappier smoothing | Lenis `lerp` up (.12) |
 | Shorter intro | counter duration 1.8 → 1.2 |
-| Bottle slosh | the sine amplitudes 3.2 / 1.8 in `renderBottle` |
 | Longer/shorter fly-through | `innerHeight * 1.8` in C7b; final `scale` 48 (must stay big enough for the I's stem to cover the screen) |
 | Faster marquee | `animation` duration on `.marquee-track` (30s) |
 | Footage look | edit the GLSL in `tools/footage/films.js`, re-render (see README) |

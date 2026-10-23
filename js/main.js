@@ -30,49 +30,11 @@
   const item = id => PRODUCTS.find(p => p.id === id) || EXTRAS[id];
   const rand = (a, b) => a + Math.random() * (b - a);
 
-  /* ── A2 · SVG bottle builder (original illustration; swap for packshots later) ── */
-  const BODY = 'M46 48 V58 C46 74 14 82 14 112 V368 Q14 392 38 392 H82 Q106 392 106 368 V112 C106 82 74 74 74 58 V48 Z';
-  let bid = 0;
-  const bottles = [];
+  /* ── A2 · bottle: the real Aquarise packshot (cut out of the sunrise photo) ── */
   function buildBottle(el) {
     if (el.dataset.built) return;
     el.dataset.built = '1';
-    const id = 'aqb' + (++bid);
-    const color = el.dataset.liquid || '#3FB8E8';
-    const labelColor = el.dataset.labelColor || '#0E5A8A';
-    const label = el.dataset.label || 'Aquarise';
-    el.innerHTML = `<svg viewBox="0 0 120 400" aria-hidden="true">
-      <defs>
-        <clipPath id="${id}c"><path d="${BODY}"/></clipPath>
-        <linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".55"/><stop offset="1" stop-color="${color}" stop-opacity=".95"/></linearGradient>
-        <linearGradient id="${id}s" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".06"/><stop offset=".2" stop-color="#fff" stop-opacity=".38"/><stop offset=".36" stop-color="#fff" stop-opacity=".03"/><stop offset=".86" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".2"/></linearGradient>
-      </defs>
-      <path d="${BODY}" fill="rgba(255,255,255,.07)"/>
-      <g clip-path="url(#${id}c)"><g class="b-liquid"><path class="b-wave" fill="url(#${id}g)"/></g></g>
-      <path d="${BODY}" fill="url(#${id}s)" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
-      <path d="M20 342 H100 M20 354 H100" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>
-      <text class="b-label" x="60" y="244" text-anchor="middle" transform="rotate(-90 60 244)" fill="${labelColor}">${label}</text>
-      <rect x="40" y="6" width="40" height="42" rx="6" fill="#E9EEF2"/>
-      <path d="M45 13V44M51 13V44M57 13V44M63 13V44M69 13V44M75 13V44" stroke="#B5C1CB" stroke-width="1.3"/>
-    </svg>`;
-    const b = {
-      el, wave: $('.b-wave', el), liquid: $('.b-liquid', el),
-      surface: 62 + (parseFloat(el.dataset.level) || .2) * 300,
-      seed: Math.random() * 10, rot: 0, visible: true
-    };
-    bottles.push(b);
-    renderBottle(b, 0);
-    return b;
-  }
-  function renderBottle(b, t) {
-    const s = b.surface, k = t + b.seed;
-    let d = 'M-140 560 L-140 ' + s.toFixed(1);
-    for (let x = -140; x <= 260; x += 10) {
-      const y = s + 3.2 * Math.sin(x * .06 + k * 2.2) + 1.8 * Math.sin(x * .11 - k * 1.6);
-      d += ` L${x} ${y.toFixed(1)}`;
-    }
-    b.wave.setAttribute('d', d + ' L260 560 Z');
-    b.liquid.setAttribute('transform', `rotate(${(-b.rot).toFixed(2)} 60 250)`);
+    el.innerHTML = '<picture><source srcset="assets/bottle.webp" type="image/webp"><img src="assets/bottle.png" alt="" width="206" height="723" loading="lazy" decoding="async" draggable="false"></picture>';
   }
 
   /* ── A3 · bubbles inside water layers ── */
@@ -142,7 +104,6 @@
   const save = () => { try { localStorage.setItem('aquarise-cart', JSON.stringify(cart)); } catch (e) {} };
   const countEl = $('[data-cart-count]');
   function renderCart() {
-    for (let i = bottles.length - 1; i >= 0; i--) if (!bottles[i].el.isConnected) bottles.splice(i, 1);
     const list = $('[data-cart-items]');
     const ids = Object.keys(cart).filter(id => cart[id] > 0 && item(id));
     let total = 0, count = 0;
@@ -288,16 +249,8 @@
     w.state = 'm'; w.el.style.clipPath = wavePoly(w.dir, w.p, t, w.amp, w.freq);
   }
 
-  // one ticker for every water surface + bottle liquid
-  const io = new IntersectionObserver(es => es.forEach(e => { const b = bottles.find(x => x.el === e.target); if (b) b.visible = e.isIntersecting; }));
-  const watch = b => io.observe(b.el);
-  bottles.forEach(watch);
-  const _push = bottles.push.bind(bottles);
-  bottles.push = b => { _push(b); watch(b); return bottles.length; };
-  gsap.ticker.add(time => {
-    for (const w of waves) drawWave(w, time);
-    for (const b of bottles) if (b.visible && b.el.isConnected) renderBottle(b, time);
-  });
+  // one ticker for every water surface
+  gsap.ticker.add(time => { for (const w of waves) drawWave(w, time); });
 
   /* ── C2 · LOADER → letterbox opens → hero intro ── */
   const loaderWave = makeWave($('.loader-water'), 'bottom', { amp: 5 });
