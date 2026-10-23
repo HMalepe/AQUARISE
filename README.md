@@ -37,9 +37,10 @@ aquarise-site/
 |---|---|---|
 | `hero` | Hero background | Your sunrise bottle photo brought to life: the sea rolls in, sand glints, bubbles rise inside the bottle, spray drifts through the light |
 | `heat` | Scene 01 · The Heat | Real AI-generated footage (OpenArt, Seedance 2.5): a woman in profile at sunset, sweat dripping from her chin. Not rendered by tools/footage — re-running `render.mjs` without arguments would overwrite it, so render other films by name |
+| `sip` | Scene 03 · The First Sip | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade). Not rendered by tools/footage |
 | `condensation` | Scene 02 · The Craving, Source card "The Seal" | A cold bottle fogged over; drops slide down and clear streaks through to the sunrise |
-| `drop` | Scene 03 · The First Drop, Join background | One drop hits still water at sunrise: crown, rebound jet, rings |
-| `stones` | Scene 04 · The Relief, Source card "The Stone" | Looking down through a clear stream at river stones, caustics moving over them |
+| `drop` | Scene 04 · The First Drop, Join background | One drop hits still water at sunrise: crown, rebound jet, rings |
+| `stones` | Scene 05 · The Relief, Source card "The Stone" | Looking down through a clear stream at river stones, caustics moving over them |
 | `waterfall` | The SPRING knockout section, Source card "The Spring" | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
 Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
