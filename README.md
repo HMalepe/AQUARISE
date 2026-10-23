@@ -23,7 +23,7 @@ aquarise-site/
 ├── assets/
 │   ├── hero-bottle.jpg   your sunrise bottle shot (cropped to remove the generator watermark); hero poster
 │   ├── brand/            aquarise-logo.svg (navy), aquarise-logo-light.svg (for dark backgrounds), favicon.svg
-│   ├── video/            hero, heat, condensation, drop, stones, waterfall — .mp4 (first) + .webm fallback + .jpg poster each
+│   ├── video/            hero, sip, waterfall — .mp4 (first) + .webm fallback + .jpg poster each
 │   └── fonts/            Anton + Manrope (self-hosted, SIL Open Font License)
 ├── tools/footage/        the shader "studio" that renders every clip in assets/video
 ├── MOTION_SPEC.md        every animation: trigger, start/end, scrub, ease, tuning knobs
@@ -36,11 +36,8 @@ aquarise-site/
 | Clip | Where it plays | What it is |
 |---|---|---|
 | `hero` | Hero background | Your sunrise bottle photo brought to life: the sea rolls in, sand glints, bubbles rise inside the bottle, spray drifts through the light |
-| `sip` | Scene 01 · The First Sip | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade). Not rendered by tools/footage |
-| `condensation` | Scene 02 · The Craving, Source card "The Seal" | A cold bottle fogged over; drops slide down and clear streaks through to the sunrise |
-| `drop` | Scene 03 · The First Drop, Join background | One drop hits still water at sunrise: crown, rebound jet, rings |
-| `stones` | Scene 04 · The Relief, Source card "The Stone" | Looking down through a clear stream at river stones, caustics moving over them |
-| `waterfall` | The SPRING knockout section, Source card "The Spring" | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
+| `sip` | The Thirst (single scene), Source card "The Seal" (framed on the bottle) | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade). Not rendered by tools/footage |
+| `waterfall` | The SPRING knockout section, Source cards "The Spring" and "The Stone" (framed on the rocks) | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
 Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
 
@@ -57,7 +54,7 @@ To preview live, serve the folder and open `/tools/footage/studio.html`, then cl
 
 ### Swapping in real footage
 
-Drop a real clip into `assets/video/` with the same name (`heat.mp4` + `heat.webm` + `heat.jpg` poster) and it replaces the rendered one everywhere it is used. Keep clips muted, under ~4 MB, and ideally loopable. Good real-world replacements: a runner or labourer with sweat on their face in hard sun (heat), condensation on an actual Aquarise bottle (condensation), a macro drop splash (drop), your actual spring source (waterfall, stones).
+Drop a real clip into `assets/video/` with the same name (for example `sip.mp4` + `sip.webm` + `sip.jpg` poster) and it replaces the old one everywhere it is used. Keep clips muted, under ~4 MB, and ideally loopable.
 
 ## Swapping in real photos and video
 
@@ -74,7 +71,7 @@ Then delete the `<span class="ph-note">`.
 |---|---|
 | Hero | Now a rendered loop of the sunrise bottle shot. A real 6–10s loop of waves around the bottle at ≥1920px would beat it. |
 | Scenes 01–04 | Rendered thirst film (heat → craving → first drop → relief). Real people drinking Aquarise would add warmth: a runner at sunrise, someone in a hot gym, friends on a rooftop. |
-| Source cards | Rendered clips. Real alternatives: cupped hands with spring water · river stones under water · droplet crowning off the cap. |
+| Source cards | The waterfall and sip clips, framed differently per card. Real alternatives: cupped hands with spring water · river stones under water · droplet crowning off the cap. |
 | Product bottles | The SVG bottles are original placeholders. Swap for transparent PNG/WebP packshots inside each `.bottle`. The liquid wave is optional after that. |
 
 Scenes look best as 1920×1080+ video (H.264/WebM, under ~4 MB each, muted).

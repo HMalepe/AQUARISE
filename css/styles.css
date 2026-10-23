@@ -263,9 +263,6 @@ video { background: var(--deep); }
 .scene-ph::after { content: none; } /* the clips carry their own grain; blending it over full-screen video every frame costs smoothness */
 .scene-meta { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0; height: 12svh; z-index: 3; display: flex; align-items: center; gap: 28px; font-size: .78rem; font-weight: 700; letter-spacing: .26em; color: rgba(255,255,255,.75); }
 .scene-meta span:first-child { color: var(--sun); }
-.scene-dots { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); z-index: 10; display: grid; gap: 10px; }
-.scene-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.3); transition: background-color .3s, transform .3s; }
-.scene-dots i.on { background: var(--sun); transform: scale(1.4); }
 
 /* 04b spring */
 .spring { background: var(--abyss); }
@@ -355,6 +352,8 @@ video { background: var(--deep); }
 .src-media { position: relative; aspect-ratio: 3 / 4; border-radius: var(--radius); overflow: hidden; margin-bottom: 22px; }
 .src-media .ph { position: absolute; left: 0; right: 0; top: -9%; height: 118%; }
 .src-card h3 { font-family: var(--display); font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: .5rem; }
+.src-media video.frame-rocks { object-position: 0% 100%; }
+.src-media video.frame-bottle { object-position: 38% 25%; }
 .src-card p { color: rgba(232,246,251,.78); max-width: 34ch; }
 
 /* 09 faq */
@@ -370,9 +369,6 @@ video { background: var(--deep); }
 
 /* 10 join */
 .join { padding: clamp(100px, 14vw, 200px) 0; background: radial-gradient(80% 60% at 50% 100%, rgba(63,184,232,.25), transparent 70%), var(--abyss); text-align: center; overflow: hidden; }
-.join-media { position: absolute; inset: 0; opacity: .55; }
-.join-media video { width: 100%; height: 100%; object-fit: cover; }
-.join-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, var(--abyss) 0%, rgba(4,18,31,.3) 45%, rgba(4,18,31,.7) 100%); }
 .join-inner { position: relative; display: grid; justify-items: center; gap: 1.4rem; }
 .join-form { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 1rem; width: min(560px, 100%); }
 .join-form input { flex: 1 1 260px; min-width: 0; border-radius: 999px; border: 1px solid var(--line); background: rgba(232,246,251,.06); color: var(--foam); padding: 1.05em 1.4em; font: inherit; }
@@ -479,8 +475,7 @@ video { background: var(--deep); }
 .static .scenes { height: auto; }
 .static .scene { position: relative; height: 100svh; }
 .static .scene-head { position: relative; height: auto; padding-block: 40px; background: #000; }
-.static .scene-dots { display: none; }
-.static .spring-mask { display: none; }
+.static .static .spring-mask { display: none; }
 .static .us-fill { display: none; }
 .static .cmp .us { background: var(--tide); }
 .static .caustics, .static .bubbles, .static .pool i, .static .foot-water i, .static .hero-cue i, .static .marquee-track { animation: none !important; }

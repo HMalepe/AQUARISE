@@ -86,17 +86,10 @@ Each step: wave `p 0→1` over .85 (`power1.inOut`, amp 7); word `yPercent 35→
 - Stickers and droplets: `[data-speed]` parallax
 - Foam-to-abyss wave seam at the top (CSS mask)
 
-### 04 Scenes — pinned film ("The Thirst")
-Trigger `.scenes`, `top top` → `+= 0.8 × innerHeight × (scenes − 0.4)` (≈2.9 screens for 4 scenes), `scrub: .35`, `anticipatePin: 1`.
-Scrub is short on purpose: Lenis already smooths the wheel, and a long scrub on top of it feels sticky. Scene grain overlay is off (`.scene-ph::after`) because blending it over full-screen video every frame cost frames.
-| Scene | Clip | At | Washes in from | Inner video | Previous scene |
-|---|---|---|---|---|---|
-| 01 The First Sip | `sip` | 0 | — | `scale 1.12→1` | — |
-| 02 The Craving | `condensation` | .3 | **right** | `scale 1.2→1` over 1 | `scale .92`, `xPercent −8` |
-| 03 The First Drop | `drop` | 1.3 | **top** | same | `scale .92`, `yPercent 8` |
-| 04 The Relief | `stones` | 2.3 | **left** | same | `scale .92`, `xPercent 8` |
-Each wave takes .75 (`power2.inOut`); hold .2 at the end. No subtitles; the scene meta bar fades in at +.45. Each scene has its own letterbox bars and `isolation: isolate` (important: otherwise z-indexed children leak above later scenes). Dots track the scene whose wave is past .5.
-Playback: only the active scene and the one currently washing in (wave `0 < p < 1`) play; the rest pause. An IntersectionObserver on `.scenes` pauses every clip once the section leaves the screen.
+### 04 Scenes — pinned ("The Thirst")
+One scene: the `sip` clip (1s loop crossfade baked in, anchored to the top with `.frame-top` so her head stays in frame).
+Trigger `.scenes`, `top top` → `+= 0.8 × innerHeight × (scenes − 0.4)` (≈0.5 screen), `scrub: .35`, `anticipatePin: 1`. The clip pushes in `scale 1.12 → 1`.
+The multi-scene machinery in C7 (directional washes, dots, per-scene playback) still works if more `<article class="scene">` elements are added back.
 
 ### 04b Spring — pinned knockout
 Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `invalidateOnRefresh`.
@@ -128,10 +121,10 @@ Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0
 Primitive 7, batched with stagger .14; text fades up after .3.
 
 ### 08 Source cards
-Each `.ph` now holds a looping clip (waterfall, stones, condensation); the clip reveal and drift above apply unchanged.
+Each `.ph` holds a looping clip: waterfall, waterfall framed on the rocks, the sip clip framed on the bottle; the clip reveal and drift above apply unchanged.
 
 ### 09 FAQ / 10 Join
-Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). Join has the `drop` clip behind it at .55 opacity under an abyss gradient.
+Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). 
 
 ### 11 Footer
 `.foot-mark` (the traced Aquarise wordmark, SVG) `yPercent 100 → 0`, scrubbed from `top bottom` to `bottom bottom`, rising behind two drifting wave strips.
