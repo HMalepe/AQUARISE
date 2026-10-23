@@ -36,6 +36,9 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 ### 5. Parallax float
 `[data-speed]`: `y = speed·180 → −speed·180` px across its section, scrubbed (`scrub: true`).
 
+### 5b. Shine
+`.shine::after`: a white glint sweeps across a pill every 3.2s (CSS). Static mode stops it.
+
 ### 6. Splash
 `splash(host)`: 14 droplets fly from the pool line (`power2.out` up, then `power2.in` down and fade).
 
@@ -66,7 +69,8 @@ Trigger `.hero`, `top top` → `+=130%`, `scrub: 1`.
 | 0 → .2 | meta fade (`fromTo`, `immediateRender:false`) |
 | 0 → 1 | `.hero-media` `scale 1.2`, `yPercent −6` |
 | .38 → 1 | **Water rises from the bottom** (`.hero-flood` wave `p 0→1`, `power1.in`, amp 7) |
-| .7 → 1 | "Drawn from the deep…" rises in |
+| .16 → .34 | `.hero-offer` (Thirsty yet? + "Quench it — shop now") rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .22. The flood then rises over it |
+| .7 → 1 | "Drawn from the deep…" and the "Taste the source" button rise in (stagger .06) |
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 
 ### 02 Tides — pinned (water from four directions)

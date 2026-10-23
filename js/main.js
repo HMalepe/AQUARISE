@@ -287,7 +287,9 @@
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .2, immediateRender: false }, 0)
     .to('.hero-media', { scale: 1.2, yPercent: -6, ease: 'none', duration: 1 }, 0)
     .to(heroFlood, { p: 1, ease: 'power1.in', duration: .62 }, .38)
-    .fromTo('.hero-flood-line', { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: .3, ease: 'power2.out' }, .7);
+    .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .18, ease: 'power2.out' }, .16)   // offer rises as the title lifts
+    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .14, ease: 'back.out(2)' }, .22)
+    .fromTo('.hero-flood-copy > *', { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: .3, stagger: .06, ease: 'power2.out' }, .7);
 
   // pointer ripples on the hero water
   (() => {
