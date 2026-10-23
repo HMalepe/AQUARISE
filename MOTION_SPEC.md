@@ -72,10 +72,7 @@ Trigger `.hero`, `top top` → `+=90%`, `scrub: 1`.
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 The old water flood ("Drawn from the deep") and the 02 Tides section were removed.
 
-### 03 Feature
-- Left column is the `sip` clip (square card, `object-position 55% 15%`), fading up with the shared `[data-fade]` reveal. The old tilting bottle and stickers are gone.
-
-### 04b Spring — pinned knockout
+### 02 Spring — pinned knockout
 Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `invalidateOnRefresh`.
 - The waterfall video plays behind `.spring-mask`, an abyss layer with white text in `mix-blend-mode: multiply`, so the video only shows through the letters of SPRING.
 - `transform-origin` is the centre of the **I** (measured with `offsetLeft/Top` on every `refreshInit`, so it ignores the current scale).
@@ -87,6 +84,9 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
 | end | hold .3 |
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
+
+### 03 Feature
+- Left column is the `sip` clip (square card, `object-position 55% 15%`), fading up with the shared `[data-fade]` reveal. The old tilting bottle and stickers are gone.
 
 ### 05 Shop
 - Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`
@@ -122,6 +122,6 @@ Word rises and fade-ups only. The join button fills with a curved water shape on
 | Slower film | the `.8` multiplier in C7's `end` (and `scrub` for more/less lag) |
 | Snappier smoothing | Lenis `lerp` up (.12) |
 | Shorter intro | counter duration 1.8 → 1.2 |
-| Longer/shorter fly-through | `innerHeight * 1.8` in C7b; final `scale` 48 (must stay big enough for the I's stem to cover the screen) |
+| Longer/shorter fly-through | `innerHeight * 1.8` in C5; final `scale` 48 (must stay big enough for the I's stem to cover the screen) |
 | Faster marquee | `animation` duration on `.marquee-track` (30s) |
 | Footage look | edit the GLSL in `tools/footage/films.js`, re-render (see README) |

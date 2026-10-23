@@ -2,8 +2,8 @@
    AQUARISE — main.js
    Part A: basics that work in every mode (cart, slider, menu, forms, bottles, videos)
    Part B: early return into .static if reduced motion / GSAP missing
-   Part C: motion blocks in DOM order (loader → hero → feature →
-           spring → shop → bundles → compare → source → footer)
+   Part C: motion blocks in DOM order (loader → hero → spring → feature →
+           shop → bundles → compare → source → footer)
    ========================================================================== */
 (() => {
   'use strict';
@@ -324,13 +324,7 @@
     gsap.fromTo(el, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
   });
 
-  /* ── C6 · FEATURE: parallax on anything with data-speed (the clip itself fades up via data-fade) ── */
-  $$('[data-speed]').forEach(el => {
-    const s = parseFloat(el.dataset.speed) || 0;
-    gsap.fromTo(el, { y: () => s * 180 }, { y: () => -s * 180, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
-  });
-
-  /* ── C7b · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
+  /* ── C5 · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
   const sWord = $('.spring-word'), sI = $('.spring-i');
   const springOrigin = () => { sWord.style.transformOrigin = `${sI.offsetLeft - sWord.offsetLeft + sI.offsetWidth / 2}px ${sI.offsetTop - sWord.offsetTop + sI.offsetHeight * .52}px`; };
   springOrigin();
@@ -341,6 +335,12 @@
     .fromTo('.spring-mask', { autoAlpha: 1 }, { autoAlpha: 0, duration: .08, immediateRender: false }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
     .to({}, { duration: .3 });
+
+  /* ── C6 · FEATURE: parallax on anything with data-speed (the clip itself fades up via data-fade) ── */
+  $$('[data-speed]').forEach(el => {
+    const s = parseFloat(el.dataset.speed) || 0;
+    gsap.fromTo(el, { y: () => s * 180 }, { y: () => -s * 180, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
+  });
 
   /* ── C8 · SHOP: arch straightens; bottles sink/rise through the pool ── */
   gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: 1 } });
