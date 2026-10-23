@@ -2,7 +2,7 @@
    AQUARISE — main.js
    Part A: basics that work in every mode (cart, slider, menu, forms, bottles, videos)
    Part B: early return into .static if reduced motion / GSAP missing
-   Part C: motion blocks in DOM order (loader → hero → tides → feature →
+   Part C: motion blocks in DOM order (loader → hero → feature →
            spring → shop → bundles → compare → source → footer)
    ========================================================================== */
 (() => {
@@ -279,17 +279,14 @@
     .to('[data-hero-meta]', { autoAlpha: 1, y: 0, duration: .9, stagger: .1, ease: 'expo.out' }, '<.1')
     .add(() => { lenis && lenis.start(); });
 
-  /* ── C3 · HERO pinned scroll: title parts, image pushes in, water floods up ── */
-  const heroFlood = makeWave($('.hero-flood'), 'bottom', { amp: 7 });
-  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=130%', pin: true, scrub: 1, invalidateOnRefresh: true } })
+  /* ── C3 · HERO pinned scroll: title parts, image pushes in, the offer rises ── */
+  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=90%', pin: true, scrub: 1, invalidateOnRefresh: true } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .45 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .45 }, .06)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .2, immediateRender: false }, 0)
     .to('.hero-media', { scale: 1.2, yPercent: -6, ease: 'none', duration: 1 }, 0)
-    .to(heroFlood, { p: 1, ease: 'power1.in', duration: .62 }, .38)
     .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .18, ease: 'power2.out' }, .16)   // offer rises as the title lifts
-    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .14, ease: 'back.out(2)' }, .22)
-    .fromTo('.hero-flood-copy > *', { yPercent: 60, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: .3, stagger: .06, ease: 'power2.out' }, .7);
+    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .14, ease: 'back.out(2)' }, .22);
 
   // pointer ripples on the hero water
   (() => {
@@ -326,20 +323,6 @@
   $$('[data-fade]').forEach(el => {
     gsap.fromTo(el, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
   });
-
-  /* ── C5 · TIDES pinned: four floods from left, right, top, bottom ── */
-  const tideWaves = $$('.tide').map(el => makeWave(el, el.dataset.wave, { amp: 7 }));
-  const tt = gsap.timeline({ scrollTrigger: { trigger: '.tides', start: 'top top', end: () => '+=' + innerHeight * 3.4, pin: true, scrub: 1, invalidateOnRefresh: true } });
-  tt.fromTo('.tides-intro', { autoAlpha: 1, scale: 1 }, { autoAlpha: 0, scale: .9, duration: .5 }, .1);
-  tideWaves.forEach((w, i) => {
-    const at = .25 + i, el = w.el;
-    tt.to(w, { p: 1, duration: .85, ease: 'power1.inOut' }, at)
-      .fromTo($('.tide-word', el), { yPercent: 35, scale: 1.18 }, { yPercent: 0, scale: 1, duration: .95, ease: 'power2.out' }, at)
-      .fromTo($$('.tide-no, .tide-copy p', el), { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .4, stagger: .1 }, at + .4);
-    if (i > 0) tt.to($('.tide-copy', tideWaves[i - 1].el), { scale: .88, autoAlpha: .25, duration: .8 }, at);
-  });
-  tt.to({}, { duration: .35 });
-  tt.fromTo('.tides-progress i', { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: tt.duration() }, 0);
 
   /* ── C6 · FEATURE: parallax on anything with data-speed (the clip itself fades up via data-fade) ── */
   $$('[data-speed]').forEach(el => {

@@ -31,4 +31,4 @@
 - Widths: 390×844 and 1280×800 (also 1440+). No horizontal scroll: `document.documentElement.scrollWidth - innerWidth === 0`.
 - Zero console errors.
 - Emulate `prefers-reduced-motion: reduce`: page must render fully in `.static` with no loader.
-- Scroll through each pinned section (hero, tides, spring) and check text is never clipped.
+- Scroll through each pinned section (hero, spring) and check text is never clipped.

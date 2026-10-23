@@ -61,32 +61,19 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 
 ### 01 Hero — pinned
 Background is `assets/video/hero.mp4` (8s seamless loop, poster = the original photo). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
-Trigger `.hero`, `top top` → `+=130%`, `scrub: 1`.
+Trigger `.hero`, `top top` → `+=90%`, `scrub: 1`.
 | Timeline pos | Tween |
 |---|---|
 | 0 → .45 | `.hl-1` `yPercent −70`, fade out |
 | .06 → .51 | `.hl-2` `yPercent −40`, fade out |
 | 0 → .2 | meta fade (`fromTo`, `immediateRender:false`) |
 | 0 → 1 | `.hero-media` `scale 1.2`, `yPercent −6` |
-| .38 → 1 | **Water rises from the bottom** (`.hero-flood` wave `p 0→1`, `power1.in`, amp 7) |
-| .16 → .34 | `.hero-offer` (Thirsty yet? + "Quench it — shop now") rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .22. The flood then rises over it |
-| .7 → 1 | "Drawn from the deep…" and the "Taste the source" button rise in (stagger .06) |
+| .16 → .34 | `.hero-offer` (Thirsty yet? + "Quench it — shop now") rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .22. It stays up until the pin releases |
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
-
-### 02 Tides — pinned (water from four directions)
-Trigger `.tides`, `top top` → `+= 3.4 × innerHeight`, `scrub: 1`.
-| Step | At | Flood from | Layer colour | Word |
-|---|---|---|---|---|
-| intro fades | .1 | — | deep | "Four tides. One bottle." |
-| 1 | .25 | **left** | deep tide blue | SOURCE |
-| 2 | 1.25 | **right** | wave blue | STONE |
-| 3 | 2.25 | **top** (pour) | sunrise gradient | BALANCE |
-| 4 | 3.25 | **bottom** (rise) | foam | YOU |
-Each step: wave `p 0→1` over .85 (`power1.inOut`, amp 7); word `yPercent 35→0, scale 1.18→1`; label + line fade in at +.4; previous layer's copy shrinks to .88 and dims. Progress bar scales across the whole timeline. Hold .35 at the end.
+The old water flood ("Drawn from the deep") and the 02 Tides section were removed.
 
 ### 03 Feature
 - Left column is the `sip` clip (square card, `object-position 55% 15%`), fading up with the shared `[data-fade]` reveal. The old tilting bottle and stickers are gone.
-- Foam-to-abyss wave seam at the top (CSS mask)
 
 ### 04b Spring — pinned knockout
 Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `invalidateOnRefresh`.
@@ -130,9 +117,8 @@ Word rises and fade-ups only. The join button fills with a curved water shape on
 
 | Want | Change |
 |---|---|
-| Choppier water edges | raise `amp` in `makeWave` calls (hero 7, tides 7) |
+| Choppier water edges | raise `amp` in `makeWave` calls |
 | More crests | raise `freq` (1.2 default) |
-| Longer tides sequence | `innerHeight * 3.4` in C5 |
 | Slower film | the `.8` multiplier in C7's `end` (and `scrub` for more/less lag) |
 | Snappier smoothing | Lenis `lerp` up (.12) |
 | Shorter intro | counter duration 1.8 → 1.2 |
