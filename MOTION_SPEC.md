@@ -69,8 +69,9 @@ Trigger `.hero`, `top top` → `+= 1.7 × innerHeight`, `scrub: .4`.
 | 0 → .5 | `.hero-media` `scale 1.2`, `yPercent −6` |
 | .1 → .22 | `.hero-offer` rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .14 |
 | .5 → .6 | offer lifts away `y −40`, fades |
-| .5 → .9 | **the dive**: `.hero-media` `scale → 4`, `power3.in` (straight into the bottle) |
-| .6 → .94 | `.hero-portal` opens `clip-path circle(0% at 50% 45%) → circle(75%)`, `power2.in`. The portal is the exact first frame of SPRING (waterfall poster at the same brightness + the same `.spring-mask`/`.spring-word`) |
+| .5 → .9 | **the dive**: `.hero-media` slow push `scale → 1.65`, `power2.in` (kept low so the photo never pixelates) |
+| .52 → .84 | `.hero-dim` (abyss layer) fades in: the light drains to black |
+| .76 → 1 | `.hero-portal` fades in out of the black while its SPRING word settles `scale 1.45 → 1`, `blur 14px → 0`, `expo.out`. The portal is the exact first frame of SPRING (waterfall poster at the same brightness + the same `.spring-mask`/`.spring-word`) |
 | end | hold .1 |
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases, and SPRING's own pin starts at that same scroll position. `.spring` is `autoAlpha 0` until its stage hits `top top`, then shown (hidden again on scroll back). No visible scroll between the two.
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.

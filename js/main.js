@@ -295,8 +295,12 @@
     .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .12, ease: 'power2.out' }, .1)   // offer rises as the title lifts
     .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .1, ease: 'back.out(2)' }, .14)
     .to('.hero-offer', { y: -40, autoAlpha: 0, duration: .1, ease: 'power1.in' }, .5)                               // ...holds, then the dive
-    .to('.hero-media', { scale: 4, yPercent: 0, ease: 'power3.in', duration: .4 }, .5)
-    .fromTo('.hero-portal', { autoAlpha: 1, clipPath: 'circle(0% at 50% 45%)' }, { clipPath: 'circle(75% at 50% 50%)', ease: 'power2.in', duration: .34, immediateRender: false }, .6)
+    .set('.hero-dim, .hero-portal', { autoAlpha: 0 }, 0)                                                            // start states live in the timeline so scrubbing back always restores them
+    .set('.hero-portal .spring-word', { scale: 1.45, filter: 'blur(14px)' }, 0)
+    .to('.hero-media', { scale: 1.65, yPercent: -3, ease: 'power2.in', duration: .4 }, .5)                         // slow push into the bottle
+    .to('.hero-dim', { autoAlpha: 1, ease: 'power1.in', duration: .32 }, .52)                  // the light drains to black
+    .to('.hero-portal', { autoAlpha: 1, ease: 'power2.out', duration: .22 }, .76)   // SPRING surfaces out of the dark
+    .to('.hero-portal .spring-word', { scale: 1, filter: 'blur(0px)', ease: 'expo.out', duration: .24 }, .76)
     .to({}, { duration: .1 });
   ScrollTrigger.create({ trigger: '.spring-stage', start: 'top top', onEnter: () => gsap.set(spring, { autoAlpha: 1 }), onLeaveBack: () => gsap.set(spring, { autoAlpha: 0 }) });
 
