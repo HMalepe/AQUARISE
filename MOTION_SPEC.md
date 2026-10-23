@@ -61,14 +61,18 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 
 ### 01 Hero — pinned
 Background is `assets/video/hero.mp4` (8s seamless loop, poster = the original photo). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
-Trigger `.hero`, `top top` → `+=90%`, `scrub: 1`.
+Trigger `.hero`, `top top` → `+= 1.7 × innerHeight`, `scrub: .4`.
 | Timeline pos | Tween |
 |---|---|
-| 0 → .45 | `.hl-1` `yPercent −70`, fade out |
-| .06 → .51 | `.hl-2` `yPercent −40`, fade out |
-| 0 → .2 | meta fade (`fromTo`, `immediateRender:false`) |
-| 0 → 1 | `.hero-media` `scale 1.2`, `yPercent −6` |
-| .16 → .34 | `.hero-offer` (Thirsty yet? + "Quench it — shop now") rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .22. It stays up until the pin releases |
+| 0 → .3 | `.hl-1` `yPercent −70`, fade out; `.hl-2` (from .04) `yPercent −40`, fade out |
+| 0 → .12 | meta fade (`fromTo`, `immediateRender:false`) |
+| 0 → .5 | `.hero-media` `scale 1.2`, `yPercent −6` |
+| .1 → .22 | `.hero-offer` rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .14 |
+| .5 → .6 | offer lifts away `y −40`, fades |
+| .5 → .9 | **the dive**: `.hero-media` `scale → 4`, `power3.in` (straight into the bottle) |
+| .6 → .94 | `.hero-portal` opens `clip-path circle(0% at 50% 45%) → circle(75%)`, `power2.in`. The portal is the exact first frame of SPRING (waterfall poster at the same brightness + the same `.spring-mask`/`.spring-word`) |
+| end | hold .1 |
+**Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases, and SPRING's own pin starts at that same scroll position. `.spring` is `autoAlpha 0` until its stage hits `top top`, then shown (hidden again on scroll back). No visible scroll between the two.
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 The old water flood ("Drawn from the deep") and the 02 Tides section were removed.
 
@@ -80,7 +84,7 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 |---|---|
 | .12 → 1.12 | `.spring-word` `scale 1 → 48`, `power3.in` — the camera flies through the I's stem |
 | .12 → 1.07 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
-| 1.04 | mask `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
+| 0 / 1.04 | mask `set autoAlpha 1` at 0 (so rewinding always restores it), then `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
 | end | hold .3 |
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.

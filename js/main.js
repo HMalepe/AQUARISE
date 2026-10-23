@@ -280,13 +280,25 @@
     .add(() => { lenis && lenis.start(); });
 
   /* ── C3 · HERO pinned scroll: title parts, image pushes in, the offer rises ── */
-  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=90%', pin: true, scrub: 1, invalidateOnRefresh: true } })
-    .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .45 }, 0)
-    .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .45 }, .06)
-    .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .2, immediateRender: false }, 0)
-    .to('.hero-media', { scale: 1.2, yPercent: -6, ease: 'none', duration: 1 }, 0)
-    .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .18, ease: 'power2.out' }, .16)   // offer rises as the title lifts
-    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .14, ease: 'back.out(2)' }, .22);
+  // Then the camera dives into the bottle and a portal opens onto SPRING's first frame. SPRING is pulled up under
+  // the hero (negative margin) and stays invisible until the hero lets go, so the hand-off has no scroll at all.
+  const hero = $('.hero'), spring = $('.spring');
+  const tuckSpring = () => { spring.style.marginTop = -hero.offsetHeight + 'px'; };
+  tuckSpring();
+  ScrollTrigger.addEventListener('refreshInit', tuckSpring);
+  gsap.set(spring, { autoAlpha: 0 });
+  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true, scrub: .4, invalidateOnRefresh: true } })
+    .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .3 }, 0)
+    .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .3 }, .04)
+    .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .12, immediateRender: false }, 0)
+    .to('.hero-media', { scale: 1.2, yPercent: -6, ease: 'none', duration: .5 }, 0)
+    .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .12, ease: 'power2.out' }, .1)   // offer rises as the title lifts
+    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .1, ease: 'back.out(2)' }, .14)
+    .to('.hero-offer', { y: -40, autoAlpha: 0, duration: .1, ease: 'power1.in' }, .5)                               // ...holds, then the dive
+    .to('.hero-media', { scale: 4, yPercent: 0, ease: 'power3.in', duration: .4 }, .5)
+    .fromTo('.hero-portal', { autoAlpha: 1, clipPath: 'circle(0% at 50% 45%)' }, { clipPath: 'circle(75% at 50% 50%)', ease: 'power2.in', duration: .34, immediateRender: false }, .6)
+    .to({}, { duration: .1 });
+  ScrollTrigger.create({ trigger: '.spring-stage', start: 'top top', onEnter: () => gsap.set(spring, { autoAlpha: 1 }), onLeaveBack: () => gsap.set(spring, { autoAlpha: 0 }) });
 
   // pointer ripples on the hero water
   (() => {
@@ -325,14 +337,15 @@
   });
 
   /* ── C5 · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
-  const sWord = $('.spring-word'), sI = $('.spring-i');
+  const sWord = $('.spring-stage .spring-word'), sI = $('.spring-i');
   const springOrigin = () => { sWord.style.transformOrigin = `${sI.offsetLeft - sWord.offsetLeft + sI.offsetWidth / 2}px ${sI.offsetTop - sWord.offsetTop + sI.offsetHeight * .52}px`; };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
   gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: 1, invalidateOnRefresh: true } })
     .fromTo(sWord, { scale: 1 }, { scale: 48, ease: 'power3.in', duration: 1 }, .12)
     .fromTo('.spring-video', { filter: 'brightness(1.25) saturate(1.15)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: .95 }, .12)
-    .fromTo('.spring-mask', { autoAlpha: 1 }, { autoAlpha: 0, duration: .08, immediateRender: false }, 1.04)
+    .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
+    .to('.spring-stage .spring-mask', { autoAlpha: 0, duration: .08 }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
     .to({}, { duration: .3 });
 
