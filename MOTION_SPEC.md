@@ -11,7 +11,7 @@ The source of truth for every animation. If you port to Next.js or another stack
 | Signature eases | `expo.out` (entrances), `expo.inOut` (curtains), `power2.inOut` (water floods), `none` (scrubbed parallax) |
 | Units | Sections use `svh`; pinned durations are functions of `innerHeight` with `invalidateOnRefresh: true` |
 | Static mode | `html.static` when reduced motion is on or GSAP is missing; JS returns before any motion code |
-| Video | Every `video[data-video]` plays only while within 200px of the viewport (IntersectionObserver, A11) and pauses otherwise. `preload="none"` flips to `auto` on first play. Reduced motion: never plays, posters only. The pinned film's clips are driven by C7 instead (see 04). |
+| Video | Every `video[data-video]` plays only while within 200px of the viewport (IntersectionObserver, A11) and pauses otherwise. `preload="none"` flips to `auto` on first play. Reduced motion: never plays, posters only.  |
 
 ## Reusable primitives
 
@@ -81,15 +81,8 @@ Trigger `.tides`, `top top` → `+= 3.4 × innerHeight`, `scrub: 1`.
 Each step: wave `p 0→1` over .85 (`power1.inOut`, amp 7); word `yPercent 35→0, scale 1.18→1`; label + line fade in at +.4; previous layer's copy shrinks to .88 and dims. Progress bar scales across the whole timeline. Hold .35 at the end.
 
 ### 03 Feature
-- Bottle `rotate −20° → 16°`, `y 70 → −70`, scrubbed across the section; liquid counter-rotates (stays level)
-- Stickers `scale 0 → 1`, `back.out(2.2)`, stagger .12, trigger `top 70%`, once
-- Stickers and droplets: `[data-speed]` parallax
+- Left column is the `sip` clip (square card, `object-position 55% 15%`), fading up with the shared `[data-fade]` reveal. The old tilting bottle and stickers are gone.
 - Foam-to-abyss wave seam at the top (CSS mask)
-
-### 04 Scenes — pinned ("The Thirst")
-One scene: the `sip` clip (1s loop crossfade baked in, anchored to the top with `.frame-top` so her head stays in frame).
-Trigger `.scenes`, `top top` → `+= 0.8 × innerHeight × (scenes − 0.4)` (≈0.5 screen), `scrub: .35`, `anticipatePin: 1`. The clip pushes in `scale 1.12 → 1`.
-The multi-scene machinery in C7 (directional washes, dots, per-scene playback) still works if more `<article class="scene">` elements are added back.
 
 ### 04b Spring — pinned knockout
 Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `invalidateOnRefresh`.
@@ -133,7 +126,7 @@ Word rises and fade-ups only. The join button fills with a curved water shape on
 
 | Want | Change |
 |---|---|
-| Choppier water edges | raise `amp` in `makeWave` calls (hero 7, tides 7, scenes 8) |
+| Choppier water edges | raise `amp` in `makeWave` calls (hero 7, tides 7) |
 | More crests | raise `freq` (1.2 default) |
 | Longer tides sequence | `innerHeight * 3.4` in C5 |
 | Slower film | the `.8` multiplier in C7's `end` (and `scrub` for more/less lag) |

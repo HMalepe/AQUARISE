@@ -65,7 +65,6 @@
 <div class="menu" id="menu" aria-hidden="true">
   <nav aria-label="Menu">
     <a href="#shop" data-menu-link>Shop the range</a>
-    <a href="#scenes" data-menu-link>Thirst</a>
     <a href="#spring" data-menu-link>The spring</a>
     <a href="#bundles" data-menu-link>Bundles &amp; subscriptions</a>
     <a href="#source" data-menu-link>The source</a>
@@ -128,16 +127,11 @@
   <div class="tides-progress" aria-hidden="true"><i></i></div>
 </section>
 
-<!-- 03 · FEATURE — tilted bottle with level-holding water, floating stickers -->
+<!-- 03 · FEATURE — the drinking clip beside the product promise -->
 <section class="feature" id="feature">
   <div class="container feature-grid">
-    <div class="feature-visual">
-      <div class="bottle feature-bottle" data-liquid="#3FB8E8" data-label="Aquarise" data-level="0.22"></div>
-      <span class="sticker s1" data-speed="-0.25">0g<br>SUGAR</span>
-      <span class="sticker s2" data-speed="0.18">0<br>KCAL</span>
-      <span class="sticker s3" data-speed="-0.12">BPA<br>FREE*</span>
-      <span class="sticker s4" data-speed="0.3">MINERAL<br>RICH*</span>
-      <i class="drop d1" data-speed="0.5"></i><i class="drop d2" data-speed="-0.4"></i><i class="drop d3" data-speed="0.7"></i><i class="drop d4" data-speed="-0.6"></i>
+    <div class="feature-visual" data-fade>
+      <video class="feature-video" muted loop playsinline preload="none" poster="assets/video/sip.jpg" data-video aria-label="A sweating woman at sunset drinks from a cold Aquarise bottle"><source src="assets/video/sip.mp4" type="video/mp4"><source src="assets/video/sip.webm" type="video/webm"></video>
     </div>
     <div class="feature-copy">
       <h2 class="h-xl" data-split>PURE. CRISP. ALIVE.</h2>
@@ -149,18 +143,6 @@
         <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4" fill="none" stroke="currentColor" stroke-width="2"/></svg>Everyday hydration</li>
       </ul>
     </div>
-  </div>
-</section>
-
-<!-- 04 · SCENES — pinned film about thirst; each scene washes in from a new direction -->
-<section class="scenes" id="scenes" aria-label="Thirst">
-  <div class="scene-head"><span class="scene-label">Now showing</span><h2 class="h-lg" data-split>THE THIRST</h2></div>
-  <div class="scene-stage">
-    <!-- VIDEO: rendered clips from tools/footage. To use real footage, replace the .mp4/.jpg with the same name (shot ideas in README). -->
-    <article class="scene" data-dir="none">
-      <div class="ph scene-ph"><video class="frame-top" muted loop playsinline preload="none" poster="assets/video/sip.jpg" data-video aria-label="A sweating woman at sunset drinks from an Aquarise bottle"><source src="assets/video/sip.mp4" type="video/mp4"><source src="assets/video/sip.webm" type="video/webm"></video></div>
-      <div class="scene-meta"><span>SCENE 01</span><span>13:12</span><span>THE FIRST SIP</span></div>
-    </article>
   </div>
 </section>
 
@@ -330,7 +312,7 @@
     </div>
     <nav class="foot-cols" aria-label="Footer">
       <div><h4>Shop</h4><a href="#shop">The range</a><a href="#bundles">Bundles</a><a href="#bundles">Subscriptions</a></div>
-      <div><h4>Brand</h4><a href="#spring">The spring</a><a href="#source">Source</a><a href="#scenes">Thirst</a><a href="#compare">Clarity test</a></div>
+      <div><h4>Brand</h4><a href="#spring">The spring</a><a href="#source">Source</a><a href="#compare">Clarity test</a></div>
       <div><h4>Help</h4><a href="#faq">FAQ</a><a href="mailto:hello@aquarise.example">Contact</a><a href="#">Shipping &amp; returns</a></div>
     </nav>
   </div>

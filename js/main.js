@@ -3,7 +3,7 @@
    Part A: basics that work in every mode (cart, slider, menu, forms, bottles, videos)
    Part B: early return into .static if reduced motion / GSAP missing
    Part C: motion blocks in DOM order (loader → hero → tides → feature →
-           scenes → spring → shop → bundles → compare → source → footer)
+           spring → shop → bundles → compare → source → footer)
    ========================================================================== */
 (() => {
   'use strict';
@@ -235,8 +235,7 @@
   if (reduce) videos.forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   else if ('IntersectionObserver' in window) {
     const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? playV(e.target) : e.target.pause()), { rootMargin: '200px 0px' });
-    // in motion mode the pinned film (C7) decides which scene plays
-    videos.filter(v => !(motion && v.closest('.scene'))).forEach(v => vio.observe(v));
+    videos.forEach(v => vio.observe(v));
   }
 
   /* ── B · STATIC MODE GATE ── */
@@ -387,51 +386,11 @@
   tt.to({}, { duration: .35 });
   tt.fromTo('.tides-progress i', { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: tt.duration() }, 0);
 
-  /* ── C6 · FEATURE: tilting bottle whose water stays level, stickers pop, parallax ── */
-  const fb = bottles.find(b => b.el.classList.contains('feature-bottle'));
-  gsap.fromTo('.feature-bottle', { rotate: -20, y: 70 }, {
-    rotate: 16, y: -70, ease: 'none',
-    scrollTrigger: { trigger: '.feature', start: 'top bottom', end: 'bottom top', scrub: 1 },
-    onUpdate() { if (fb) fb.rot = gsap.getProperty('.feature-bottle', 'rotation'); }
-  });
-  gsap.fromTo('.sticker', { scale: 0 }, { scale: 1, duration: .9, ease: 'back.out(2.2)', stagger: .12, scrollTrigger: { trigger: '.feature-visual', start: 'top 70%', once: true } });
+  /* ── C6 · FEATURE: parallax on anything with data-speed (the clip itself fades up via data-fade) ── */
   $$('[data-speed]').forEach(el => {
     const s = parseFloat(el.dataset.speed) || 0;
     gsap.fromTo(el, { y: () => s * 180 }, { y: () => -s * 180, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
   });
-
-  /* ── C7 · SCENES pinned film: each scene washes in from a new direction ── */
-  const scenes = $$('.scene'), dots = $$('.scene-dots i');
-  const sceneWaves = scenes.map((s, i) => i ? makeWave(s, s.dataset.dir, { amp: 8, freq: 1 }) : null);
-  dots[0] && dots[0].classList.add('on');
-  const sceneVids = scenes.map(s => $('video', s));
-  // play the scene on screen plus the one washing in; pause the rest
-  function syncScenes(live) {
-    let a = 0; sceneWaves.forEach((w, i) => { if (w && w.p > .5) a = i; });
-    dots.forEach((d, i) => d.classList.toggle('on', i === a));
-    sceneVids.forEach((v, i) => {
-      if (!v) return;
-      const on = live && (i === a || (sceneWaves[i] && sceneWaves[i].p > 0 && sceneWaves[i].p < 1));
-      if (on && v.paused) playV(v); else if (!on && !v.paused) v.pause();
-    });
-  }
-  let scenesLive = false;
-  new IntersectionObserver(([e]) => { scenesLive = e.isIntersecting; syncScenes(scenesLive); }).observe($('.scenes'));
-  // one timeline unit per scene change; transitions overlap the next hold so the film never sits still.
-  // Lenis already smooths the wheel, so the scrub lag stays short (.35s) to avoid a sticky double-smoothing feel.
-  const stl = gsap.timeline({ onUpdate: () => syncScenes(scenesLive), scrollTrigger: {
-    trigger: '.scenes', start: 'top top', end: () => '+=' + innerHeight * .8 * (scenes.length - .4), pin: true, anticipatePin: 1, scrub: .35, invalidateOnRefresh: true
-  } });
-  scenes.forEach((s, i) => {
-    const ph = $('.scene-ph', s);
-    if (!i) { stl.fromTo(ph, { scale: 1.12 }, { scale: 1, duration: 1.1, ease: 'none' }, 0); return; }
-    const at = .3 + (i - 1), dir = s.dataset.dir, prevPh = $('.scene-ph', scenes[i - 1]);
-    stl.to(sceneWaves[i], { p: 1, duration: .75, ease: 'power2.inOut' }, at)
-      .fromTo(ph, { scale: 1.2 }, { scale: 1, duration: 1, ease: 'none' }, at)
-      .fromTo($('.scene-meta', s), { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .25 }, at + .45)
-      .to(prevPh, { scale: .92, xPercent: dir === 'right' ? -8 : dir === 'left' ? 8 : 0, yPercent: dir === 'top' ? 8 : 0, duration: .75, ease: 'power2.inOut' }, at);
-  });
-  stl.to({}, { duration: .2 });
 
   /* ── C7b · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
   const sWord = $('.spring-word'), sI = $('.spring-i');

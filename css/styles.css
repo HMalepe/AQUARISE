@@ -230,39 +230,13 @@ video { background: var(--deep); }
           mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 90' preserveAspectRatio='none'%3E%3Cpath d='M0 0H1200V40Q1050 85 900 50T600 45T300 55T0 40Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
 }
 .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
-.feature-visual { position: relative; min-height: min(78svh, 720px); display: grid; place-items: center; }
-.feature-bottle { height: min(68svh, 600px); }
-.sticker {
-  position: absolute; z-index: 2; display: grid; place-items: center; text-align: center;
-  width: clamp(92px, 11vw, 140px); aspect-ratio: 1; background: var(--foam); color: var(--tide);
-  border-radius: 47% 53% 42% 58% / 52% 44% 56% 48%;
-  font-family: var(--display); font-size: clamp(1.1rem, 1.8vw, 1.6rem); line-height: .95; box-shadow: 0 20px 50px rgba(0,0,0,.35);
-}
-.s1 { left: 6%; top: 10%; transform: rotate(-8deg); }
-.s2 { right: 8%; top: 22%; transform: rotate(7deg); }
-.s3 { left: 4%; bottom: 26%; transform: rotate(5deg); }
-.s4 { right: 6%; bottom: 10%; transform: rotate(-6deg); }
+.feature-visual { position: relative; display: grid; place-items: center; }
+.feature-video { width: 100%; max-height: min(78svh, 720px); aspect-ratio: 1; object-fit: cover; object-position: 55% 15%; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
 .drop { position: absolute; width: 16px; height: 16px; border-radius: 50% 0 50% 50%; transform: rotate(-45deg); background: linear-gradient(135deg, rgba(255,255,255,.85), rgba(63,184,232,.25)); box-shadow: inset -2px -2px 4px rgba(4,18,31,.25); }
-.d1 { left: 28%; top: 6%; } .d2 { right: 24%; top: 8%; width: 10px; height: 10px; } .d3 { left: 22%; bottom: 8%; width: 12px; height: 12px; } .d4 { right: 30%; bottom: 30%; width: 20px; height: 20px; }
 .feature-copy .h-xl { margin-bottom: 1.4rem; }
 .pills { list-style: none; margin: 2.2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, max-content); gap: 14px; }
 .pills li { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border: 1px solid var(--line); border-radius: 999px; font-weight: 600; }
 .pills svg { width: 22px; height: 22px; color: var(--aqua); flex: none; }
-
-/* 04 scenes */
-.scenes { height: 100svh; min-height: 560px; overflow: hidden; background: #000; }
-.scene-head { position: absolute; top: 0; left: 0; right: 0; height: 12svh; z-index: 10; display: flex; align-items: center; gap: 18px; padding: 0 var(--gutter); padding-top: calc(var(--nav-h) * .0); pointer-events: none; }
-.scene-head .h-lg { font-size: clamp(1.4rem, 2.6vw, 2.4rem); }
-.scene-label { font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: var(--sun); border: 1px solid currentColor; border-radius: 999px; padding: 6px 12px; }
-.scene-stage { position: absolute; inset: 0; }
-.scene { position: absolute; inset: 0; overflow: hidden; isolation: isolate; will-change: clip-path; }
-.scene::before, .scene::after { content: ""; position: absolute; left: 0; right: 0; height: 12svh; background: #000; z-index: 2; }
-.scene::before { top: 0; } .scene::after { bottom: 0; }
-.scene-ph { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
-.scene-ph > video.frame-top { object-position: 50% 0%; } /* keep heads in frame on wide screens */
-.scene-ph::after { content: none; } /* the clips carry their own grain; blending it over full-screen video every frame costs smoothness */
-.scene-meta { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0; height: 12svh; z-index: 3; display: flex; align-items: center; gap: 28px; font-size: .78rem; font-weight: 700; letter-spacing: .26em; color: rgba(255,255,255,.75); }
-.scene-meta span:first-child { color: var(--sun); }
 
 /* 04b spring */
 .spring { background: var(--abyss); }
@@ -440,7 +414,6 @@ video { background: var(--deep); }
 @media (max-width: 960px) {
   .nav-links { display: none; }
   .feature-grid, .faq-grid, .foot-grid { grid-template-columns: 1fr; }
-  .feature-visual { min-height: 64svh; }
   .sec-head.split { grid-template-columns: 1fr; }
   .src-grid { grid-template-columns: 1fr; }
   .src-card.offset { margin-top: 0; }
@@ -458,9 +431,6 @@ video { background: var(--deep); }
   .hero-cue { bottom: 4svh; }
   .pills { grid-template-columns: 1fr; }
   .bundle-grid { grid-template-columns: 1fr; }
-  .scene-meta { gap: 14px; font-size: .66rem; letter-spacing: .16em; }
-  .scene-head { gap: 10px; }
-  .scene-label { display: none; }
   .foot-cols { grid-template-columns: repeat(2, 1fr); }
   .round-btn { top: auto; bottom: 26%; }
 }
@@ -472,9 +442,6 @@ video { background: var(--deep); }
 .static .tides-base { position: relative; min-height: 50svh; }
 .static .tide { position: relative; inset: auto; min-height: 80svh; }
 .static .tides-progress { display: none; }
-.static .scenes { height: auto; }
-.static .scene { position: relative; height: 100svh; }
-.static .scene-head { position: relative; height: auto; padding-block: 40px; background: #000; }
 .static .static .spring-mask { display: none; }
 .static .us-fill { display: none; }
 .static .cmp .us { background: var(--tide); }

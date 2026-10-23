@@ -36,7 +36,7 @@ aquarise-site/
 | Clip | Where it plays | What it is |
 |---|---|---|
 | `hero` | Hero background | Your sunrise bottle photo brought to life: the sea rolls in, sand glints, bubbles rise inside the bottle, spray drifts through the light |
-| `sip` | The Thirst (single scene), Source card "The Seal" (framed on the bottle) | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade). Not rendered by tools/footage |
+| `sip` | Feature section ("Pure. Crisp. Alive."), Source card "The Seal" (framed on the bottle) | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade). Not rendered by tools/footage |
 | `waterfall` | The SPRING knockout section, Source cards "The Spring" and "The Stone" (framed on the rocks) | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
 Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
@@ -70,11 +70,9 @@ Then delete the `<span class="ph-note">`.
 | Where | Shot |
 |---|---|
 | Hero | Now a rendered loop of the sunrise bottle shot. A real 6–10s loop of waves around the bottle at ≥1920px would beat it. |
-| Scenes 01–04 | Rendered thirst film (heat → craving → first drop → relief). Real people drinking Aquarise would add warmth: a runner at sunrise, someone in a hot gym, friends on a rooftop. |
 | Source cards | The waterfall and sip clips, framed differently per card. Real alternatives: cupped hands with spring water · river stones under water · droplet crowning off the cap. |
 | Product bottles | The SVG bottles are original placeholders. Swap for transparent PNG/WebP packshots inside each `.bottle`. The liquid wave is optional after that. |
 
-Scenes look best as 1920×1080+ video (H.264/WebM, under ~4 MB each, muted).
 
 ## Before launch checklist
 
