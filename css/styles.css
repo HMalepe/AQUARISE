@@ -259,6 +259,7 @@ video { background: var(--deep); }
 .scene::before, .scene::after { content: ""; position: absolute; left: 0; right: 0; height: 12svh; background: #000; z-index: 2; }
 .scene::before { top: 0; } .scene::after { bottom: 0; }
 .scene-ph { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.scene-ph > video.frame-top { object-position: 50% 0%; } /* keep heads in frame on wide screens */
 .scene-ph::after { content: none; } /* the clips carry their own grain; blending it over full-screen video every frame costs smoothness */
 .scene-meta { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0; height: 12svh; z-index: 3; display: flex; align-items: center; gap: 28px; font-size: .78rem; font-weight: 700; letter-spacing: .26em; color: rgba(255,255,255,.75); }
 .scene-meta span:first-child { color: var(--sun); }
