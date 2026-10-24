@@ -74,14 +74,14 @@ Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: .9` (slower and 
 | .52 → 1 | **fisheye lens**: `.hero-portal` mask `--r 0% → 160%` (soft-edged circle, solid core at 78% of the radius, centred on the bottle at 50% 46%), `power2.inOut`. Inside it the SPRING frame (canvas + word) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
 | end | no hold (.01): SPRING's own zoom takes over at the same scroll position |
 Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal paints SPRING's live video frame every tick while visible, so the hand-off matches on every pass.
-**Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases, and SPRING's own pin starts at that same scroll position. `.spring` is `autoAlpha 0` until its stage hits `top top`, then shown (hidden again on scroll back). No visible scroll between the two.
+**Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases. `.spring` is shown/hidden by the hero timeline's own scrub-smoothed progress (`> .999`), not the raw scroll position, so a fast scroll can never swap sections before the lens has finished (or, going up, started closing).
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 The old water flood ("Drawn from the deep") and the 02 Tides section were removed.
 
 ### 02 Spring — pinned knockout
 Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `invalidateOnRefresh`.
 - The waterfall video plays behind `.spring-mask`, an abyss layer with white text in `mix-blend-mode: multiply`, so the video only shows through the letters of SPRING.
-- `transform-origin` is the centre of the **I** (measured with `offsetLeft/Top` on every `refreshInit`, so it ignores the current scale).
+- `transform-origin` is the centre of the **I**'s stem: measured from on-screen rects (I centre − word left, word height / 2) divided by the current scale, on every `refreshInit`. The old `offsetLeft` maths used the wrong parent and aimed above and beside the I, so the fly-through went dark and snapped bright at the end.
 | Timeline pos | Tween |
 |---|---|
 | 0 → 1.04 | `.spring-word` zoom continues the hero lens with no restart: `scale = exp(.6·p + (ln 48 − .6)·p³)`, `p` linear. It starts at the lens' exit zoom rate (.6 = ln(1/.55) per zoom phase) and accelerates to 48× through the I's stem. Scrub .9 to match the hero |

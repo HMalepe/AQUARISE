@@ -262,7 +262,7 @@ video { background: var(--deep); }
 .arch text { font-family: var(--display); font-size: 150px; fill: var(--foam); letter-spacing: 2px; }
 .slider { text-align: center; }
 .slide-name-wrap { overflow: hidden; padding-top: .1em; }
-.slide-name { font-size: clamp(3rem, 9vw, 8rem); color: var(--c); transition: color .4s; }
+.slide-name { font-size: clamp(3rem, 9vw, 8rem); color: var(--aqua); }   /* one brand blue for every product name */
 .slide-desc { margin: .8rem auto 0; max-width: 44ch; color: rgba(232,246,251,.78); min-height: 3.1em; padding: 0 var(--gutter); }
 .slide-buy { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 1.4rem; }
 .slide-price { font-family: var(--display); font-size: 2rem; }

@@ -74,7 +74,6 @@
     $('[data-slide-name]').textContent = p.name;
     $('[data-slide-desc]').textContent = p.desc;
     $('[data-slide-price]').textContent = `R${p.price}*`;
-    slider.style.setProperty('--c', p.accent || (p.color === '#1C8FC4' ? '#3FB8E8' : p.color));
     $$('[data-slide-tabs] button').forEach((b, j) => b.setAttribute('aria-selected', i === j));
   }
   function showSlide(n, dir) {
@@ -295,7 +294,10 @@
   // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
   // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
   const ZOOM_FROM = Math.log(.55), ZOOM_RATE = -ZOOM_FROM, lensZoom = { z: ZOOM_FROM };
-  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: .9, invalidateOnRefresh: true } })
+  // SPRING is revealed by the hero timeline's own (scrub-smoothed) progress, not the raw scroll position, so on fast scrolls
+  // the swap waits for the lens to actually finish (and on the way up, for it to actually start closing).
+  const showSpring = tl => gsap.set(spring, { autoAlpha: tl.progress() > .999 ? 1 : 0 });
+  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: .9, invalidateOnRefresh: true } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
@@ -315,7 +317,6 @@
     .to('.hero-portal .spring-word, .hero-portal-frame', { filter: 'blur(0px)', ease: 'power1.out', duration: .3 }, .52)
     .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
-  ScrollTrigger.create({ trigger: '.spring-stage', start: 'top top', onEnter: () => gsap.set(spring, { autoAlpha: 1 }), onLeaveBack: () => gsap.set(spring, { autoAlpha: 0 }) });
   // The portal paints SPRING's live video frame (poster until the clip has data), so the hand-off matches on every
   // pass, not just the first one before the video has loaded.
   (() => {
@@ -372,7 +373,12 @@
 
   /* ── C5 · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
   const sWord = $('.spring-stage .spring-word'), sI = $('.spring-i'), springZoom = { p: 0 };
-  const springOrigin = () => { sWord.style.transformOrigin = `${sI.offsetLeft - sWord.offsetLeft + sI.offsetWidth / 2}px ${sI.offsetTop - sWord.offsetTop + sI.offsetHeight * .52}px`; };
+  // Zoom origin = centre of the I's stem, in the word's own (unscaled) box. Measured from on-screen rects divided by the
+  // current scale, so it is right at any scroll position (offsetLeft was relative to the wrong parent and missed the I).
+  const springOrigin = () => {
+    const sc = +gsap.getProperty(sWord, 'scale') || 1, rw = sWord.getBoundingClientRect(), ri = sI.getBoundingClientRect();
+    sWord.style.transformOrigin = `${(ri.left + ri.width / 2 - rw.left) / sc}px ${(rw.height / 2) / sc}px`;
+  };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
   gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: .9, invalidateOnRefresh: true } })
