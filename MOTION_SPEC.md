@@ -36,6 +36,9 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 ### 5. Parallax float
 `[data-speed]`: `y = speed·180 → −speed·180` px across its section, scrubbed (`scrub: true`).
 
+### 5a. Water-fill CTAs
+Every `.pill` fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete, then sloshes gently (border-radius swap, 2.4s). Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
+
 ### 5b. Shine
 `.shine::after`: a white glint sweeps across a pill every 3.2s (CSS). Static mode stops it.
 
@@ -116,7 +119,7 @@ Hover (fine pointers only):
 Click: bottles hop (`y −26` yoyo, stagger .06) and a lemon "+1 in your cart" floats up from the button. Switching Weekly/Monthly springs the price `scale .7 → 1`, `back.out(3)`.
 
 ### 09 FAQ (faq.html) / 10 Join
-Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). 
+Word rises and fade-ups only. The join button uses the shared water-fill hover (5a). 
 
 ### 11 Footer
 `.foot-mark` (the traced Aquarise wordmark, SVG) `yPercent 100 → 0`, scrubbed from `top bottom` to `bottom bottom`, rising behind two drifting wave strips.
