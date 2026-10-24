@@ -474,5 +474,5 @@
   /* ── C13 · ordering + refresh ── */
   ScrollTrigger.sort();
   document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
-  addEventListener('load', () => ScrollTrigger.refresh());
+  addEventListener('load', () => { scrollTo(0, 0); lenis && lenis.scrollTo(0, { immediate: true }); ScrollTrigger.refresh(); });   // a refresh always starts at the hero
 })();
