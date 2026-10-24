@@ -417,6 +417,12 @@ video { background: var(--deep); }
   .faq-head { position: static; }
 }
 @media (max-width: 720px) {
+  /* comfortable tap targets (≥44px) */
+  .foot-cols a { padding: 11px 0; }
+  .cart-x { min-width: 44px; min-height: 44px; }
+  .qty button { width: 40px; height: 40px; }
+  .slide-tabs button { min-height: 44px; }
+  .hero-pill { min-height: 44px; }
   :root { --nav-h: 72px; }
   .logo-mark { width: 42px; height: 26px; }
   .logo-word { width: 104px; height: 18px; }

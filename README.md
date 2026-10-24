@@ -41,7 +41,7 @@ aquarise-site/
 | `sip` | Feature section ("Pure. Crisp. Alive.") | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade), slowed to 0.85× and played forward then in reverse so it loops without a jump (~9.5s). Not rendered by tools/footage |
 | `waterfall` | The SPRING knockout section | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
-Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
+Phones (≤768px wide) get lighter `-m` versions of the hero (a 720×1200 portrait crop centred on the bottle), waterfall and sip clips via `<source media>`, about 1.5 MB in total instead of ~4.5 MB; same effects. Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
 
 ### Re-render or tweak the footage
 

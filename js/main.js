@@ -321,7 +321,7 @@
   (() => {
     const cv = $('.hero-portal-frame'), ctx = cv.getContext('2d'), portal = $('.hero-portal'), vid = $('.spring-video');
     const poster = new Image(); poster.src = vid.getAttribute('poster');
-    const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; };
+    const fit = () => { const d = Math.min(devicePixelRatio || 1, innerWidth < 768 ? 1.5 : 2);   /* phones: lighter canvas, same look */ cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; };
     fit(); addEventListener('resize', fit);
     gsap.ticker.add(() => {
       if (+gsap.getProperty(portal, 'autoAlpha') <= 0) return;
