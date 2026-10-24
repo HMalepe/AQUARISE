@@ -6,6 +6,7 @@ The source of truth for every animation. If you port to Next.js or another stack
 
 | Setting | Value |
 |---|---|
+| In-page links | Nav and menu links jump instantly (Lenis `immediate`) behind a .2s abyss veil (`.jump-veil`), skipping the pinned scenes in between; Shop lands on the product name so name, price, bottle and tabs are all on screen |
 | Smooth scroll | Lenis `lerp: .09`, `smoothWheel: true`, driven by `gsap.ticker` (`lagSmoothing(0)`) |
 | ScrollTrigger | `config({ ignoreMobileResize: true })`, `ScrollTrigger.sort()` after all triggers, refresh after `document.fonts.ready` and `window.load` |
 | Signature eases | `expo.out` (entrances), `expo.inOut` (curtains), `power2.inOut` (water floods), `none` (scrubbed parallax) |

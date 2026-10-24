@@ -443,6 +443,7 @@ video { background: var(--deep); }
 .cart-foot { padding: 24px; border-top: 1px solid rgba(4,18,31,.12); display: grid; gap: 16px; }
 .cart-total { display: flex; justify-content: space-between; font-size: 1.1rem; }
 .checkout { width: 100%; background: var(--ink); color: var(--foam); }
+.jump-veil { position: fixed; inset: 0; z-index: 75; background: var(--abyss); opacity: 0; visibility: hidden; pointer-events: none; }   /* brief dip to black while menu/nav links jump */
 .toast { position: fixed; left: 50%; bottom: 24px; z-index: 99; transform: translate(-50%, calc(100% + 40px)); opacity: 0; background: var(--foam); color: var(--ink); padding: 14px 22px; border-radius: 999px; font-weight: 700; box-shadow: 0 10px 40px rgba(0,0,0,.35); transition: transform .6s var(--ease-out), opacity .4s; pointer-events: none; }
 .toast.show { transform: translate(-50%, 0); opacity: 1; }
 .cart-count.bump { animation: bump .6s var(--ease-out); }

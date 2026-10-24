@@ -186,7 +186,11 @@
       const target = $(href); if (!target) return;
       e.preventDefault();
       if (html.classList.contains('menu-open')) setMenu(false);
-      if (lenis) lenis.scrollTo(target, { duration: 1.6 }); else target.scrollIntoView({ behavior: 'smooth' });
+      // jump straight there: no smooth scroll through the pinned scenes in between (they settle in their end state)
+      const dest = href === '#shop' ? $('.slide-name-wrap') : target, off = href === '#shop' ? -($('.nav').offsetHeight + 6) : 0;   // Shop lands on the product itself
+      const go = () => { if (lenis) lenis.scrollTo(dest, { immediate: true, force: true, offset: off }); else scrollTo(0, dest.getBoundingClientRect().top + scrollY + off); window.ScrollTrigger && ScrollTrigger.update(); };
+      if (window.gsap && !html.classList.contains('static')) gsap.timeline().to('.jump-veil', { autoAlpha: 1, duration: .18 }).add(go).to('.jump-veil', { autoAlpha: 0, duration: .35, delay: .05 });
+      else go();
     }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { setCart(false); setMenu(false); } });
