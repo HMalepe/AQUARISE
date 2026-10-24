@@ -277,8 +277,8 @@ video { background: var(--deep); }
 .pills svg { width: 22px; height: 22px; color: var(--aqua); flex: none; }
 
 /* 04 promise strip */
-.promise { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 34px; padding: 18px var(--gutter); background: var(--deep); border-block: 1px solid var(--line); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
-.promise span::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 10px; border-radius: 50%; background: var(--lemon); vertical-align: middle; }
+.promise { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 34px; padding: 18px var(--gutter); background: var(--lemon); color: var(--navy); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
+.promise span::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 10px; border-radius: 50%; background: var(--navy); vertical-align: middle; }
 
 /* 05 shop */
 .shop { padding: clamp(80px, 12vw, 160px) 0 clamp(60px, 8vw, 120px); background: linear-gradient(180deg, var(--abyss), var(--deep)); --c: var(--aqua); }
