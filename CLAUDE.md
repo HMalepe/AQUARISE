@@ -3,6 +3,7 @@
 ## Stack
 - Static HTML + CSS + vanilla JS. GSAP 3 + ScrollTrigger + Lenis, vendored in `js/vendor/`. No build step, no framework (unless porting via PROMPTS.md #2).
 - Fonts are self-hosted in `assets/fonts/` (Anton display, Manrope body). Don't add Google Fonts links.
+- Type rules: Anton (weight 400 only) is for big statement headlines (hero, SPRING, section titles, product names, card titles, marquee). Buttons, prices, tabs, labels, footer headings and small UI use Manrope 600–800. `font-synthesis: none` is on, so never ask Anton for another weight. No text under 13px.
 - Logo: the `#aq-mark` / `#aq-word` symbols in the sprite at the top of `index.html` (traced from the real logo). Use `<svg><use href="#aq-mark"/></svg>`; colour with `--mark-sun`, `--mark-wave` and `color`. Don't redraw it.
 - Video: clips live in `assets/video/` as `.webm` + `.mp4` + `.jpg` poster, rendered by `tools/footage/` (see README). Every `<video>` is `muted loop playsinline`, has `data-video` (so it only plays on screen) and a poster.
 - `MOTION_SPEC.md` is the source of truth for animation. Update it whenever you change motion.
