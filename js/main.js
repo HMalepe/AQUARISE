@@ -150,7 +150,7 @@
       for (const [k, v] of Object.entries(d.fields)) { const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; f.appendChild(i); }
       document.body.appendChild(f); f.submit();
     } catch (e) {
-      toast(e.message === 'offline' || e.name === 'TypeError' ? 'Checkout is offline right now — WhatsApp us to order' : e.message);
+      toast(e.message === 'offline' || e.name === 'TypeError' ? 'Checkout is offline right now — WhatsApp or email hello@aquarise.co.za to order' : e.message);
       btn.disabled = false; btn.textContent = label;
     }
   }
