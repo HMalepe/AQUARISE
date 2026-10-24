@@ -286,12 +286,12 @@ video { background: var(--deep); }
 .slide-price { font-family: var(--body); font-weight: 800; font-size: 1.9rem; letter-spacing: -.01em; }
 .slide-stage { touch-action: pan-y; position: relative; height: clamp(360px, calc(100svh - 410px), 640px);   /* name, price, bottle and tabs all fit one screen */ margin-top: 1.2rem; overflow: hidden; isolation: isolate; }
 /* backlit like the photo: a low sunrise glow behind the bottle, a glossy floor with a real reflection */
-.stage-glow { position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(26% 46% at 50% 58%, rgba(246,178,107,.42), rgba(233,128,106,.14) 55%, transparent 75%),
-              radial-gradient(55% 20% at 50% 84%, rgba(155,225,255,.10), transparent 70%); }
+.stage-glow { position: absolute; inset: 0; z-index: -1; pointer-events: none;   /* cool white light behind the bottle */
+  background: radial-gradient(30% 48% at 50% 56%, rgba(232,246,251,.20), rgba(155,225,255,.07) 55%, transparent 76%),
+              radial-gradient(60% 22% at 50% 86%, rgba(155,225,255,.10), transparent 70%); }
 /* sunlit steam from the waterfall clip (mist.mp4, cropped + mirrored loop); screen blend drops its dark trees */
-.stage-mist { position: absolute; left: 50%; top: 10%; width: min(760px, 120%); height: 88%; margin-left: max(-380px, -60%); z-index: -1; pointer-events: none; mix-blend-mode: screen; opacity: .85;
-  -webkit-mask: radial-gradient(46% 46% at 50% 52%, #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); mask: radial-gradient(46% 46% at 50% 52%, #000 0%, rgba(0,0,0,.55) 45%, transparent 100%); }
+.stage-mist { position: absolute; left: -10%; right: -10%; top: -4%; bottom: 0; z-index: -1; pointer-events: none; mix-blend-mode: screen; opacity: .75;   /* white-grey steam across most of the stage */
+  -webkit-mask: radial-gradient(64% 50% at 50% 62%, #000 0%, rgba(0,0,0,.6) 50%, transparent 100%); mask: radial-gradient(64% 50% at 50% 62%, #000 0%, rgba(0,0,0,.6) 50%, transparent 100%); }
 .stage-mist video { width: 100%; height: 100%; object-fit: cover; background: none; }   /* contrast/blur are baked into mist.mp4 */
 .stage-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgba(232,246,251,.07), rgba(4,18,31,0) 70%);

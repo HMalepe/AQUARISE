@@ -104,8 +104,8 @@ Picture first, then the copy one piece at a time. Desktop (≥961px wide, ≥600
 
 ### 05 Shop
 - Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`
-- Stage: the HD bottle packshot (cut from a Real-ESRGAN 4× upscale, sunset orange neutralised to clean cool water, label untouched) backlit by `.stage-glow` (warm radial, like the photo's sunrise), on `.stage-floor` (glossy line + sheen) with a flipped, masked reflection (`.b-reflect`) and a contact shadow
-- Behind the bottle, `.stage-mist` plays `mist` (the sunlit steam cropped from the waterfall clip, 0.7× speed, forward-then-reverse ~14s loop) with `mix-blend-mode: screen` and a radial mask, so only the glowing steam and rays show
+- Stage: the HD bottle packshot (cut from a Real-ESRGAN 4× upscale; every non-label colour neutralised to clear, faintly cool water, clarity curve + light sharpening; only the blue label keeps its colour) backlit by `.stage-glow` (warm radial, like the photo's sunrise), on `.stage-floor` (glossy line + sheen) with a flipped, masked reflection (`.b-reflect`) and a contact shadow
+- Behind the bottle, `.stage-glow` is a cool white light and `.stage-mist` plays `mist` (white-grey steam, desaturated from the waterfall clip, 0.7× speed, forward-then-reverse ~14s loop) with `mix-blend-mode: screen` and a radial mask, so only the glowing steam and rays show
 - Entrance (`top 75%`, once): glow and mist `autoAlpha 0 → 1`, `scale .8 → 1`, 1.6s `expo.out`; bottle `y 80 → 0`, fades in, 1.4s `expo.out` at .1
 - Navigation: auto-advances every 5s while the stage is at least half on screen (paused with the cart open or the tab hidden). Trackpad two-finger swipe (horizontal wheel, 40px threshold, one product per gesture, browser back-swipe suppressed over the shop) and finger swipe on the stage (50px, mostly horizontal) change product; every interaction restarts the 5s countdown.
 - Slide change: outgoing glides out `xPercent ∓70`, `rotate ∓5°`, fades, .55s `power2.in`; incoming glides in from the other side, 1s `expo.out` at .3; glow re-brightens `.55 → 1`; name `yPercent 105 → 0`; desc and price fade at .3
