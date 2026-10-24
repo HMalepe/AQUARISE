@@ -87,14 +87,14 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
 
 ### 03 Feature
-One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 5 × innerHeight`, `scrub: true`; timeline units = screens. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
+One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 4.5 × innerHeight`, `scrub: true`; timeline units = screens. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
 | Screen | Beat (finishes in the first ~60%, then holds) |
 |---|---|
-| 1 (0 → .9) | the picture opens: card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
-| 2 (1 → 1.6) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
-| 3 (2 → 2.6) | "CRISP." |
-| 4 (3 → 3.6) | "ALIVE." (then keeps its lemon shimmer) |
-| 5 (4 → 4.85) | the paragraph writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
+| ½ (0 → .45) | the picture opens (one short scroll): card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
+| 2 (.55 → 1.15) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
+| 3 (1.55 → 2.15) | "CRISP." |
+| 4 (2.55 → 3.15) | "ALIVE." (then keeps its lemon shimmer) |
+| 5 (3.55 → 4.4) | the paragraph (invisible until now) writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
 No scroll-snapping on purpose: the page never fights the user's scroll.
 
 ### 05 Shop

@@ -388,15 +388,15 @@
   // One timeline unit = one screen of scrolling: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills.
   // Each beat finishes in the first ~60% of its screen and then holds, so nothing rushes past on a single flick.
   const featureSeq = st => gsap.timeline({ scrollTrigger: st })
-    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .9 }, 0)
-    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .9 }, 0)
-    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power2.out', duration: .6, stagger: 1 }, 1)
-    .fromTo('.feature .lw', { autoAlpha: .1, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 4)
-    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 4.35)
-    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 4.4)
+    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
+    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
+    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power2.out', duration: .6, stagger: 1 }, .55)
+    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 3.55)
+    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 3.9)
+    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 3.95)
     .to({}, { duration: .2 });
   gsap.matchMedia()
-    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 5, pin: true, scrub: true, invalidateOnRefresh: true }); })
+    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4.5, pin: true, scrub: true, invalidateOnRefresh: true }); })
     .add('(max-width: 960px), (max-height: 599px)', () => { featureSeq({ trigger: '.feature', start: 'top 85%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true }); });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').slice(-1).forEach(w => w.classList.add('shimmer-word'));
