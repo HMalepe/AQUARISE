@@ -233,7 +233,7 @@ video { background: var(--deep); }
   -webkit-mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); transform: scale(0); }
 .lens-in { position: absolute; left: calc(110vmax - 50vw); top: calc(110vmax - 46svh); width: 100vw; height: 100svh; transform-origin: 50% 46%; }
 .hero-portal-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.hero-portal .hero-portal-frame { -webkit-mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(transparent, #000 14%, #000 86%, transparent); -webkit-mask-composite: source-in; mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-composite: intersect; }   /* feathered edges: no box while it is smaller than the screen */
+.lens-vig { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--abyss), transparent 14%, transparent 86%, var(--abyss)), linear-gradient(var(--abyss), transparent 14%, transparent 86%, var(--abyss)); }   /* soft edges while the picture is smaller than the screen; fades out before the hand-off */
 /* brightening layer (screen blend) — composited, unlike a CSS filter on video which re-filters every frame */
 .spring-glow { position: absolute; inset: 0; background: rgba(255,236,214,.22); mix-blend-mode: screen; pointer-events: none; }
 .spring-stage .spring-glow { z-index: 1; }

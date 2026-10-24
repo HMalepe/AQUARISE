@@ -302,15 +302,16 @@
     .set('.hero-dim', { autoAlpha: 0 }, 0)
     .set(lens, { autoAlpha: 0 }, 0)
     .set(lensC, { p: .001 }, 0)
-    .set('.hero-portal .spring-word, .hero-portal-frame', { autoAlpha: .55 }, 0)
+    .set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: .55 }, 0)
     .add(lensDraw, 0)
     .set(lensZoom, { z: ZOOM_FROM }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
     .set(lens, { autoAlpha: 1 }, .52)
     .to(lensC, { p: 1, ease: 'power2.inOut', duration: .44, onUpdate: lensDraw }, .52)                                          // the lens opens small → full
-    .to('.hero-portal .spring-word, .hero-portal-frame', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
-    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
+    .to('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
+    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
+    .fromTo('.lens-vig', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'none', duration: .2, immediateRender: false }, .8)   // edges brighten gradually to match SPRING
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
   // The portal shows the same waterfall as SPRING in its own <video>. Both loops start together and keep playing side by
   // side (same clip, same length), so they stay in step without seeking; any drift is corrected only while the lens is
