@@ -68,8 +68,8 @@ Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: .9` (slower and 
 | .4 → .48 | offer lifts away `y −40`, fades |
 | .42 → .92 | gentle push into the bottle: `.hero-media` `scale → 1.5`, `sine.inOut` |
 | .46 → .86 | `.hero-dim` fades to `.9`, `sine.inOut` |
-| .52 → .96 | **fisheye lens**: `.hero-portal` mask `--r 0% → 160%` (a soft-edged circle, solid core at 78% of the radius, centred on the bottle at 50% 46%), `power2.inOut`. Inside it, the SPRING frame (canvas + word) settles from `scale 1.7, blur 10px` to `scale 1, blur 0`, so it opens small and magnified and relaxes to full frame |
-| end | hold .1 |
+| .52 → 1 | **fisheye lens**: `.hero-portal` mask `--r 0% → 160%` (soft-edged circle, solid core at 78% of the radius, centred on the bottle at 50% 46%), `power2.inOut`. Inside it the SPRING frame (canvas + word) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
+| end | no hold (.01): SPRING's own zoom takes over at the same scroll position |
 Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal paints SPRING's live video frame every tick while visible, so the hand-off matches on every pass.
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases, and SPRING's own pin starts at that same scroll position. `.spring` is `autoAlpha 0` until its stage hits `top top`, then shown (hidden again on scroll back). No visible scroll between the two.
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
@@ -81,8 +81,8 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 - `transform-origin` is the centre of the **I** (measured with `offsetLeft/Top` on every `refreshInit`, so it ignores the current scale).
 | Timeline pos | Tween |
 |---|---|
-| .12 → 1.12 | `.spring-word` `scale 1 → 48`, `power3.in` — the camera flies through the I's stem |
-| .12 → 1.07 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
+| 0 → 1.04 | `.spring-word` zoom continues the hero lens with no restart: `scale = exp(.6·p + (ln 48 − .6)·p³)`, `p` linear. It starts at the lens' exit zoom rate (.6 = ln(1/.55) per zoom phase) and accelerates to 48× through the I's stem. Scrub .9 to match the hero |
+| 0 → 1 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
 | 0 / 1.04 | mask `set autoAlpha 1` at 0 (so rewinding always restores it), then `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
 | end | hold .3 |

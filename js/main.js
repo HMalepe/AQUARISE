@@ -292,6 +292,9 @@
   // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre (--r) while the SPRING frame inside
   // it starts magnified and settles (scale 1.7 → 1) and the outside dims, like light bending through the bottle.
   const lens = $('.hero-portal');
+  // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
+  // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
+  const ZOOM_FROM = Math.log(.55), ZOOM_RATE = -ZOOM_FROM, lensZoom = { z: ZOOM_FROM };
   gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: .9, invalidateOnRefresh: true } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
@@ -303,13 +306,15 @@
     // start states live in the timeline so scrubbing back always restores them
     .set('.hero-dim', { autoAlpha: 0 }, 0)
     .set(lens, { autoAlpha: 0, '--r': '0%' }, 0)
-    .set('.hero-portal .spring-word, .hero-portal-frame', { scale: 1.7, filter: 'blur(10px)' }, 0)
+    .set('.hero-portal .spring-word, .hero-portal-frame', { filter: 'blur(4px)' }, 0)
+    .set(lensZoom, { z: ZOOM_FROM }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
     .set(lens, { autoAlpha: 1 }, .52)
     .to(lens, { '--r': '160%', ease: 'power2.inOut', duration: .44 }, .52)                                          // the lens opens small → full
-    .to('.hero-portal .spring-word, .hero-portal-frame', { scale: 1, filter: 'blur(0px)', ease: 'power2.inOut', duration: .44 }, .52)
-    .to({}, { duration: .1 });
+    .to('.hero-portal .spring-word, .hero-portal-frame', { filter: 'blur(0px)', ease: 'power1.out', duration: .3 }, .52)
+    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
+    .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
   ScrollTrigger.create({ trigger: '.spring-stage', start: 'top top', onEnter: () => gsap.set(spring, { autoAlpha: 1 }), onLeaveBack: () => gsap.set(spring, { autoAlpha: 0 }) });
   // The portal paints SPRING's live video frame (poster until the clip has data), so the hand-off matches on every
   // pass, not just the first one before the video has loaded.
@@ -366,13 +371,13 @@
   });
 
   /* ── C5 · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
-  const sWord = $('.spring-stage .spring-word'), sI = $('.spring-i');
+  const sWord = $('.spring-stage .spring-word'), sI = $('.spring-i'), springZoom = { p: 0 };
   const springOrigin = () => { sWord.style.transformOrigin = `${sI.offsetLeft - sWord.offsetLeft + sI.offsetWidth / 2}px ${sI.offsetTop - sWord.offsetTop + sI.offsetHeight * .52}px`; };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: 1, invalidateOnRefresh: true } })
-    .fromTo(sWord, { scale: 1 }, { scale: 48, ease: 'power3.in', duration: 1 }, .12)
-    .fromTo('.spring-video', { filter: 'brightness(1.25) saturate(1.15)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: .95 }, .12)
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: .9, invalidateOnRefresh: true } })
+    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => gsap.set(sWord, { scale: Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3) }) }, 0)   // picks up the lens' zoom rate, then accelerates to 48×
+    .fromTo('.spring-video', { filter: 'brightness(1.25) saturate(1.15)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
     .to('.spring-stage .spring-mask', { autoAlpha: 0, duration: .08 }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
