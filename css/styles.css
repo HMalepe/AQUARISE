@@ -293,9 +293,9 @@ video { background: var(--deep); }
 .round-btn:hover { transform: scale(1.08); }
 .round-btn svg { width: 40%; }
 .prev { left: var(--gutter); } .next { right: var(--gutter); }
-.slide-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 1.6rem; padding: 0 var(--gutter); }
+.slide-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 1.6rem; padding: 0 var(--gutter); }
 .slide-tabs button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: .9rem; }
-.slide-tabs button[aria-selected="true"] { background: var(--foam); color: var(--ink); border-color: var(--foam); }
+.slide-tabs button[aria-selected="true"] { background: var(--aqua); color: var(--ink); border-color: var(--aqua); box-shadow: 0 8px 24px rgba(63,184,232,.35); }
 
 /* 06 bundles */
 .bundles { padding: clamp(80px, 12vw, 160px) 0; background: var(--deep); }
