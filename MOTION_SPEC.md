@@ -58,18 +58,19 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 
 ### 01 Hero — pinned
 Background is `assets/video/hero.mp4` (8s seamless loop, 1920×1366, rendered from `assets/hero-bottle-hd.jpg`, a Real-ESRGAN 4× upscale of the photo, which is also the poster). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
-Trigger `.hero`, `top top` → `+= 1.7 × innerHeight`, `scrub: .4`.
+Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: .9` (slower and smoother than before).
 | Timeline pos | Tween |
 |---|---|
 | 0 → .3 | `.hl-1` `yPercent −70`, fade out; `.hl-2` (from .04) `yPercent −40`, fade out |
-| 0 → .12 | meta fade (`fromTo`, `immediateRender:false`) |
-| 0 → .5 | `.hero-media` `scale 1.2`, `yPercent −6` |
-| .1 → .22 | `.hero-offer` (the "Quench it — shop now" button only) rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .14 |
-| .5 → .6 | offer lifts away `y −40`, fades |
-| .5 → .9 | **the dive**: `.hero-media` slow push `scale → 1.65`, `power2.in` (kept low so the photo never pixelates) |
-| .52 → .84 | `.hero-dim` (abyss layer) fades in: the light drains to black |
-| .76 → 1 | `.hero-portal` fades in out of the black while its SPRING word settles `scale 1.45 → 1`, `blur 14px → 0`, `expo.out`. The portal is the exact first frame of SPRING: a canvas that paints the SPRING section's **live** video frame every tick while visible (poster until the clip has data), at the same brightness, under the same `.spring-mask`/`.spring-word`. Painting the live frame is what keeps the hand-off seamless on second and later passes, after the video has started playing |
+| 0 → .1 | meta fade (`fromTo`, `immediateRender:false`) |
+| 0 → .42 | `.hero-media` `scale 1.2`, `yPercent −6` |
+| .08 → .18 | `.hero-offer` (button only) rises `y 60 → 0`, fades in; pops `scale .8 → 1` `back.out(2)` at .11 |
+| .4 → .48 | offer lifts away `y −40`, fades |
+| .42 → .92 | gentle push into the bottle: `.hero-media` `scale → 1.5`, `sine.inOut` |
+| .46 → .86 | `.hero-dim` fades to `.9`, `sine.inOut` |
+| .52 → .96 | **fisheye lens**: `.hero-portal` mask `--r 0% → 160%` (a soft-edged circle, solid core at 78% of the radius, centred on the bottle at 50% 46%), `power2.inOut`. Inside it, the SPRING frame (canvas + word) settles from `scale 1.7, blur 10px` to `scale 1, blur 0`, so it opens small and magnified and relaxes to full frame |
 | end | hold .1 |
+Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal paints SPRING's live video frame every tick while visible, so the hand-off matches on every pass.
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases, and SPRING's own pin starts at that same scroll position. `.spring` is `autoAlpha 0` until its stage hits `top top`, then shown (hidden again on scroll back). No visible scroll between the two.
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 The old water flood ("Drawn from the deep") and the 02 Tides section were removed.

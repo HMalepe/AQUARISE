@@ -207,7 +207,8 @@ video { background: var(--deep); }
 .hero-offer { position: absolute; left: 50%; bottom: 14svh; z-index: 3; transform: translateX(-50%); width: min(820px, 100% - var(--gutter) * 2); display: grid; justify-items: center; gap: .8rem; text-align: center; }
 .hero-offer-btn { font-size: 1.15rem; padding: 1.05em 2.2em; box-shadow: 0 14px 40px rgba(4,18,31,.45); }
 .hero-dim { position: absolute; inset: 0; z-index: 4; background: var(--abyss); visibility: hidden; pointer-events: none; }
-.hero-portal { position: absolute; inset: 0; z-index: 5; isolation: isolate; visibility: hidden; pointer-events: none; }
+.hero-portal { --r: 0%; position: absolute; inset: 0; z-index: 5; isolation: isolate; visibility: hidden; pointer-events: none;
+  -webkit-mask: radial-gradient(circle at 50% 46%, #000 calc(var(--r) * .78), transparent var(--r)); mask: radial-gradient(circle at 50% 46%, #000 calc(var(--r) * .78), transparent var(--r)); }
 .hero-portal-frame { position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(1.25) saturate(1.15); }
 /* a glint sweeps across the button every few seconds */
 .shine::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%); transform: translateX(-120%); animation: shine 3.2s var(--ease-out) infinite 1s; }
@@ -235,7 +236,7 @@ video { background: var(--deep); }
 /* 03 feature */
 .feature { padding: clamp(80px, 14vw, 180px) 0; background: var(--abyss); }
 .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
-.feature-visual { position: relative; display: grid; place-items: center; }
+.feature-visual { position: relative; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius); }   /* clip-path alone does not stop the scaled clip widening the page on phones */
 .feature-video { width: 100%; max-height: min(78svh, 720px); aspect-ratio: 1; object-fit: cover; object-position: 55% 15%; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
 .feature-lead .lw { display: inline-block; }
 .feature-visual { will-change: clip-path; }

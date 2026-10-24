@@ -289,20 +289,26 @@
   tuckSpring();
   ScrollTrigger.addEventListener('refreshInit', tuckSpring);
   gsap.set(spring, { autoAlpha: 0 });
-  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true, scrub: .4, invalidateOnRefresh: true } })
-    .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .3 }, 0)
-    .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .3 }, .04)
-    .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .12, immediateRender: false }, 0)
-    .to('.hero-media', { scale: 1.2, yPercent: -6, ease: 'none', duration: .5 }, 0)
-    .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .12, ease: 'power2.out' }, .1)   // offer rises as the title lifts
-    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .1, ease: 'back.out(2)' }, .14)
-    .to('.hero-offer', { y: -40, autoAlpha: 0, duration: .1, ease: 'power1.in' }, .5)                               // ...holds, then the dive
-    .set('.hero-dim, .hero-portal', { autoAlpha: 0 }, 0)                                                            // start states live in the timeline so scrubbing back always restores them
-    .set('.hero-portal .spring-word', { scale: 1.45, filter: 'blur(14px)' }, 0)
-    .to('.hero-media', { scale: 1.65, yPercent: -3, ease: 'power2.in', duration: .4 }, .5)                         // slow push into the bottle
-    .to('.hero-dim', { autoAlpha: 1, ease: 'power1.in', duration: .32 }, .52)                  // the light drains to black
-    .to('.hero-portal', { autoAlpha: 1, ease: 'power2.out', duration: .22 }, .76)   // SPRING surfaces out of the dark
-    .to('.hero-portal .spring-word', { scale: 1, filter: 'blur(0px)', ease: 'expo.out', duration: .24 }, .76)
+  // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre (--r) while the SPRING frame inside
+  // it starts magnified and settles (scale 1.7 → 1) and the outside dims, like light bending through the bottle.
+  const lens = $('.hero-portal');
+  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: .9, invalidateOnRefresh: true } })
+    .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
+    .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
+    .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
+    .to('.hero-media', { scale: 1.2, yPercent: -6, ease: 'none', duration: .42 }, 0)
+    .fromTo('.hero-offer', { y: 60, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .1, ease: 'power2.out' }, .08)   // offer rises as the title lifts
+    .fromTo('.hero-offer-btn', { scale: .8 }, { scale: 1, duration: .08, ease: 'back.out(2)' }, .11)
+    .to('.hero-offer', { y: -40, autoAlpha: 0, duration: .08, ease: 'power1.in' }, .4)                               // ...holds, then the dive
+    // start states live in the timeline so scrubbing back always restores them
+    .set('.hero-dim', { autoAlpha: 0 }, 0)
+    .set(lens, { autoAlpha: 0, '--r': '0%' }, 0)
+    .set('.hero-portal .spring-word, .hero-portal-frame', { scale: 1.7, filter: 'blur(10px)' }, 0)
+    .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
+    .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
+    .set(lens, { autoAlpha: 1 }, .52)
+    .to(lens, { '--r': '160%', ease: 'power2.inOut', duration: .44 }, .52)                                          // the lens opens small → full
+    .to('.hero-portal .spring-word, .hero-portal-frame', { scale: 1, filter: 'blur(0px)', ease: 'power2.inOut', duration: .44 }, .52)
     .to({}, { duration: .1 });
   ScrollTrigger.create({ trigger: '.spring-stage', start: 'top top', onEnter: () => gsap.set(spring, { autoAlpha: 1 }), onLeaveBack: () => gsap.set(spring, { autoAlpha: 0 }) });
   // The portal paints SPRING's live video frame (poster until the clip has data), so the hand-off matches on every
