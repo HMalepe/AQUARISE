@@ -3,7 +3,7 @@
    Part A: basics that work in every mode (cart, slider, menu, forms, bottles, videos)
    Part B: early return into .static if reduced motion / GSAP missing
    Part C: motion blocks in DOM order (loader → hero → spring → feature →
-           shop → bundles → compare → source → footer)
+           shop → bundles → compare → footer)
    ========================================================================== */
 (() => {
   'use strict';
@@ -414,18 +414,6 @@
   const fillWave = makeWave(usFill, 'bottom', { amp: 4, freq: .6 });
   gsap.to(fillWave, { p: 1, ease: 'none', scrollTrigger: { trigger: '.table-wrap', start: 'top 70%', end: 'bottom 55%', scrub: 1 } });
   gsap.fromTo('.cmp tbody tr', { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: .9, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '.cmp', start: 'top 75%', once: true } });
-
-  /* ── C11 · SOURCE: clip reveals + image drift ── */
-  gsap.set('.src-media', { clipPath: 'inset(100% 0% 0% 0%)' });
-  ScrollTrigger.batch('.src-card', {
-    start: 'top 85%', once: true,
-    onEnter: batch => {
-      gsap.to(batch.map(c => $('.src-media', c)), { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.4, ease: 'expo.out', stagger: .14 });
-      gsap.fromTo(batch.map(c => $('.ph', c)), { scale: 1.3 }, { scale: 1, duration: 1.8, ease: 'expo.out', stagger: .14 });
-      gsap.fromTo(batch.flatMap(c => $$('h3, p', c)), { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .06, delay: .3 });
-    }
-  });
-  $$('.drift').forEach(el => gsap.fromTo(el, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
   gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: 1 } });

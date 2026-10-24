@@ -42,9 +42,6 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 ### 6. Splash (retired)
 `splash(host)`: 14 droplets fly from the pool line (`power2.out` up, then `power2.in` down and fade).
 
-### 7. Clip reveal + drift
-`.src-media` `clipPath inset(100% 0 0 0) → inset(0)`, 1.4s `expo.out`; inner `.ph` `scale 1.3 → 1`; `.drift` `yPercent −6 → 6` scrubbed.
-
 ## Section choreography
 
 ### 00 Loader → letterbox → hero intro (timeline, not scrolled)
@@ -105,12 +102,6 @@ Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0
 ### 07 Compare
 - `.us-fill` sized to the Aquarise column on every `refreshInit`; wave `p 0→1` scrubbed `top 70%` → `bottom 55%` (amp 4, freq .6)
 - Rows slide in `x −30 → 0`, stagger .1, once
-
-### 08 Source
-Primitive 7, batched with stagger .14; text fades up after .3.
-
-### 08 Source cards
-Each `.ph` holds a looping clip: waterfall, waterfall framed on the rocks, the sip clip framed on the bottle; the clip reveal and drift above apply unchanged.
 
 ### 09 FAQ / 10 Join
 Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). 

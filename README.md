@@ -36,8 +36,8 @@ aquarise-site/
 | Clip | Where it plays | What it is |
 |---|---|---|
 | `hero` | Hero background | 1920px. Your sunrise bottle photo, AI-upscaled 4× (Real-ESRGAN, `assets/hero-bottle-hd.jpg`) and brought to life: the sea rolls in, sand glints, bubbles rise inside the bottle, spray drifts through the light |
-| `sip` | Feature section ("Pure. Crisp. Alive."), Source card "The Seal" (framed on the bottle) | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade), slowed to 0.85× and played forward then in reverse so it loops without a jump (~9.5s). Not rendered by tools/footage |
-| `waterfall` | The SPRING knockout section, Source cards "The Spring" and "The Stone" (framed on the rocks) | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
+| `sip` | Feature section ("Pure. Crisp. Alive.") | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade), slowed to 0.85× and played forward then in reverse so it loops without a jump (~9.5s). Not rendered by tools/footage |
+| `waterfall` | The SPRING knockout section | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
 Every clip is an 8-second seamless loop, 1280×720 (hero 1024×728), 30fps, roughly 0.2–0.9 MB each. They play only while on screen.
 
@@ -70,7 +70,6 @@ Then delete the `<span class="ph-note">`.
 | Where | Shot |
 |---|---|
 | Hero | Now a rendered loop of the sunrise bottle shot. A real 6–10s loop of waves around the bottle at ≥1920px would beat it. |
-| Source cards | The waterfall and sip clips, framed differently per card. Real alternatives: cupped hands with spring water · river stones under water · droplet crowning off the cap. |
 | Product bottles | The real bottle, cut out of the sunrise photo (`assets/bottle.webp` + `.png`). Every product uses it for now; shoot a transparent packshot per size (500ml, 1L, glass…) and point each product at its own file. |
 
 

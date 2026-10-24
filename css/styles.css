@@ -311,16 +311,6 @@ video { background: var(--deep); }
 .cmp .us { color: #fff; background: rgba(63,184,232,.08); }
 .us-fill { right: auto; bottom: auto; z-index: 0; background: linear-gradient(180deg, var(--aqua), var(--tide)); border-radius: 6px 6px 0 0; }
 
-/* 08 source */
-.source { padding: clamp(80px, 12vw, 160px) 0; background: var(--abyss); }
-.src-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
-.src-card.offset { margin-top: clamp(60px, 9vw, 140px); }
-.src-media { position: relative; aspect-ratio: 3 / 4; border-radius: var(--radius); overflow: hidden; margin-bottom: 22px; }
-.src-media .ph { position: absolute; left: 0; right: 0; top: -9%; height: 118%; }
-.src-card h3 { font-family: var(--display); font-size: clamp(2rem, 3vw, 2.8rem); margin-bottom: .5rem; }
-.src-media video.frame-rocks { object-position: 0% 100%; }
-.src-media video.frame-bottle { object-position: 38% 25%; }
-.src-card p { color: rgba(232,246,251,.78); max-width: 34ch; }
 
 /* 09 faq */
 .faq { padding: clamp(80px, 12vw, 160px) 0; background: var(--deep); }
@@ -407,8 +397,6 @@ video { background: var(--deep); }
   .nav-links { display: none; }
   .feature-grid, .faq-grid, .foot-grid { grid-template-columns: 1fr; }
   .sec-head.split { grid-template-columns: 1fr; }
-  .src-grid { grid-template-columns: 1fr; }
-  .src-card.offset { margin-top: 0; }
   .faq-head { position: static; }
 }
 @media (max-width: 720px) {
