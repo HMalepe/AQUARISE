@@ -393,7 +393,7 @@
   gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: 1 } });
   const stage = $('.slide-stage');
   gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top 75%', once: true } })
-    .fromTo('.stage-glow', { autoAlpha: 0, scale: .8 }, { autoAlpha: 1, scale: 1, duration: 1.6, ease: 'expo.out' })
+    .fromTo('.stage-glow, .stage-mist', { autoAlpha: 0, scale: .8 }, { autoAlpha: 1, scale: 1, duration: 1.6, ease: 'expo.out' })
     .fromTo(sl.els[0], { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: 'expo.out' }, .1);
   let sliding = null;
   animateSlide = (prev, next, dir) => {
