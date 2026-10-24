@@ -23,7 +23,7 @@
   ];
   const EXTRAS = {
     'ritual-24':   { name: 'Daily Ritual · 24 × 500ml', price: 289, color: '#9BE1FF' },
-    'sub-weekly':  { name: 'Never Run Dry · weekly',    price: 249, color: '#1C8FC4' },
+    'sub-weekly':  { name: 'Never Run Dry · weekly (billed monthly)', price: 996, color: '#1C8FC4' },
     'sub-monthly': { name: 'Never Run Dry · monthly',   price: 899, color: '#1C8FC4' }
   };
   const FREE_SHIP = 350;
@@ -95,7 +95,7 @@
     const monthly = r.value === 'monthly' && r.checked;
     const btn = $('[data-sub-btn]'), price = $('[data-sub-price]');
     btn.dataset.add = monthly ? 'sub-monthly' : 'sub-weekly';
-    const note = $('[data-sub-note]'); if (note) note.textContent = monthly ? 'You’re saving ~R100 a month' : 'Go monthly and save ~R100';
+    const note = $('[data-sub-note]'); if (note) note.textContent = monthly ? 'You’re saving ~R100 a month' : 'Billed R996 a month · go monthly and save ~R100';
     price.innerHTML = monthly ? '<span>R899</span><small>/month*</small>' : '<span>R249</span><small>/week*</small>';
     if (window.gsap) gsap.fromTo(price, { scale: .7, rotate: -4 }, { scale: 1, rotate: 0, duration: .6, ease: 'back.out(3)' });
   }));
@@ -138,6 +138,22 @@
     countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump');
     toast(`${p.name} added to cart`);
   }
+  // PayFast: the server prices the cart and signs the form (api/checkout.js); we just post it to PayFast.
+  async function checkout(btn) {
+    if (!Object.keys(cart).length) return toast('Your cart is empty');
+    btn.disabled = true; const label = btn.textContent; btn.textContent = 'Opening PayFast…';
+    try {
+      const r = await fetch('/api/checkout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ cart }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.action) throw new Error(d.error || 'offline');
+      const f = document.createElement('form'); f.method = 'POST'; f.action = d.action;
+      for (const [k, v] of Object.entries(d.fields)) { const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; f.appendChild(i); }
+      document.body.appendChild(f); f.submit();
+    } catch (e) {
+      toast(e.message === 'offline' || e.name === 'TypeError' ? 'Checkout is offline right now — WhatsApp us to order' : e.message);
+      btn.disabled = false; btn.textContent = label;
+    }
+  }
   function setCart(open) {
     html.classList.toggle('cart-open', open);
     $('.cart').setAttribute('aria-hidden', !open);
@@ -164,7 +180,7 @@
     if (t.matches('[data-cart-open]')) return setCart(true);
     if (t.matches('[data-cart-close]')) return setCart(false);
     if (t.matches('[data-menu-toggle]')) return setMenu(!html.classList.contains('menu-open'));
-    if (t.matches('[data-checkout]')) return toast('Online checkout opens soon — WhatsApp us to order today');
+    if (t.matches('[data-checkout]')) return checkout(t);
     const href = t.getAttribute('href');
     if (href.length > 1) {
       const target = $(href); if (!target) return;

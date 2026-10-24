@@ -82,7 +82,8 @@ Then delete the `<span class="ph-note">`.
 - [ ] Email hello@aquarise.co.za · WhatsApp +27 82 555 0123 (wa.me link in menu, footer, bulk quote, FAQ) · @aquarise.za on Instagram/TikTok
 - [ ] Delivery: Gauteng, Cape Town & Durban · 2pm cut-off for next-day · R60 delivery under R350 · 7-day replace/refund (FAQ)
 - [ ] "Never Run Dry" = 12 still + 12 sparkling · PET code 1 bottles, returnable glass
-- [ ] "(Pty) Ltd" in the footer copyright: use the registered company name
+- [ ] Footer and Terms company details: "Aquarise (Pty) Ltd", reg. 2026/123456/07, Unit 4, 12 Spring Lane, Pinetown: all invented, replace with the real CIPC details
+- [ ] Privacy, Terms and Shipping pages are drafts: have them checked, and register your Information Officer (POPIA)
 - [ ] Not invented on purpose: customer reviews, lab results/mineral values. Add only real ones.
 
 - [ ] Replace `hello@aquarise.example` everywhere (search the repo)
@@ -102,6 +103,16 @@ Then delete the `<span class="ph-note">`.
 - Without JS the loader and letterbox never show (they need `html.js`). A CSS safety timer also hides them after 5s.
 - The cart, slider, menu, FAQ (`<details>`) and forms all work in static mode.
 - Focus rings on all interactive elements; Escape closes the cart and menu; the cart drawer and menu have `aria-hidden` state.
+
+## Payments (PayFast)
+
+Checkout posts the cart to `api/checkout.js` (a Vercel function). It prices everything from `lib/catalogue.js` (never from the browser), adds R60 delivery under R350, signs the PayFast form with the passphrase and sends the shopper to PayFast. PayFast then calls `api/payfast-notify.js`, which checks the signature and confirms with PayFast before treating the order as paid.
+
+- **Test mode is on by default**, using PayFast's public sandbox merchant. Pay with the sandbox test buyer on sandbox.payfast.co.za.
+- **Going live:** in Vercel → Project → Settings → Environment Variables add `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY`, `PAYFAST_PASSPHRASE` (set the same passphrase in your PayFast dashboard) and `PAYFAST_SANDBOX=false`, then redeploy.
+- Subscriptions (Never Run Dry) check out on their own as PayFast monthly subscriptions; the weekly plan is 4 deliveries billed R996 monthly (PayFast has no weekly billing).
+- Change a price in **both** `lib/catalogue.js` (what is charged) and `js/main.js` (what is shown).
+- Still to do: `payfast-notify.js` only logs paid orders (see Vercel → Logs). Save orders and email confirmations before launch.
 
 ## Deploy
 

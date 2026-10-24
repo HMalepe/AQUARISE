@@ -1,0 +1,6 @@
+{
+  "name": "aquarise-site",
+  "private": true,
+  "type": "module",
+  "description": "Static site + Vercel functions in /api (PayFast checkout). No build step."
+}
