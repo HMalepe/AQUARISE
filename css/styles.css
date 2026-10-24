@@ -284,7 +284,7 @@ video { background: var(--deep); }
 .slide-desc { margin: .8rem auto 0; max-width: 44ch; color: rgba(232,246,251,.78); min-height: 3.1em; padding: 0 var(--gutter); }
 .slide-buy { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 1.4rem; }
 .slide-price { font-family: var(--body); font-weight: 800; font-size: 1.9rem; letter-spacing: -.01em; }
-.slide-stage { position: relative; height: clamp(360px, calc(100svh - 410px), 640px);   /* name, price, bottle and tabs all fit one screen */ margin-top: 1.2rem; overflow: hidden; isolation: isolate; }
+.slide-stage { touch-action: pan-y; position: relative; height: clamp(360px, calc(100svh - 410px), 640px);   /* name, price, bottle and tabs all fit one screen */ margin-top: 1.2rem; overflow: hidden; isolation: isolate; }
 /* backlit like the photo: a low sunrise glow behind the bottle, a glossy floor with a real reflection */
 .stage-glow { position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: radial-gradient(26% 46% at 50% 58%, rgba(246,178,107,.42), rgba(233,128,106,.14) 55%, transparent 75%),

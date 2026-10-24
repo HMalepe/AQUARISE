@@ -445,16 +445,33 @@
       .fromTo('[data-slide-desc], .slide-buy', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .6, stagger: .06 }, .3);
   };
 
-  // Auto-advance the range every 4.5s while the shop is on screen. Pauses while the pointer is over it or the tab is
-  // hidden; any manual change (arrows, tabs, swipe) restarts the countdown so it never jumps right after a click.
+  // Range navigation: auto-advances every 5s while on screen; a trackpad side-swipe (horizontal wheel) or a finger swipe
+  // changes product; any interaction restarts the 5s countdown so it never moves right after you did.
   (() => {
-    const shop = $('.slider'); let onScreen = false, hovering = false, timer = null;
-    const tick = () => { if (onScreen && !hovering && !document.hidden && !html.classList.contains('cart-open')) showSlide(sl.i + 1, 1); };
-    const restart = () => { clearInterval(timer); timer = setInterval(tick, 4500); };
-    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting && e.intersectionRatio > .5; restart(); }, { threshold: [0, .5, 1] }).observe($('.slide-stage'));
-    shop.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hovering = true; });
-    shop.addEventListener('pointerleave', () => { hovering = false; restart(); });
+    const shop = $('.slider'), stage = $('.slide-stage'); let onScreen = false, timer = null;
+    const tick = () => { if (onScreen && !document.hidden && !html.classList.contains('cart-open')) showSlide(sl.i + 1, 1); };
+    const restart = () => { clearInterval(timer); timer = setInterval(tick, 5000); };
+    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting && e.intersectionRatio > .5; restart(); }, { threshold: [0, .5, 1] }).observe(stage);
     shop.addEventListener('click', e => { if (e.target.closest('button')) restart(); });
+    // trackpad: two-finger swipe left = next, right = previous (one product per gesture)
+    let acc = 0, locked = false, lockT;
+    shop.addEventListener('wheel', e => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;   // vertical scrolling is left to the page
+      e.preventDefault();                                      // stops the browser's back/forward swipe here
+      if (locked) { clearTimeout(lockT); lockT = setTimeout(() => { locked = false; acc = 0; }, 180); return; }
+      acc += e.deltaX;
+      if (Math.abs(acc) > 40) {
+        const d = acc > 0 ? 1 : -1; showSlide(sl.i + d, d); restart();
+        locked = true; acc = 0; clearTimeout(lockT); lockT = setTimeout(() => { locked = false; }, 450);
+      }
+    }, { passive: false });
+    // touch: horizontal swipe on the stage
+    let x0 = null, y0 = 0;
+    stage.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+    stage.addEventListener('touchend', e => {
+      if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { const d = dx < 0 ? 1 : -1; showSlide(sl.i + d, d); restart(); }
+    }, { passive: true });
     restart();
   })();
 
