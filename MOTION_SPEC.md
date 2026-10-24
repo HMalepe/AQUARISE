@@ -60,14 +60,14 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 | end | `lenis.start()` (scroll is locked during the intro) |
 
 ### 01 Hero — pinned
-Background is `assets/video/hero.mp4` (8s seamless loop, poster = the original photo). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
+Background is `assets/video/hero.mp4` (8s seamless loop, 1920×1366, rendered from `assets/hero-bottle-hd.jpg`, a Real-ESRGAN 4× upscale of the photo, which is also the poster). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
 Trigger `.hero`, `top top` → `+= 1.7 × innerHeight`, `scrub: .4`.
 | Timeline pos | Tween |
 |---|---|
 | 0 → .3 | `.hl-1` `yPercent −70`, fade out; `.hl-2` (from .04) `yPercent −40`, fade out |
 | 0 → .12 | meta fade (`fromTo`, `immediateRender:false`) |
 | 0 → .5 | `.hero-media` `scale 1.2`, `yPercent −6` |
-| .1 → .22 | `.hero-offer` rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .14 |
+| .1 → .22 | `.hero-offer` (the "Quench it — shop now" button only) rises `y 60 → 0`, fades in; button pops `scale .8 → 1` `back.out(2)` at .14 |
 | .5 → .6 | offer lifts away `y −40`, fades |
 | .5 → .9 | **the dive**: `.hero-media` slow push `scale → 1.65`, `power2.in` (kept low so the photo never pixelates) |
 | .52 → .84 | `.hero-dim` (abyss layer) fades in: the light drains to black |

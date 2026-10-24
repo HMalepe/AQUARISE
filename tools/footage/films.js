@@ -6,14 +6,16 @@ window.FILMS = {};
 
 /* ── HERO · the Aquarise sunrise shot brought to life: sea rolling in, glinting sand, bubbles rising in the bottle ── */
 FILMS.hero = {
-  w: 1024, h: 728, fps: 30, loop: 8, blend: 0,
-  textures: async ({ img }) => [await img('../../assets/hero-bottle.jpg')],
+  w: 1920, h: 1366, fps: 30, loop: 8, blend: 0,   // full HD; all coordinates below are in the photo's 1024×728 space
+  textures: async ({ img }) => [await img('../../assets/hero-bottle-hd.jpg')],   // Real-ESRGAN 4× upscale of the photo
   frag: `
 const vec3 SUN = vec3(1., .851, .275);
 float box(vec2 p, vec2 c, vec2 b, float r){ vec2 q = abs(p - c) - b + r; return length(max(q, 0.)) + min(max(q.x, q.y), 0.) - r; }
 float bottle(vec2 p){ return min(box(p, vec2(506., 420.), vec2(93., 302.), 64.), box(p, vec2(508., 62.), vec2(42., 54.), 10.)); }
-vec3 img(vec2 p){ return texture(uTex0, p / uRes).rgb; }
+const vec2 SRC = vec2(1024., 728.);
+vec3 img(vec2 p){ return texture(uTex0, p / SRC).rgb; }
 vec3 scene(vec2 frag, float t){
+  frag *= SRC / uRes;
   float w = TAU / uLoop;
   float sd = bottle(frag);
   float outside = smoothstep(-3., 5., sd);
@@ -58,7 +60,7 @@ vec3 scene(vec2 frag, float t){
   // drifting spray in the light, out of focus
   for (int i = 0; i < 18; i++) {
     float fi = float(i);
-    vec2 b = vec2(hash12(vec2(fi, 7.)), hash12(vec2(fi, 8.))) * uRes;
+    vec2 b = vec2(hash12(vec2(fi, 7.)), hash12(vec2(fi, 8.))) * SRC;
     b += vec2(46. * sin(w * t + fi), 28. * sin(w * 2. * t + fi * 1.7) - 20. * sin(w * t));
     float r = mix(5., 15., hash12(vec2(fi, 9.)));
     c += vec3(1., .9, .72) * smoothstep(r, r * .6, length(frag - b)) * .13 * (.6 + .4 * sin(w * t + fi));
