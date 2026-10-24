@@ -213,7 +213,7 @@
   const videos = $$('video[data-video]');
   if (reduce) videos.forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   else if ('IntersectionObserver' in window) {
-    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? playV(e.target) : e.target.pause()), { rootMargin: '200px 0px' });
+    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? playV(e.target) : e.target.pause()), { rootMargin: '100% 0px' }   /* pause only a full screen away: restarting a clip mid-scroll stalls the page */);
     videos.forEach(v => vio.observe(v));
   }
 
@@ -326,31 +326,27 @@
     // start states live in the timeline so scrubbing back always restores them
     .set('.hero-dim', { autoAlpha: 0 }, 0)
     .set(lens, { autoAlpha: 0, '--r': '0%' }, 0)
-    .set('.hero-portal .spring-word, .hero-portal-frame', { filter: 'blur(4px)' }, 0)
+    .set('.hero-portal .spring-word, .hero-portal-frame', { autoAlpha: .55 }, 0)
     .set(lensZoom, { z: ZOOM_FROM }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
     .set(lens, { autoAlpha: 1 }, .52)
     .to(lens, { '--r': '160%', ease: 'power2.inOut', duration: .44 }, .52)                                          // the lens opens small → full
-    .to('.hero-portal .spring-word, .hero-portal-frame', { filter: 'blur(0px)', ease: 'power1.out', duration: .3 }, .52)
+    .to('.hero-portal .spring-word, .hero-portal-frame', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
     .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
-  // The portal paints SPRING's live video frame (poster until the clip has data), so the hand-off matches on every
-  // pass, not just the first one before the video has loaded.
+  // The portal shows the same waterfall as SPRING in its own <video>. Both loops start together and keep playing side by
+  // side (same clip, same length), so they stay in step without seeking; any drift is corrected only while the lens is
+  // hidden, because a seek on screen stalls the page (and copying frames into a canvas did too).
   (() => {
-    const cv = $('.hero-portal-frame'), ctx = cv.getContext('2d'), portal = $('.hero-portal'), vid = $('.spring-video');
-    const poster = new Image(); poster.src = vid.getAttribute('poster');
-    const fit = () => { const d = Math.min(devicePixelRatio || 1, innerWidth < 768 ? 1.5 : 2);   /* phones: lighter canvas, same look */ cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; };
-    fit(); addEventListener('resize', fit);
-    gsap.ticker.add(() => {
-      if (+gsap.getProperty(portal, 'autoAlpha') <= 0) return;
-      const src = vid.readyState >= 2 ? vid : poster.complete ? poster : null;
-      if (!src) return;
-      const sw = src.videoWidth || src.naturalWidth, sh = src.videoHeight || src.naturalHeight;
-      if (!sw) return;
-      const k = Math.max(cv.width / sw, cv.height / sh), w = sw * k, h = sh * k;   // object-fit: cover
-      ctx.drawImage(src, (cv.width - w) / 2, (cv.height - h) / 2, w, h);
-    });
+    const pv = $('.hero-portal-frame'), portal = $('.hero-portal'), vid = $('.spring-video');
+    const pair = () => { if (vid.paused) return; if (pv.paused) { pv.currentTime = vid.currentTime; playV(pv); } };
+    vid.addEventListener('playing', pair);
+    vid.addEventListener('pause', () => pv.pause());
+    setInterval(() => {
+      if (pv.paused || vid.paused || +gsap.getProperty(portal, 'autoAlpha') > 0) return;
+      if (Math.abs(pv.currentTime - vid.currentTime) > .2) pv.currentTime = vid.currentTime;
+    }, 1000);
   })();
 
   // pointer ripples on the hero water
@@ -390,7 +386,7 @@
   });
 
   /* ── C5 · SPRING pinned: the waterfall plays inside the word, then the camera flies through the I ── */
-  const sWord = $('.spring-stage .spring-word'), sI = $('.spring-i'), springZoom = { p: 0 };
+  const sWord = $('.spring-stage .spring-word'), sI = $('.spring-i'), sMask = $('.spring-stage .spring-mask'), springZoom = { p: 0 };
   // Zoom origin = centre of the I's stem, in the word's own (unscaled) box. Measured from on-screen rects divided by the
   // current scale, so it is right at any scroll position (offsetLeft was relative to the wrong parent and missed the I).
   const springOrigin = () => {
@@ -400,8 +396,8 @@
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
   gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true } })
-    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => gsap.set(sWord, { scale: Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3) }) }, 0)   // picks up the lens' zoom rate, then accelerates to 48×
-    .fromTo('.spring-video', { filter: 'brightness(1.25) saturate(1.15)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: 1 }, 0)
+    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => { const sc = Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3); gsap.set(sWord, { scale: sc }); sMask.style.visibility = sc > 22 ? 'hidden' : ''; } }, 0)   // past ~17x the I's stem fills the screen: hide the giant text instead of rasterising it at 48x   // picks up the lens' zoom rate, then accelerates to 48×
+    .fromTo('.spring-stage .spring-glow', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
     .to('.spring-stage .spring-mask', { autoAlpha: 0, duration: .08 }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)

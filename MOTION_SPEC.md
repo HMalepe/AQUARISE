@@ -11,7 +11,7 @@ The source of truth for every animation. If you port to Next.js or another stack
 | Signature eases | `expo.out` (entrances), `expo.inOut` (curtains), `power2.inOut` (water floods), `none` (scrubbed parallax) |
 | Units | Sections use `svh`; pinned durations are functions of `innerHeight` with `invalidateOnRefresh: true` |
 | Static mode | `html.static` when reduced motion is on or GSAP is missing; JS returns before any motion code |
-| Video | Every `video[data-video]` plays only while within 200px of the viewport (IntersectionObserver, A11) and pauses otherwise. `preload="none"` flips to `auto` on first play. Reduced motion: never plays, posters only.  |
+| Video | Every `video[data-video]` plays only while within one screen of the viewport (pausing/restarting a clip mid-scroll stalled the page) (IntersectionObserver, A11) and pauses otherwise. `preload="none"` flips to `auto` on first play. Reduced motion: never plays, posters only.  |
 
 ## Reusable primitives
 
@@ -136,3 +136,10 @@ Word rises and fade-ups only. The join button uses the shared water-fill hover (
 | Longer/shorter fly-through | `innerHeight * 1.8` in C5; final `scale` 48 (must stay big enough for the I's stem to cover the screen) |
 | Faster marquee | `animation` duration on `.marquee-track` (30s) |
 | Footage look | edit the GLSL in `tools/footage/films.js`, re-render (see README) |
+
+## Performance rules (smooth one-flick scrolling)
+- No CSS `filter` animated on full-screen layers or videos; use an overlay's opacity instead (`.spring-glow`). Bake fixed looks into the video file (mist contrast/blur is baked).
+- No `blur()` tweens on full-screen layers; fade opacity instead.
+- Never seek a video that is on screen; never `drawImage` video frames per tick.
+- Hide giant scaled text once it covers the screen (`.spring-mask` hidden past 22×) so the browser never rasterises it at 48×.
+- MP4 (H.264, hardware-decoded) is listed before WebM in every `<video>`.
