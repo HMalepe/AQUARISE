@@ -292,14 +292,14 @@ video { background: var(--deep); }
 .bundle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .bundle { position: relative; border-radius: var(--radius); padding: clamp(28px, 4vw, 52px); text-align: center; display: grid; justify-items: center; align-content: space-evenly; gap: 14px; overflow: hidden; }
 .bundle h3 { font-family: var(--display); font-size: clamp(2.2rem, 4.4vw, 4rem); line-height: .95; }
-.bundle-sub { max-width: 34ch; font-weight: 600; opacity: .85; }
+.bundle-sub { position: relative; z-index: 3; max-width: 34ch; font-weight: 600; opacity: .85; }
 .bundle-price { font-family: var(--display); font-size: 2.6rem; }
 .bundle-price small { font-size: .45em; opacity: .8; }
 .b-aqua { background: linear-gradient(170deg, var(--mist), var(--aqua)); color: var(--ink); }
 .b-deep { background: linear-gradient(170deg, var(--wave), var(--tide)); color: var(--foam); }
-.bundle-bottles { display: flex; align-items: flex-end; justify-content: center; gap: 6%; height: clamp(180px, 22vw, 260px); margin: 8px 0; width: 100%; }
-.bundle-bottles .bottle { height: 100%; }
-.bundle-bottles .bottle:nth-child(2) { height: 110%; transform: translateY(5%); }
+.bundle-bottles { display: flex; align-items: flex-end; justify-content: center; gap: 6%; height: clamp(180px, 22vw, 260px); margin: 22px 0 8px; width: 100%; }
+.bundle-bottles .bottle { height: 88%; }
+.bundle-bottles .bottle:nth-child(2) { height: 100%; }   /* tallest bottle stays inside the row so it never covers the subtitle */
 /* hover: the trio fans out and lifts; a glare follows the pointer; perk chips pop around the card */
 .bundle { transform-style: preserve-3d; transition: box-shadow .5s var(--ease-out); }
 .bundle:hover { box-shadow: 0 40px 90px rgba(0,0,0,.45); }
