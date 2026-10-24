@@ -381,8 +381,8 @@ video { background: var(--deep); }
 .foot-cols a:hover { opacity: 1; color: var(--aqua); }
 .foot-mark-wrap { position: relative; margin-top: clamp(40px, 6vw, 80px); overflow: hidden; }
 .foot-logo { display: block; width: 112px; height: 69px; margin-bottom: 1rem; --mark-wave: var(--foam); }
-.foot-mark { display: block; width: 96%; height: auto; aspect-ratio: 520 / 88; margin: 0 auto -1.5%; color: var(--foam); }
-.foot-water { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; pointer-events: none; }
+.foot-mark { position: relative; z-index: 1; display: block; width: 96%; height: auto; aspect-ratio: 520 / 88; margin: 0 auto; padding-bottom: 2.5%; box-sizing: content-box; color: var(--foam); }   /* whole word sits above the bottom edge; the water drifts behind its base */
+.foot-water { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; pointer-events: none; z-index: 0; }
 .foot-water i:first-child { background: rgba(63,184,232,.55); animation-duration: 12s; }
 .foot-water i:last-child { height: 78%; background: var(--tide); animation-duration: 8s; animation-direction: reverse; }
 .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 22px 0 28px; font-size: .85rem; opacity: .7; position: relative; }

@@ -486,7 +486,7 @@
   }));
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
-  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: 1 } });
+  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true } });   // no lag: at the very bottom of the page the word is fully up
 
   /* ── C13 · ordering + refresh ── */
   ScrollTrigger.sort();
