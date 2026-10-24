@@ -110,7 +110,6 @@ Scroll (each card, `top 85%`, once):
 - Card fills with water from the bottom (`p 0→1`, 1.6s `power2.out`), children fade up from .35
 - Bottles drop in from `y −160` with `rotate −22° / 8° / 24°`, `bounce.out`, stagger .12, at .55
 - Price counts up R0 → R289 / R249 (1.4s `power3.out`); the Weekly/Monthly toggle pops `scale .6 → 1` `back.out(2.5)`
-- Depth: the two cards drift at different scrubbed speeds (`y 30 → −15` and `90 → −40`) across the grid
 Hover (fine pointers only):
 - 3D tilt toward the cursor (`rotationX ±5°`, `rotationY ±6°`, `quickTo` .6s, perspective 1000) plus a soft-light glare that follows the pointer (`--mx/--my`)
 - The bottle trio fans out (outer bottles `rotate ∓9°`, middle lifts) and the button is magnetic (`x/y` follow the pointer ×.3/.4)

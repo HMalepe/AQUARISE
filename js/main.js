@@ -416,7 +416,7 @@
 
   /* ── C9 · BUNDLES: cards fill with water, bottles drop in, prices count up; tilt, glare and perk chips on hover ── */
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  $$('[data-reveal-wave]').forEach((card, ci) => {
+  $$('[data-reveal-wave]').forEach(card => {
     const w = makeWave(card, 'bottom', { amp: 6 });
     const kids = [...card.children].filter(c => !c.matches('.bundle-glare'));
     const count = $('[data-count]', card);
@@ -430,8 +430,6 @@
       const n = { v: 0 }, end = +count.dataset.count;
       tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
     }
-    // depth: the two cards drift at different speeds
-    gsap.fromTo(card, { y: ci ? 90 : 30 }, { y: ci ? -40 : -15, ease: 'none', scrollTrigger: { trigger: '.bundle-grid', start: 'top bottom', end: 'bottom top', scrub: true } });
   });
   if (canHover) $$('[data-tilt]').forEach(card => {
     const rx = gsap.quickTo(card, 'rotationX', { duration: .6, ease: 'power3' }), ry = gsap.quickTo(card, 'rotationY', { duration: .6, ease: 'power3' });
