@@ -412,6 +412,8 @@ video { background: var(--deep); }
 .foot-water i:first-child { background: rgba(63,184,232,.55); animation-duration: 12s; }
 .foot-water i:last-child { height: 78%; background: var(--tide); animation-duration: 8s; animation-direction: reverse; }
 .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding: 22px 0 28px; font-size: .85rem; opacity: .7; position: relative; }
+.foot-bottom a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.foot-bottom a:hover { color: var(--lemon); }
 .footer .foot-bottom { background: var(--tide); width: 100%; padding-inline: var(--gutter); margin-top: -1px; opacity: 1; color: rgba(232,246,251,.85); }
 
 /* 5 ─ CART / MENU / TOAST ───────────────────────────────────────────────── */
