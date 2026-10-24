@@ -297,9 +297,9 @@ video { background: var(--deep); }
   background: radial-gradient(30% 48% at 50% 56%, rgba(232,246,251,.20), rgba(155,225,255,.07) 55%, transparent 76%),
               radial-gradient(60% 22% at 50% 86%, rgba(155,225,255,.10), transparent 70%); }
 /* sunlit steam from the waterfall clip (mist.mp4, cropped + mirrored loop); screen blend drops its dark trees */
-.stage-mist { position: absolute; left: -10%; right: -10%; top: -4%; bottom: 0; z-index: -1; pointer-events: none; mix-blend-mode: screen; opacity: .75;   /* white-grey steam across most of the stage */
-  -webkit-mask: radial-gradient(64% 50% at 50% 62%, #000 0%, rgba(0,0,0,.6) 50%, transparent 100%); mask: radial-gradient(64% 50% at 50% 62%, #000 0%, rgba(0,0,0,.6) 50%, transparent 100%); }
-.stage-mist video { width: 100%; height: 100%; object-fit: cover; background: none; }   /* contrast/blur are baked into mist.mp4 */
+.stage-mist { position: absolute; inset: 0 0 0 0; z-index: -1; pointer-events: none;   /* waterfall spray over a clear river, filling the stage */
+  -webkit-mask: radial-gradient(72% 85% at 50% 70%, #000 45%, transparent 100%), linear-gradient(transparent, #000 28%); -webkit-mask-composite: source-in; mask: radial-gradient(72% 85% at 50% 70%, #000 45%, transparent 100%), linear-gradient(transparent, #000 28%); mask-composite: intersect; }
+.stage-mist video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; background: none; }   /* water line sits on the stage floor */   /* contrast/blur are baked into mist.mp4 */
 .stage-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgba(232,246,251,.07), rgba(4,18,31,0) 70%);
   border-top: 1px solid rgba(232,246,251,.1); -webkit-mask: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }

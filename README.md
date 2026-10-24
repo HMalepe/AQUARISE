@@ -37,7 +37,7 @@ aquarise-site/
 | Clip | Where it plays | What it is |
 |---|---|---|
 | `hero` | Hero background | 1920px. Your sunrise bottle photo, AI-upscaled 4× (Real-ESRGAN, `assets/hero-bottle-hd.jpg`) and brought to life: the sea rolls in, sand glints, bubbles rise inside the bottle, spray drifts through the light |
-| `mist` | Shop stage, behind the bottle | The sunlit steam cut from the waterfall clip (the steam plume left of the falls, upscaled), slowed to 0.7× and mirrored so it loops without a jump |
+| `mist` | Shop stage, behind the bottle | Real AI-generated footage (OpenArt): waterfall spray over clear water, graded cool and crisp, crossfade loop; phone version `mist-m` |
 | `sip` | Feature section ("Pure. Crisp. Alive.") | Real AI-generated footage (OpenArt, Seedance): the sweating woman drinks from an Aquarise bottle at sunset. Trimmed to start 1s in (the opening frames had a different colour grade), slowed to 0.85× and played forward then in reverse so it loops without a jump (~9.5s). Not rendered by tools/footage |
 | `waterfall` | The SPRING knockout section (3.5s loop: the last 1.5s crossfades into the start, invisible on moving water; reversing would make the water flow up) | Real AI-generated footage (OpenArt, Seedance): a waterfall at sunrise. Not rendered by tools/footage |
 
