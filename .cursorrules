@@ -24,7 +24,7 @@
 - Every new animation needs a `.static` fallback that shows the final state.
 
 ## Content
-- No fabricated reviews or testimonials. Claims (BPA-free, minerals, comparison table) are placeholders until the owner confirms them.
+- No fabricated reviews or testimonials. Claims (BPA-free, minerals, recyclability) are placeholders until the owner confirms them.
 - Prices are ZAR placeholders, marked `*`.
 
 ## Test before saying done

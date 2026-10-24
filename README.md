@@ -78,7 +78,7 @@ Then delete the `<span class="ph-note">`.
 
 - [ ] Replace `hello@aquarise.example` everywhere (search the repo)
 - [ ] Real prices and product specs in `PRODUCTS` / `EXTRAS` in `js/main.js` (all marked `*` = placeholder)
-- [ ] **Verify every claim**: comparison table, stickers (BPA-free, mineral rich), recyclability, source location. Bottled-water labelling and advertising claims are regulated, so confirm each one with your supplier or lab sheet.
+- [ ] **Verify every claim**: stickers (BPA-free, mineral rich), recyclability, source location. Bottled-water labelling and advertising claims are regulated, so confirm each one with your supplier or lab sheet.
 - [ ] Wire checkout (Shopify Storefront / Yoco / PayFast / Stripe) — `PROMPTS.md #3`
 - [ ] Wire the newsletter form — `PROMPTS.md #3`
 - [ ] Social links in the footer

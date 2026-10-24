@@ -116,10 +116,6 @@ Hover (fine pointers only):
 - The bottle trio fans out (outer bottles `rotate ∓9°`, middle lifts) and the button is magnetic (`x/y` follow the pointer ×.3/.4)
 Click: bottles hop (`y −26` yoyo, stagger .06) and a lemon "+1 in your cart" floats up from the button. Switching Weekly/Monthly springs the price `scale .7 → 1`, `back.out(3)`.
 
-### 07 Compare
-- `.us-fill` sized to the Aquarise column on every `refreshInit`; wave `p 0→1` scrubbed `top 70%` → `bottom 55%` (amp 4, freq .6)
-- Rows slide in `x −30 → 0`, stagger .1, once
-
 ### 09 FAQ / 10 Join
 Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). 
 

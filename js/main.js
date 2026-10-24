@@ -3,7 +3,7 @@
    Part A: basics that work in every mode (cart, slider, menu, forms, bottles, videos)
    Part B: early return into .static if reduced motion / GSAP missing
    Part C: motion blocks in DOM order (loader → hero → spring → feature →
-           shop → bundles → compare → footer)
+           shop → bundles → footer)
    ========================================================================== */
 (() => {
   'use strict';
@@ -416,9 +416,10 @@
     const count = $('[data-count]', card);
     const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
       .to(w, { p: 1, duration: 1.6, ease: 'power2.out' })
-      .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35)
-      .fromTo($$('.bundle-bottles .bottle', card), { y: -160, rotate: i => [-22, 8, 24][i], autoAlpha: 0 }, { y: 0, rotate: 0, autoAlpha: 1, duration: 1.1, ease: 'bounce.out', stagger: .12 }, .55)
-      .fromTo($('.freq', card), { scale: .6 }, { scale: 1, duration: .8, ease: 'back.out(2.5)' }, .7);
+      .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
+    const trio = $$('.bundle-bottles .bottle', card), freq = $('.freq', card);
+    if (trio.length) tl.fromTo(trio, { y: -160, rotate: i => [-22, 8, 24][i], autoAlpha: 0 }, { y: 0, rotate: 0, autoAlpha: 1, duration: 1.1, ease: 'bounce.out', stagger: .12 }, .55);
+    if (freq) tl.fromTo(freq, { scale: .6 }, { scale: 1, duration: .8, ease: 'back.out(2.5)' }, .7);
     if (count) {   // price counts up from zero
       const n = { v: 0 }, end = +count.dataset.count;
       tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
@@ -446,24 +447,13 @@
   // adding a bundle: the bottles jump and a "+1" floats up from the button
   $$('.bundle [data-add]').forEach(btn => btn.addEventListener('click', () => {
     const card = btn.closest('.bundle');
-    gsap.fromTo($$('.bundle-bottles .bottle', card), { y: 0 }, { y: -26, duration: .22, ease: 'power2.out', yoyo: true, repeat: 1, stagger: .06 });
+    const trio = $$('.bundle-bottles .bottle', card);
+    if (trio.length) gsap.fromTo(trio, { y: 0 }, { y: -26, duration: .22, ease: 'power2.out', yoyo: true, repeat: 1, stagger: .06 });
     const tag = document.createElement('span'); tag.className = 'plus-one'; tag.textContent = '+1 in your cart';
     btn.after(tag);
     gsap.fromTo(tag, { y: 0, autoAlpha: 0, scale: .6 }, { y: -70, autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(2)' });
     gsap.to(tag, { autoAlpha: 0, y: -100, duration: .5, delay: 1, onComplete: () => tag.remove() });
   }));
-
-  /* ── C10 · COMPARE: Aquarise column floods from the bottom ── */
-  const usFill = $('.us-fill');
-  const placeFill = () => {
-    const th = $('.cmp thead .us'), table = $('.cmp');
-    Object.assign(usFill.style, { left: table.offsetLeft + th.offsetLeft + 'px', width: th.offsetWidth + 'px', top: table.offsetTop + 'px', height: table.offsetHeight + 'px' });
-  };
-  placeFill();
-  ScrollTrigger.addEventListener('refreshInit', placeFill);
-  const fillWave = makeWave(usFill, 'bottom', { amp: 4, freq: .6 });
-  gsap.to(fillWave, { p: 1, ease: 'none', scrollTrigger: { trigger: '.table-wrap', start: 'top 70%', end: 'bottom 55%', scrub: 1 } });
-  gsap.fromTo('.cmp tbody tr', { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: .9, ease: 'expo.out', stagger: .1, scrollTrigger: { trigger: '.cmp', start: 'top 75%', once: true } });
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
   gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: 1 } });

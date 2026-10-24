@@ -326,19 +326,6 @@ video { background: var(--deep); }
 .freq input:checked + span { background: var(--foam); color: var(--ink); }
 .freq input:focus-visible + span { outline: 2px solid var(--foam); outline-offset: 2px; }
 
-/* 07 compare */
-.compare { padding: clamp(80px, 12vw, 160px) 0; background: var(--abyss); }
-.table-wrap { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.cmp { position: relative; z-index: 1; width: 100%; min-width: 680px; border-collapse: collapse; text-align: center; }
-.cmp th, .cmp td { padding: clamp(20px, 3vw, 34px) 12px; border-bottom: 1px solid var(--line); }
-.cmp td + td, .cmp th + td, .cmp thead th + th { border-left: 1px solid var(--line); }
-.cmp thead th { font-family: var(--display); font-size: clamp(1.1rem, 2vw, 1.8rem); font-weight: 400; letter-spacing: .03em; }
-.cmp tbody th { text-align: left; font-family: var(--display); font-size: clamp(1.1rem, 2vw, 1.7rem); font-weight: 400; text-transform: uppercase; }
-.cmp td { font-weight: 700; font-size: 1.05rem; color: rgba(232,246,251,.8); }
-.cmp .us { color: #fff; background: rgba(63,184,232,.08); }
-.us-fill { right: auto; bottom: auto; z-index: 0; background: linear-gradient(180deg, var(--aqua), var(--tide)); border-radius: 6px 6px 0 0; }
-
-
 /* 09 faq */
 .faq { padding: clamp(80px, 12vw, 160px) 0; background: var(--deep); }
 .faq-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
@@ -447,8 +434,6 @@ video { background: var(--deep); }
 .static .hero-offer { display: none; } /* no scroll phase here; the title already carries a Shop pill */
 .static .static .spring-mask, .static .hero-portal, .static .hero-dim { display: none; }
 .static .pop-chip { transform: none; }
-.static .us-fill { display: none; }
-.static .cmp .us { background: var(--tide); }
 .static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }
 .static .bubbles { display: none; }
 @media (prefers-reduced-motion: reduce) {
