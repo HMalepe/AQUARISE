@@ -93,7 +93,7 @@ One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned
 | ½ (0 → .45) | the picture opens (one short scroll): card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
 | 2 (.55 → 1.15) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
 | 3 (1.55 → 2.15) | "CRISP." |
-| 4 (2.55 → 3.15) | "ALIVE." Then each word keeps its own colour sweep, one after another on a 6s cycle with a rest between: PURE aqua (1s), CRISP icy mist (3s), ALIVE lemon (5s). The pills fill with water on hover, like the CTAs. |
+| 4 (2.55 → 3.15) | "ALIVE." Then each word keeps its own colour sweep, one after another on a 6s cycle with a rest between: PURE aqua (1s), CRISP icy mist (3s), ALIVE aqua–mist blend (5s). The pills fill with water on hover, like the CTAs. |
 | 5 (3.55 → 4.4) | the paragraph (invisible until now) writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
 No scroll-snapping on purpose: the page never fights the user's scroll.
 

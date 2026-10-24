@@ -269,7 +269,7 @@ video { background: var(--deep); }
 .shimmer-word { --shine: var(--lemon); background: linear-gradient(100deg, var(--foam) 40%, var(--shine) 50%, var(--foam) 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 6s ease-in-out infinite; }
 .sw-0 { --shine: var(--aqua); animation-delay: 1s; }   /* PURE: clear water blue */
 .sw-1 { --shine: var(--mist); animation-delay: 3s; }   /* CRISP: icy light blue */
-.sw-2 { --shine: var(--lemon); animation-delay: 5s; }  /* ALIVE: the logo's sun */
+.sw-2 { --shine: color-mix(in srgb, var(--aqua), var(--mist)); animation-delay: 5s; }  /* ALIVE: between PURE and CRISP blue */
 @keyframes shimmer { 0% { background-position: 100% 0; } 25%, 100% { background-position: -50% 0; } }   /* quick sweep, then ~4.5s rest */
 .feature-copy .h-xl { margin-bottom: 1.4rem; }
 .pills { list-style: none; margin: 2.2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, max-content); gap: 14px; }
