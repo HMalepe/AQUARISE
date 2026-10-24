@@ -39,7 +39,7 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 ### 5b. Shine
 `.shine::after`: a white glint sweeps across a pill every 3.2s (CSS). Static mode stops it.
 
-### 6. Splash
+### 6. Splash (retired)
 `splash(host)`: 14 droplets fly from the pool line (`power2.out` up, then `power2.in` down and fade).
 
 ### 7. Clip reveal + drift
@@ -95,9 +95,9 @@ Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0
 
 ### 05 Shop
 - Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`
-- First bottle rises out of the pool `yPercent 110 → 0`, 1.4s `expo.out`, then splash
-- Slide change: outgoing bottle sinks (`yPercent 110`, rotate `±12°`, .6s `power3.in`); incoming rises from `yPercent 110` with opposite tilt, 1.1s `expo.out` at .45; splash at .75; name `yPercent 105 → 0`; desc and price fade at .3
-- Pool: two masked wave strips drifting in opposite directions (CSS)
+- Stage: the HD bottle packshot (cut from a Real-ESRGAN 4× upscale) backlit by `.stage-glow` (warm radial, like the photo's sunrise), on `.stage-floor` (glossy line + sheen) with a flipped, masked reflection (`.b-reflect`) and a contact shadow
+- Entrance (`top 75%`, once): glow `autoAlpha 0 → 1`, `scale .8 → 1`, 1.6s `expo.out`; bottle `y 80 → 0`, fades in, 1.4s `expo.out` at .1
+- Slide change: outgoing glides out `xPercent ∓70`, `rotate ∓5°`, fades, .55s `power2.in`; incoming glides in from the other side, 1s `expo.out` at .3; glow re-brightens `.55 → 1`; name `yPercent 105 → 0`; desc and price fade at .3
 
 ### 06 Bundles
 - Each card fills with water from the bottom (`p 0→1`, 1.6s `power2.out`, trigger `top 85%`, once), children fade up from .35

@@ -34,7 +34,8 @@
   function buildBottle(el) {
     if (el.dataset.built) return;
     el.dataset.built = '1';
-    el.innerHTML = '<picture><source srcset="assets/bottle.webp" type="image/webp"><img src="assets/bottle.png" alt="" width="206" height="723" loading="lazy" decoding="async" draggable="false"></picture>';
+    const pic = '<picture><source srcset="assets/bottle.webp" type="image/webp"><img src="assets/bottle.png" alt="" width="368" height="1400" loading="lazy" decoding="async" draggable="false"></picture>';
+    el.innerHTML = pic + '<img class="b-reflect" src="assets/bottle.webp" alt="" loading="lazy" decoding="async" draggable="false">';   // reflection, shown on the shop stage only
   }
 
   /* ── A3 · bubbles inside water layers ── */
@@ -376,30 +377,20 @@
     gsap.fromTo(el, { y: () => s * 180 }, { y: () => -s * 180, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
   });
 
-  /* ── C8 · SHOP: arch straightens; bottles sink/rise through the pool ── */
+  /* ── C8 · SHOP: arch straightens; the bottle glides on a sunlit stage ── */
   gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: 1 } });
   const stage = $('.slide-stage');
-  gsap.fromTo(sl.els[0], { yPercent: 110 }, { yPercent: 0, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: stage, start: 'top 75%', once: true }, onComplete: () => splash(stage) });
-  function splash(host) {
-    const r = host.getBoundingClientRect();
-    for (let i = 0; i < 14; i++) {
-      const d = document.createElement('i');
-      d.className = 'drop'; d.style.cssText = `left:50%;bottom:9%;width:${rand(6, 14)}px;height:${rand(6, 14)}px;z-index:4`;
-      host.appendChild(d);
-      const x = rand(-r.width * .18, r.width * .18), up = rand(80, 220);
-      gsap.timeline({ onComplete: () => d.remove() })
-        .to(d, { x, y: -up, duration: rand(.45, .7), ease: 'power2.out' })
-        .to(d, { y: 40, autoAlpha: 0, duration: .5, ease: 'power2.in' });
-    }
-  }
+  gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top 75%', once: true } })
+    .fromTo('.stage-glow', { autoAlpha: 0, scale: .8 }, { autoAlpha: 1, scale: 1, duration: 1.6, ease: 'expo.out' })
+    .fromTo(sl.els[0], { y: 80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: 'expo.out' }, .1);
   let sliding = null;
   animateSlide = (prev, next, dir) => {
     if (sliding) sliding.progress(1);
     next.hidden = false;
-    sliding = gsap.timeline({ onComplete: () => { prev.hidden = true; sliding = null; } })
-      .to(prev, { yPercent: 110, rotate: dir * -12, duration: .6, ease: 'power3.in' }, 0)
-      .fromTo(next, { yPercent: 110, rotate: dir * 12 }, { yPercent: 0, rotate: 0, duration: 1.1, ease: 'expo.out' }, .45)
-      .add(() => splash(stage), .75)
+    sliding = gsap.timeline({ onComplete: () => { prev.hidden = true; gsap.set(prev, { clearProps: 'all' }); sliding = null; } })
+      .to(prev, { xPercent: -dir * 70, autoAlpha: 0, rotate: -dir * 5, duration: .55, ease: 'power2.in' }, 0)
+      .fromTo(next, { xPercent: dir * 70, autoAlpha: 0, rotate: dir * 5 }, { xPercent: 0, autoAlpha: 1, rotate: 0, duration: 1, ease: 'expo.out' }, .3)
+      .fromTo('.stage-glow', { autoAlpha: .55 }, { autoAlpha: 1, duration: .9, ease: 'power2.out' }, .3)
       .fromTo('[data-slide-name]', { yPercent: 105 }, { yPercent: 0, duration: .9, ease: 'expo.out' }, .2)
       .fromTo('[data-slide-desc], .slide-buy', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .6, stagger: .06 }, .3);
   };
