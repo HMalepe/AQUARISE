@@ -303,6 +303,23 @@
     .to('.hero-portal .spring-word', { scale: 1, filter: 'blur(0px)', ease: 'expo.out', duration: .24 }, .76)
     .to({}, { duration: .1 });
   ScrollTrigger.create({ trigger: '.spring-stage', start: 'top top', onEnter: () => gsap.set(spring, { autoAlpha: 1 }), onLeaveBack: () => gsap.set(spring, { autoAlpha: 0 }) });
+  // The portal paints SPRING's live video frame (poster until the clip has data), so the hand-off matches on every
+  // pass, not just the first one before the video has loaded.
+  (() => {
+    const cv = $('.hero-portal-frame'), ctx = cv.getContext('2d'), portal = $('.hero-portal'), vid = $('.spring-video');
+    const poster = new Image(); poster.src = vid.getAttribute('poster');
+    const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; };
+    fit(); addEventListener('resize', fit);
+    gsap.ticker.add(() => {
+      if (+gsap.getProperty(portal, 'autoAlpha') <= 0) return;
+      const src = vid.readyState >= 2 ? vid : poster.complete ? poster : null;
+      if (!src) return;
+      const sw = src.videoWidth || src.naturalWidth, sh = src.videoHeight || src.naturalHeight;
+      if (!sw) return;
+      const k = Math.max(cv.width / sw, cv.height / sh), w = sw * k, h = sh * k;   // object-fit: cover
+      ctx.drawImage(src, (cv.width - w) / 2, (cv.height - h) / 2, w, h);
+    });
+  })();
 
   // pointer ripples on the hero water
   (() => {

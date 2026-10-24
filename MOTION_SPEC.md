@@ -71,7 +71,7 @@ Trigger `.hero`, `top top` → `+= 1.7 × innerHeight`, `scrub: .4`.
 | .5 → .6 | offer lifts away `y −40`, fades |
 | .5 → .9 | **the dive**: `.hero-media` slow push `scale → 1.65`, `power2.in` (kept low so the photo never pixelates) |
 | .52 → .84 | `.hero-dim` (abyss layer) fades in: the light drains to black |
-| .76 → 1 | `.hero-portal` fades in out of the black while its SPRING word settles `scale 1.45 → 1`, `blur 14px → 0`, `expo.out`. The portal is the exact first frame of SPRING (waterfall poster at the same brightness + the same `.spring-mask`/`.spring-word`) |
+| .76 → 1 | `.hero-portal` fades in out of the black while its SPRING word settles `scale 1.45 → 1`, `blur 14px → 0`, `expo.out`. The portal is the exact first frame of SPRING: a canvas that paints the SPRING section's **live** video frame every tick while visible (poster until the clip has data), at the same brightness, under the same `.spring-mask`/`.spring-word`. Painting the live frame is what keeps the hand-off seamless on second and later passes, after the video has started playing |
 | end | hold .1 |
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases, and SPRING's own pin starts at that same scroll position. `.spring` is `autoAlpha 0` until its stage hits `top top`, then shown (hidden again on scroll back). No visible scroll between the two.
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
