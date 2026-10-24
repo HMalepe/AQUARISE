@@ -77,6 +77,14 @@ Then delete the `<span class="ph-note">`.
 
 ## Before launch checklist
 
+**Invented stand-ins, replace with the real thing:**
+- [ ] Spring location "Drakensberg foothills" (SPRING line, FAQ, meta description). Bottled-water origin claims are regulated: must be true.
+- [ ] Email hello@aquarise.co.za · WhatsApp +27 82 555 0123 (wa.me link in menu, footer, bulk quote, FAQ) · @aquarise.za on Instagram/TikTok
+- [ ] Delivery: Gauteng, Cape Town & Durban · 2pm cut-off for next-day · R60 delivery under R350 · 7-day replace/refund (FAQ)
+- [ ] "Never Run Dry" = 12 still + 12 sparkling · PET code 1 bottles, returnable glass
+- [ ] "(Pty) Ltd" in the footer copyright: use the registered company name
+- [ ] Not invented on purpose: customer reviews, lab results/mineral values. Add only real ones.
+
 - [ ] Replace `hello@aquarise.example` everywhere (search the repo)
 - [ ] Real prices and product specs in `PRODUCTS` / `EXTRAS` in `js/main.js` (all marked `*` = placeholder)
 - [ ] **Verify every claim**: stickers (BPA-free, mineral rich), recyclability, source location. Bottled-water labelling and advertising claims are regulated, so confirm each one with your supplier or lab sheet.

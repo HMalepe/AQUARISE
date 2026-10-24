@@ -255,6 +255,10 @@ video { background: var(--deep); }
 .pills li { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border: 1px solid var(--line); border-radius: 999px; font-weight: 600; }
 .pills svg { width: 22px; height: 22px; color: var(--aqua); flex: none; }
 
+/* 04 promise strip */
+.promise { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 34px; padding: 18px var(--gutter); background: var(--deep); border-block: 1px solid var(--line); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
+.promise span::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 10px; border-radius: 50%; background: var(--lemon); vertical-align: middle; }
+
 /* 05 shop */
 .shop { padding: clamp(80px, 12vw, 160px) 0 clamp(60px, 8vw, 120px); background: linear-gradient(180deg, var(--abyss), var(--deep)); --c: var(--aqua); }
 .arch-wrap { width: min(1000px, 100% - var(--gutter) * 2); margin: 0 auto; }
@@ -301,6 +305,9 @@ video { background: var(--deep); }
 .bundle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .bundle { position: relative; border-radius: var(--radius); padding: clamp(28px, 4vw, 52px); text-align: center; display: grid; justify-items: center; align-content: space-evenly; gap: 14px; overflow: hidden; }
 .bundle h3 { font-family: var(--display); font-size: clamp(2.2rem, 4.4vw, 4rem); line-height: .95; }
+.bundle-note { font-weight: 700; font-size: .9rem; color: var(--lemon); }
+.bulk { margin-top: 28px; text-align: center; font-weight: 600; }
+.bulk a { color: var(--aqua); }
 .bundle-sub { position: relative; z-index: 3; max-width: 34ch; font-weight: 600; opacity: .85; }
 .bundle-price { font-family: var(--display); font-size: 2.6rem; }
 .bundle-price small { font-size: .45em; opacity: .8; }

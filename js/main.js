@@ -18,8 +18,8 @@
     { id: 'still-500',     name: 'Still 500ml',     price: 18, color: '#3FB8E8', level: .2,  label: '#0E5A8A', desc: 'The everyday bottle. Cold, clean and quietly mineral.' },
     { id: 'still-1l',      name: 'Still 1L',        price: 29, color: '#7FD3F7', level: .16, label: '#0E5A8A', desc: 'For long days, long drives and longer meetings.' },
     { id: 'sparkling-500', name: 'Sparkling 500ml', price: 24, color: '#CFF3FF', accent: '#F6B26B', level: .22, label: '#0E5A8A', desc: 'Sparkling Sunrise — a fine, lively bubble for warm afternoons.' },
-    { id: 'mineral-750',   name: 'Mineral+ 750ml',  price: 32, color: '#1C8FC4', level: .18, label: '#E8F6FB', desc: 'Higher natural mineral content for after the set. [Confirm spec]' },
-    { id: 'glass-750',     name: 'Glass 750ml',     price: 45, color: '#9BE1FF', level: .2,  label: '#0E5A8A', desc: 'The dinner-table edition in returnable glass. [Confirm]' }
+    { id: 'mineral-750',   name: 'Mineral+ 750ml',  price: 32, color: '#1C8FC4', level: .18, label: '#E8F6FB', desc: 'Higher natural mineral content, made for after the set.' },
+    { id: 'glass-750',     name: 'Glass 750ml',     price: 45, color: '#9BE1FF', level: .2,  label: '#0E5A8A', desc: 'The dinner-table edition, in returnable glass.' }
   ];
   const EXTRAS = {
     'ritual-24':   { name: 'Daily Ritual · 24 × 500ml', price: 289, color: '#9BE1FF' },
@@ -95,6 +95,7 @@
     const monthly = r.value === 'monthly' && r.checked;
     const btn = $('[data-sub-btn]'), price = $('[data-sub-price]');
     btn.dataset.add = monthly ? 'sub-monthly' : 'sub-weekly';
+    const note = $('[data-sub-note]'); if (note) note.textContent = monthly ? 'You’re saving ~R100 a month' : 'Go monthly and save ~R100';
     price.innerHTML = monthly ? '<span>R899</span><small>/month*</small>' : '<span>R249</span><small>/week*</small>';
     if (window.gsap) gsap.fromTo(price, { scale: .7, rotate: -4 }, { scale: 1, rotate: 0, duration: .6, ease: 'back.out(3)' });
   }));
@@ -163,7 +164,7 @@
     if (t.matches('[data-cart-open]')) return setCart(true);
     if (t.matches('[data-cart-close]')) return setCart(false);
     if (t.matches('[data-menu-toggle]')) return setMenu(!html.classList.contains('menu-open'));
-    if (t.matches('[data-checkout]')) return toast('Checkout not connected yet — see PROMPTS.md #3');
+    if (t.matches('[data-checkout]')) return toast('Online checkout opens soon — WhatsApp us to order today');
     const href = t.getAttribute('href');
     if (href.length > 1) {
       const target = $(href); if (!target) return;
