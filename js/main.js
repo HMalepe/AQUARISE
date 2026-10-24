@@ -445,6 +445,19 @@
       .fromTo('[data-slide-desc], .slide-buy', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .6, stagger: .06 }, .3);
   };
 
+  // Auto-advance the range every 4.5s while the shop is on screen. Pauses while the pointer is over it or the tab is
+  // hidden; any manual change (arrows, tabs, swipe) restarts the countdown so it never jumps right after a click.
+  (() => {
+    const shop = $('.slider'); let onScreen = false, hovering = false, timer = null;
+    const tick = () => { if (onScreen && !hovering && !document.hidden && !html.classList.contains('cart-open')) showSlide(sl.i + 1, 1); };
+    const restart = () => { clearInterval(timer); timer = setInterval(tick, 4500); };
+    new IntersectionObserver(([e]) => { onScreen = e.isIntersecting && e.intersectionRatio > .5; restart(); }, { threshold: [0, .5, 1] }).observe($('.slide-stage'));
+    shop.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hovering = true; });
+    shop.addEventListener('pointerleave', () => { hovering = false; restart(); });
+    shop.addEventListener('click', e => { if (e.target.closest('button')) restart(); });
+    restart();
+  })();
+
   /* ── C9 · BUNDLES: cards fill with water, bottles drop in, prices count up; tilt, glare and perk chips on hover ── */
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
   $$('[data-reveal-wave]').forEach(card => {
