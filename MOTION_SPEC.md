@@ -105,7 +105,16 @@ Then "ALIVE." (`.shimmer-word`) runs a slow lemon highlight sweep every 5s (CSS)
 - Slide change: outgoing glides out `xPercent ∓70`, `rotate ∓5°`, fades, .55s `power2.in`; incoming glides in from the other side, 1s `expo.out` at .3; glow re-brightens `.55 → 1`; name `yPercent 105 → 0`; desc and price fade at .3
 
 ### 06 Bundles
-- Each card fills with water from the bottom (`p 0→1`, 1.6s `power2.out`, trigger `top 85%`, once), children fade up from .35
+Scroll (each card, `top 85%`, once):
+- Card fills with water from the bottom (`p 0→1`, 1.6s `power2.out`), children fade up from .35
+- Bottles drop in from `y −160` with `rotate −22° / 8° / 24°`, `bounce.out`, stagger .12, at .55
+- Price counts up R0 → R289 / R249 (1.4s `power3.out`); the Weekly/Monthly toggle pops `scale .6 → 1` `back.out(2.5)`
+- Depth: the two cards drift at different scrubbed speeds (`y 30 → −15` and `90 → −40`) across the grid
+Hover (fine pointers only):
+- 3D tilt toward the cursor (`rotationX ±5°`, `rotationY ±6°`, `quickTo` .6s, perspective 1000) plus a soft-light glare that follows the pointer (`--mx/--my`)
+- Perk chips pop around the card (spring `cubic-bezier(.34,1.8,.5,1)`, stagger .07): "24 bottles, one delivery", "≈ R12 a bottle*", "Ice-cold ready" / "Pause anytime", "Skip a delivery", "Cancel anytime". On touch screens they pop once when the card reaches `top 55%`, then tuck away after 3.2s
+- The bottle trio fans out (outer bottles `rotate ∓9°`, middle lifts) and the button is magnetic (`x/y` follow the pointer ×.3/.4)
+Click: bottles hop (`y −26` yoyo, stagger .06) and a lemon "+1 in your cart" floats up from the button. Switching Weekly/Monthly springs the price `scale .7 → 1`, `back.out(3)`.
 
 ### 07 Compare
 - `.us-fill` sized to the Aquarise column on every `refreshInit`; wave `p 0→1` scrubbed `top 70%` → `bottom 55%` (amp 4, freq .6)

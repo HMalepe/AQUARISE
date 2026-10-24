@@ -96,7 +96,8 @@
     const monthly = r.value === 'monthly' && r.checked;
     const btn = $('[data-sub-btn]'), price = $('[data-sub-price]');
     btn.dataset.add = monthly ? 'sub-monthly' : 'sub-weekly';
-    price.innerHTML = monthly ? 'R899<small>/month*</small>' : 'R249<small>/week*</small>';
+    price.innerHTML = monthly ? '<span>R899</span><small>/month*</small>' : '<span>R249</span><small>/week*</small>';
+    if (window.gsap) gsap.fromTo(price, { scale: .7, rotate: -4 }, { scale: 1, rotate: 0, duration: .6, ease: 'back.out(3)' });
   }));
 
   /* ── A6 · cart (localStorage is a convenience; swap for Shopify/Stripe cart later) ── */
@@ -407,13 +408,50 @@
       .fromTo('[data-slide-desc], .slide-buy', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .6, stagger: .06 }, .3);
   };
 
-  /* ── C9 · BUNDLES: cards fill with water ── */
-  $$('[data-reveal-wave]').forEach(card => {
+  /* ── C9 · BUNDLES: cards fill with water, bottles drop in, prices count up; tilt, glare and perk chips on hover ── */
+  const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  $$('[data-reveal-wave]').forEach((card, ci) => {
     const w = makeWave(card, 'bottom', { amp: 6 });
-    gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
+    const kids = [...card.children].filter(c => !c.matches('.pop-chip, .bundle-glare'));
+    const count = $('[data-count]', card);
+    const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
       .to(w, { p: 1, duration: 1.6, ease: 'power2.out' })
-      .fromTo(card.children, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
+      .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35)
+      .fromTo($$('.bundle-bottles .bottle', card), { y: -160, rotate: i => [-22, 8, 24][i], autoAlpha: 0 }, { y: 0, rotate: 0, autoAlpha: 1, duration: 1.1, ease: 'bounce.out', stagger: .12 }, .55)
+      .fromTo($('.freq', card), { scale: .6 }, { scale: 1, duration: .8, ease: 'back.out(2.5)' }, .7);
+    if (count) {   // price counts up from zero
+      const n = { v: 0 }, end = +count.dataset.count;
+      tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
+    }
+    if (!canHover) {   // touch screens: perks pop in once the card is in view, then tuck away
+      ScrollTrigger.create({ trigger: card, start: 'top 55%', once: true, onEnter: () => { card.classList.add('chips-on'); setTimeout(() => card.classList.remove('chips-on'), 3200); } });
+    }
+    // depth: the two cards drift at different speeds
+    gsap.fromTo(card, { y: ci ? 90 : 30 }, { y: ci ? -40 : -15, ease: 'none', scrollTrigger: { trigger: '.bundle-grid', start: 'top bottom', end: 'bottom top', scrub: true } });
   });
+  if (canHover) $$('[data-tilt]').forEach(card => {
+    const rx = gsap.quickTo(card, 'rotationX', { duration: .6, ease: 'power3' }), ry = gsap.quickTo(card, 'rotationY', { duration: .6, ease: 'power3' });
+    gsap.set(card, { transformPerspective: 1000 });
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      rx((.5 - y) * 10); ry((x - .5) * 12);
+      card.style.setProperty('--mx', x * 100 + '%'); card.style.setProperty('--my', y * 100 + '%');
+    });
+    card.addEventListener('pointerleave', () => { rx(0); ry(0); });
+    // magnetic button
+    const btn = $('.pill', card), bx = gsap.quickTo(btn, 'x', { duration: .4, ease: 'power3' }), by = gsap.quickTo(btn, 'y', { duration: .4, ease: 'power3' });
+    btn.addEventListener('pointermove', e => { const r = btn.getBoundingClientRect(); bx((e.clientX - r.left - r.width / 2) * .3); by((e.clientY - r.top - r.height / 2) * .4); });
+    btn.addEventListener('pointerleave', () => { bx(0); by(0); });
+  });
+  // adding a bundle: the bottles jump and a "+1" floats up from the button
+  $$('.bundle [data-add]').forEach(btn => btn.addEventListener('click', () => {
+    const card = btn.closest('.bundle');
+    gsap.fromTo($$('.bundle-bottles .bottle', card), { y: 0 }, { y: -26, duration: .22, ease: 'power2.out', yoyo: true, repeat: 1, stagger: .06 });
+    const tag = document.createElement('span'); tag.className = 'plus-one'; tag.textContent = '+1 in your cart';
+    btn.after(tag);
+    gsap.fromTo(tag, { y: 0, autoAlpha: 0, scale: .6 }, { y: -70, autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(2)' });
+    gsap.to(tag, { autoAlpha: 0, y: -100, duration: .5, delay: 1, onComplete: () => tag.remove() });
+  }));
 
   /* ── C10 · COMPARE: Aquarise column floods from the bottom ── */
   const usFill = $('.us-fill');

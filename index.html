@@ -172,7 +172,7 @@
   </div>
 </section>
 
-<!-- 06 · BUNDLES — cards fill with water as they enter -->
+<!-- 06 · BUNDLES — cards fill with water, bottles drop in, prices count up; cards tilt and pop perks on hover -->
 <section class="bundles" id="bundles">
   <div class="container">
     <header class="sec-head">
@@ -180,14 +180,22 @@
       <p class="lead" data-fade>Stock the fridge once. We’ll keep it full.</p>
     </header>
     <div class="bundle-grid">
-      <article class="bundle b-aqua" data-reveal-wave>
+      <article class="bundle b-aqua" data-reveal-wave data-tilt>
+        <i class="bundle-glare" aria-hidden="true"></i>
+        <span class="pop-chip c1">24 bottles, one delivery</span>
+        <span class="pop-chip c2">≈ R12 a bottle*</span>
+        <span class="pop-chip c3">Ice-cold ready</span>
         <h3>THE DAILY RITUAL</h3>
         <p class="bundle-sub">24 × Still 500ml</p>
         <div class="bundle-bottles"><div class="bottle mini" data-liquid="#9BE1FF" data-level="0.2"></div><div class="bottle mini" data-liquid="#9BE1FF" data-level="0.2"></div><div class="bottle mini" data-liquid="#9BE1FF" data-level="0.2"></div></div>
-        <p class="bundle-price">R289<small>*</small></p>
+        <p class="bundle-price"><span data-count="289">R289</span><small>*</small></p>
         <button class="pill pill-dark" type="button" data-add="ritual-24">Add bundle</button>
       </article>
-      <article class="bundle b-deep" data-reveal-wave>
+      <article class="bundle b-deep" data-reveal-wave data-tilt>
+        <i class="bundle-glare" aria-hidden="true"></i>
+        <span class="pop-chip c1">Pause anytime</span>
+        <span class="pop-chip c2">Skip a delivery</span>
+        <span class="pop-chip c3">Cancel anytime</span>
         <h3>NEVER RUN DRY</h3>
         <p class="bundle-sub">A mixed case on repeat. Pause or skip anytime.</p>
         <fieldset class="freq">
@@ -195,7 +203,7 @@
           <label><input type="radio" name="freq" value="weekly" checked><span>Weekly</span></label>
           <label><input type="radio" name="freq" value="monthly"><span>Monthly</span></label>
         </fieldset>
-        <p class="bundle-price" data-sub-price>R249<small>/week*</small></p>
+        <p class="bundle-price" data-sub-price><span data-count="249">R249</span><small>/week*</small></p>
         <button class="pill pill-light" type="button" data-add="sub-weekly" data-sub-btn>Subscribe</button>
       </article>
     </div>

@@ -300,6 +300,25 @@ video { background: var(--deep); }
 .bundle-bottles { display: flex; align-items: flex-end; justify-content: center; gap: 6%; height: clamp(180px, 22vw, 260px); margin: 8px 0; width: 100%; }
 .bundle-bottles .bottle { height: 100%; }
 .bundle-bottles .bottle:nth-child(2) { height: 110%; transform: translateY(5%); }
+/* hover: the trio fans out and lifts; a glare follows the pointer; perk chips pop around the card */
+.bundle { transform-style: preserve-3d; transition: box-shadow .5s var(--ease-out); }
+.bundle:hover { box-shadow: 0 40px 90px rgba(0,0,0,.45); }
+.bundle-bottles img { transition: translate .7s var(--ease-out), rotate .7s var(--ease-out), scale .7s var(--ease-out); }
+.bundle:hover .bundle-bottles .bottle:nth-child(1) img { translate: -14px -4px; rotate: -9deg; }
+.bundle:hover .bundle-bottles .bottle:nth-child(2) img { translate: 0 -6px; scale: 1.04; }
+.bundle:hover .bundle-bottles .bottle:nth-child(3) img { translate: 14px -4px; rotate: 9deg; }
+.bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; mix-blend-mode: soft-light;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(255,255,255,.75), transparent 60%); }
+.bundle:hover .bundle-glare { opacity: 1; }
+.pop-chip { position: absolute; z-index: 3; padding: 8px 14px; border-radius: 999px; background: var(--foam); color: var(--ink); font-size: .78rem; font-weight: 800; letter-spacing: .04em; white-space: nowrap; box-shadow: 0 12px 30px rgba(4,18,31,.3); pointer-events: none;
+  transform: scale(0) rotate(-8deg); transition: transform .55s cubic-bezier(.34, 1.8, .5, 1); }
+.b-aqua .pop-chip { background: var(--ink); color: var(--foam); }
+.pop-chip.c1 { left: 6%; top: 34%; } .pop-chip.c2 { right: 6%; top: 46%; } .pop-chip.c3 { left: 10%; top: 62%; }
+.bundle:hover .pop-chip, .bundle.chips-on .pop-chip { transform: scale(1) rotate(var(--r, -3deg)); }
+.pop-chip.c2 { --r: 4deg; transition-delay: .07s; } .pop-chip.c3 { transition-delay: .14s; }
+.bundle .pill { transition: transform .4s var(--ease-out), box-shadow .4s; }
+.bundle .pill:hover { box-shadow: 0 14px 34px rgba(4,18,31,.35); }
+.plus-one { position: absolute; left: 50%; bottom: 13%; margin-left: -70px; width: 140px; text-align: center; z-index: 4; padding: 8px 12px; border-radius: 999px; background: var(--lemon); color: var(--navy); font-weight: 800; font-size: .8rem; pointer-events: none; }
 .freq { border: 0; margin: 10px 0; padding: 4px; display: inline-flex; gap: 4px; background: rgba(4,18,31,.3); border-radius: 999px; }
 .freq label { position: relative; }
 .freq input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
@@ -427,6 +446,7 @@ video { background: var(--deep); }
 .static .loader, .static .letterbox { display: none !important; }
 .static .hero-offer { display: none; } /* no scroll phase here; the title already carries a Shop pill */
 .static .static .spring-mask, .static .hero-portal, .static .hero-dim { display: none; }
+.static .pop-chip { transform: none; }
 .static .us-fill { display: none; }
 .static .cmp .us { background: var(--tide); }
 .static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }
