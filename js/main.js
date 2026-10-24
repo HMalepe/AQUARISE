@@ -97,7 +97,7 @@
     btn.dataset.add = monthly ? 'sub-monthly' : 'sub-weekly';
     const note = $('[data-sub-note]'); if (note) note.textContent = monthly ? 'You’re saving ~R100 a month' : 'Billed R996 a month · go monthly and save ~R100';
     price.innerHTML = monthly ? '<span>R899</span><small>/month*</small>' : '<span>R249</span><small>/week*</small>';
-    if (window.gsap) gsap.fromTo(price, { scale: .7, rotate: -4 }, { scale: 1, rotate: 0, duration: .6, ease: 'back.out(3)' });
+    if (window.gsap) gsap.fromTo(price, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .5, ease: 'power3.out' });
   }));
 
   /* ── A6 · cart (localStorage is a convenience; swap for Shopify/Stripe cart later) ── */
@@ -453,8 +453,8 @@
       .to(w, { p: 1, duration: 1.6, ease: 'power2.out' })
       .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
     const trio = $$('.bundle-bottles .bottle', card), freq = $('.freq', card);
-    if (trio.length) tl.fromTo(trio, { y: -160, rotate: i => [-22, 8, 24][i], autoAlpha: 0 }, { y: 0, rotate: 0, autoAlpha: 1, duration: 1.1, ease: 'bounce.out', stagger: .12 }, .55);
-    if (freq) tl.fromTo(freq, { scale: .6 }, { scale: 1, duration: .8, ease: 'back.out(2.5)' }, .7);
+    if (trio.length) tl.fromTo(trio, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: 'expo.out', stagger: .1 }, .5);   // calm rise, no bounce
+    if (freq) tl.fromTo(freq, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .9, ease: 'power3.out' }, .7);
     if (count) {   // price counts up from zero
       const n = { v: 0 }, end = +count.dataset.count;
       tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
@@ -465,7 +465,7 @@
     gsap.set(card, { transformPerspective: 1000 });
     card.addEventListener('pointermove', e => {
       const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-      rx((.5 - y) * 10); ry((x - .5) * 12);
+      rx((.5 - y) * 4); ry((x - .5) * 5);   // subtle depth, not a wobble
       card.style.setProperty('--mx', x * 100 + '%'); card.style.setProperty('--my', y * 100 + '%');
     });
     card.addEventListener('pointerleave', () => { rx(0); ry(0); });
@@ -478,10 +478,10 @@
   $$('.bundle [data-add]').forEach(btn => btn.addEventListener('click', () => {
     const card = btn.closest('.bundle');
     const trio = $$('.bundle-bottles .bottle', card);
-    if (trio.length) gsap.fromTo(trio, { y: 0 }, { y: -26, duration: .22, ease: 'power2.out', yoyo: true, repeat: 1, stagger: .06 });
+    if (trio.length) gsap.fromTo(trio, { y: 0 }, { y: -8, duration: .35, ease: 'sine.inOut', yoyo: true, repeat: 1, stagger: .05 });
     const tag = document.createElement('span'); tag.className = 'plus-one'; tag.textContent = '+1 in your cart';
     btn.after(tag);
-    gsap.fromTo(tag, { y: 0, autoAlpha: 0, scale: .6 }, { y: -70, autoAlpha: 1, scale: 1, duration: .5, ease: 'back.out(2)' });
+    gsap.fromTo(tag, { y: 0, autoAlpha: 0 }, { y: -50, autoAlpha: 1, duration: .6, ease: 'power3.out' });
     gsap.to(tag, { autoAlpha: 0, y: -100, duration: .5, delay: 1, onComplete: () => tag.remove() });
   }));
 

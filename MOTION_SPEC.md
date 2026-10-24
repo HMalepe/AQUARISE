@@ -111,12 +111,12 @@ Then "ALIVE." (`.shimmer-word`) runs a slow lemon highlight sweep every 5s (CSS)
 ### 06 Bundles
 Scroll (each card, `top 85%`, once):
 - Card fills with water from the bottom (`p 0→1`, 1.6s `power2.out`), children fade up from .35
-- Bottles drop in from `y −160` with `rotate −22° / 8° / 24°`, `bounce.out`, stagger .12, at .55
-- Price counts up R0 → R289 / R249 (1.4s `power3.out`); the Weekly/Monthly toggle pops `scale .6 → 1` `back.out(2.5)`
+- Bottles rise `y 40 → 0` and fade in, 1.4s `expo.out`, stagger .1, at .5 (no bounce: premium, not playful)
+- Price counts up R0 → R289 / R249 (1.4s `power3.out`); the Weekly/Monthly toggle fades up `y 12 → 0`, `power3.out`
 Hover (fine pointers only):
-- 3D tilt toward the cursor (`rotationX ±5°`, `rotationY ±6°`, `quickTo` .6s, perspective 1000) plus a soft-light glare that follows the pointer (`--mx/--my`)
-- The bottle trio fans out (outer bottles `rotate ∓9°`, middle lifts) and the button is magnetic (`x/y` follow the pointer ×.3/.4)
-Click: bottles hop (`y −26` yoyo, stagger .06) and a lemon "+1 in your cart" floats up from the button. Switching Weekly/Monthly springs the price `scale .7 → 1`, `back.out(3)`.
+- Subtle 3D tilt toward the cursor (`rotationX ±2°`, `rotationY ±2.5°`, `quickTo` .6s, perspective 1000) plus a soft-light glare that follows the pointer (`--mx/--my`)
+- The bottle trio eases apart (outer bottles `rotate ∓3°`, middle lifts 6px) and the button is magnetic (`x/y` follow the pointer ×.3/.4)
+Click: bottles lift 8px and settle (`sine.inOut` yoyo) and a lemon "+1 in your cart" fades up from the button. Switching Weekly/Monthly fades the new price in (`y 8 → 0`). No overshoot easing anywhere on the cards.
 
 ### 09 FAQ (faq.html) / 10 Join
 Word rises and fade-ups only. The join button uses the shared water-fill hover (5a). 

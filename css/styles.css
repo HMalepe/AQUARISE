@@ -77,7 +77,7 @@ section { position: relative; }
   font-family: var(--display); font-size: 1.05rem; letter-spacing: .04em; text-transform: uppercase;
   transition: transform .4s var(--ease-out), background-color .3s, color .3s;
 }
-.pill:hover { transform: translateY(-2px) scale(1.03); }
+.pill:hover { transform: translateY(-2px); }
 /* every CTA pill fills with water on hover: a wave-topped body of aqua rises from below and covers the whole button.
    The wave crest sits above the button's top edge when full, so no corner is ever left unfilled. */
 .pill { position: relative; overflow: hidden; isolation: isolate; }
@@ -320,9 +320,9 @@ video { background: var(--deep); }
 .bundle { transform-style: preserve-3d; transition: box-shadow .5s var(--ease-out); }
 .bundle:hover { box-shadow: 0 40px 90px rgba(0,0,0,.45); }
 .bundle-bottles img { transition: translate .7s var(--ease-out), rotate .7s var(--ease-out), scale .7s var(--ease-out); }
-.bundle:hover .bundle-bottles .bottle:nth-child(1) img { translate: -14px -4px; rotate: -9deg; }
-.bundle:hover .bundle-bottles .bottle:nth-child(2) img { translate: 0 -6px; scale: 1.04; }
-.bundle:hover .bundle-bottles .bottle:nth-child(3) img { translate: 14px -4px; rotate: 9deg; }
+.bundle:hover .bundle-bottles .bottle:nth-child(1) img { translate: -6px -4px; rotate: -3deg; }
+.bundle:hover .bundle-bottles .bottle:nth-child(2) img { translate: 0 -6px; scale: 1.02; }
+.bundle:hover .bundle-bottles .bottle:nth-child(3) img { translate: 6px -4px; rotate: 3deg; }
 .bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; mix-blend-mode: soft-light;
   background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(255,255,255,.75), transparent 60%); }
 .bundle:hover .bundle-glare { opacity: 1; }
