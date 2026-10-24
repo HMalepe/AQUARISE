@@ -112,11 +112,10 @@ Scroll (each card, `top 85%`, once):
 - Depth: the two cards drift at different scrubbed speeds (`y 30 → −15` and `90 → −40`) across the grid
 Hover (fine pointers only):
 - 3D tilt toward the cursor (`rotationX ±5°`, `rotationY ±6°`, `quickTo` .6s, perspective 1000) plus a soft-light glare that follows the pointer (`--mx/--my`)
-- Perk chips pop around the card (spring `cubic-bezier(.34,1.8,.5,1)`, stagger .07): "24 bottles, one delivery", "≈ R12 a bottle*", "Ice-cold ready" / "Pause anytime", "Skip a delivery", "Cancel anytime". On touch screens they pop once when the card reaches `top 55%`, then tuck away after 3.2s
 - The bottle trio fans out (outer bottles `rotate ∓9°`, middle lifts) and the button is magnetic (`x/y` follow the pointer ×.3/.4)
 Click: bottles hop (`y −26` yoyo, stagger .06) and a lemon "+1 in your cart" floats up from the button. Switching Weekly/Monthly springs the price `scale .7 → 1`, `back.out(3)`.
 
-### 09 FAQ / 10 Join
+### 09 FAQ (faq.html) / 10 Join
 Word rises and fade-ups only. The join button fills with a curved water shape on hover (CSS). 
 
 ### 11 Footer

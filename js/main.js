@@ -412,7 +412,7 @@
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
   $$('[data-reveal-wave]').forEach((card, ci) => {
     const w = makeWave(card, 'bottom', { amp: 6 });
-    const kids = [...card.children].filter(c => !c.matches('.pop-chip, .bundle-glare'));
+    const kids = [...card.children].filter(c => !c.matches('.bundle-glare'));
     const count = $('[data-count]', card);
     const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
       .to(w, { p: 1, duration: 1.6, ease: 'power2.out' })
@@ -423,9 +423,6 @@
     if (count) {   // price counts up from zero
       const n = { v: 0 }, end = +count.dataset.count;
       tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
-    }
-    if (!canHover) {   // touch screens: perks pop in once the card is in view, then tuck away
-      ScrollTrigger.create({ trigger: card, start: 'top 55%', once: true, onEnter: () => { card.classList.add('chips-on'); setTimeout(() => card.classList.remove('chips-on'), 3200); } });
     }
     // depth: the two cards drift at different speeds
     gsap.fromTo(card, { y: ci ? 90 : 30 }, { y: ci ? -40 : -15, ease: 'none', scrollTrigger: { trigger: '.bundle-grid', start: 'top bottom', end: 'bottom top', scrub: true } });

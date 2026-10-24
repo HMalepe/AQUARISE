@@ -310,13 +310,8 @@ video { background: var(--deep); }
 .bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; mix-blend-mode: soft-light;
   background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(255,255,255,.75), transparent 60%); }
 .bundle:hover .bundle-glare { opacity: 1; }
-.pop-chip { position: absolute; z-index: 3; padding: 8px 14px; border-radius: 999px; background: var(--foam); color: var(--ink); font-size: .78rem; font-weight: 800; letter-spacing: .04em; white-space: nowrap; box-shadow: 0 12px 30px rgba(4,18,31,.3); pointer-events: none;
   transform: scale(0) rotate(-8deg); transition: transform .55s cubic-bezier(.34, 1.8, .5, 1); }
-.b-aqua .pop-chip { background: var(--ink); color: var(--foam); }
-.pop-chip.c1 { left: 6%; top: 34%; } .pop-chip.c2 { right: 6%; top: 46%; } .pop-chip.c3 { left: 10%; top: 62%; }
-.bundle:hover .pop-chip, .bundle.chips-on .pop-chip { transform: scale(1) rotate(var(--r, -3deg)); }
-.pop-chip.c2 { --r: 4deg; transition-delay: .07s; } .pop-chip.c3 { transition-delay: .14s; }
-.bundle .pill { transition: transform .4s var(--ease-out), box-shadow .4s; }
+.b-aqua .bundle:hover .bundle .pill { transition: transform .4s var(--ease-out), box-shadow .4s; }
 .bundle .pill:hover { box-shadow: 0 14px 34px rgba(4,18,31,.35); }
 .plus-one { position: absolute; left: 50%; bottom: 13%; margin-left: -70px; width: 140px; text-align: center; z-index: 4; padding: 8px 12px; border-radius: 999px; background: var(--lemon); color: var(--navy); font-weight: 800; font-size: .8rem; pointer-events: none; }
 .freq { border: 0; margin: 10px 0; padding: 4px; display: inline-flex; gap: 4px; background: rgba(4,18,31,.3); border-radius: 999px; }
@@ -329,6 +324,7 @@ video { background: var(--deep); }
 /* 09 faq */
 .faq { padding: clamp(80px, 12vw, 160px) 0; background: var(--deep); }
 .faq-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+.faq-page { min-height: 100svh; padding-top: calc(var(--nav-h) + clamp(60px, 10vw, 140px)); }
 .faq-head { position: sticky; top: calc(var(--nav-h) + 20px); display: grid; gap: 1.2rem; }
 .faq-list details { border-bottom: 1px solid var(--line); }
 .faq-list summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 20px; padding: 26px 0; font-weight: 700; font-size: clamp(1.05rem, 1.6vw, 1.35rem); }
@@ -433,8 +429,7 @@ video { background: var(--deep); }
 .static .loader, .static .letterbox { display: none !important; }
 .static .hero-offer { display: none; } /* no scroll phase here; the title already carries a Shop pill */
 .static .static .spring-mask, .static .hero-portal, .static .hero-dim { display: none; }
-.static .pop-chip { transform: none; }
-.static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }
+.static .static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }
 .static .bubbles { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

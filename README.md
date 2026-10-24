@@ -16,7 +16,8 @@ Open the printed URL. Opening `index.html` straight from disk also works, but se
 
 ```
 aquarise-site/
-├── index.html            one <section> per block, numbered 00–11
+├── index.html            one <section> per block, numbered 00–11 (09 FAQ now lives in faq.html)
+├── faq.html              standalone FAQ page (same styles, nav and footer; works without JS)
 ├── css/styles.css        :root tokens → base → primitives → sections in page order → cart/menu → responsive → .static
 ├── js/main.js            Part A basics (cart, slider, menu, forms, bottles) → Part B static gate → Part C motion in DOM order
 ├── js/vendor/            gsap.min.js, ScrollTrigger.min.js, lenis.min.js
