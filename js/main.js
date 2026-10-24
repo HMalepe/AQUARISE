@@ -351,7 +351,7 @@
 
   /* ── C4 · generic reveals: masked word rise + fade-ups (skip the hero title) ── */
   $$('[data-split]').forEach(el => {
-    if (el.closest('.hero')) return;
+    if (el.closest('.hero, .feature')) return;   // these two run their own choreography
     gsap.fromTo($$('.wi', el), { yPercent: 118 }, { yPercent: 0, duration: 1.2, ease: 'expo.out', stagger: .07, scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
   });
   $$('[data-fade]').forEach(el => {
@@ -371,7 +371,19 @@
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
     .to({}, { duration: .3 });
 
-  /* ── C6 · FEATURE: parallax on anything with data-speed (the clip itself fades up via data-fade) ── */
+  /* ── C6 · FEATURE: the copy writes itself in as you scroll, the clip opens up beside it ── */
+  const lead = $('.feature-lead');
+  lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="lw">${esc(w)}</span>`).join(' ');
+  gsap.timeline({ scrollTrigger: { trigger: '.feature', start: 'top 80%', end: 'center 55%', scrub: .6 } })
+    .fromTo('.feature-visual', { clipPath: 'inset(14% 18% 14% 18% round 48px)' }, { clipPath: 'inset(0% 0% 0% 0% round 20px)', ease: 'power2.out', duration: 1 }, 0)
+    .fromTo('.feature-video', { scale: 1.25 }, { scale: 1, ease: 'power2.out', duration: 1 }, 0)
+    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power3.out', duration: .45, stagger: .14 }, .08)
+    .fromTo('.feature .lw', { autoAlpha: .1, y: 12, filter: 'blur(6px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', ease: 'power1.out', duration: .2, stagger: .025 }, .4)
+    .fromTo('.pills li', { autoAlpha: 0, y: 34, scale: .85 }, { autoAlpha: 1, y: 0, scale: 1, ease: 'back.out(2)', duration: .25, stagger: .07 }, .72)
+    .fromTo('.pills li svg', { rotate: -120, scale: 0 }, { rotate: 0, scale: 1, ease: 'back.out(2.4)', duration: .25, stagger: .07 }, .76);
+  // ALIVE. keeps a slow shimmer once it has landed
+  $$('.feature .h-xl .wi').slice(-1).forEach(w => w.classList.add('shimmer-word'));
+
   $$('[data-speed]').forEach(el => {
     const s = parseFloat(el.dataset.speed) || 0;
     gsap.fromTo(el, { y: () => s * 180 }, { y: () => -s * 180, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
