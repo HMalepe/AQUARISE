@@ -61,7 +61,7 @@ Every `.pill` fills with water on hover/focus: a wave-topped aqua body (`::befor
 
 ### 01 Hero — pinned
 Background is `assets/video/hero.mp4` (8s seamless loop, 1920×1366, rendered from `assets/hero-bottle-hd.jpg`, a Real-ESRGAN 4× upscale of the photo, which is also the poster). Same `.hero-img` class, so the intro push-in and the pinned scale still apply.
-Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: .9` (slower and smoother than before).
+Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: true` (no extra lag: Lenis already smooths the scroll, and any scrub lag let the lens drift up with the unpinning hero, so SPRING dropped ~100px at the hand-off).
 | Timeline pos | Tween |
 |---|---|
 | 0 → .3 | `.hl-1` `yPercent −70`, fade out; `.hl-2` (from .04) `yPercent −40`, fade out |
@@ -84,7 +84,7 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 - `transform-origin` is the centre of the **I**'s stem: measured from on-screen rects (I centre − word left, word height / 2) divided by the current scale, on every `refreshInit`. The old `offsetLeft` maths used the wrong parent and aimed above and beside the I, so the fly-through went dark and snapped bright at the end.
 | Timeline pos | Tween |
 |---|---|
-| 0 → 1.04 | `.spring-word` zoom continues the hero lens with no restart: `scale = exp(.6·p + (ln 48 − .6)·p³)`, `p` linear. It starts at the lens' exit zoom rate (.6 = ln(1/.55) per zoom phase) and accelerates to 48× through the I's stem. Scrub .9 to match the hero |
+| 0 → 1.04 | `.spring-word` zoom continues the hero lens with no restart: `scale = exp(.6·p + (ln 48 − .6)·p³)`, `p` linear. It starts at the lens' exit zoom rate (.6 = ln(1/.55) per zoom phase) and accelerates to 48× through the I's stem. `scrub: true`, same as the hero |
 | 0 → 1 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
 | 0 / 1.04 | mask `set autoAlpha 1` at 0 (so rewinding always restores it), then `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |

@@ -295,10 +295,11 @@
   // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
   // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
   const ZOOM_FROM = Math.log(.55), ZOOM_RATE = -ZOOM_FROM, lensZoom = { z: ZOOM_FROM };
-  // SPRING is revealed by the hero timeline's own (scrub-smoothed) progress, not the raw scroll position, so on fast scrolls
-  // the swap waits for the lens to actually finish (and on the way up, for it to actually start closing).
+  // SPRING is revealed by the hero timeline's progress. Both pinned timelines use scrub: true (Lenis already smooths the
+  // scroll), so that progress is exactly the pin position: no scrub lag can leave the lens on screen after the hero unpins
+  // (that made SPRING drop ~100px at the hand-off), and the two zooms meet at the same frame.
   const showSpring = tl => gsap.set(spring, { autoAlpha: tl.progress() > .999 ? 1 : 0 });
-  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: .9, invalidateOnRefresh: true } })
+  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
@@ -382,7 +383,7 @@
   };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: .9, invalidateOnRefresh: true } })
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true } })
     .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => gsap.set(sWord, { scale: Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3) }) }, 0)   // picks up the lens' zoom rate, then accelerates to 48×
     .fromTo('.spring-video', { filter: 'brightness(1.25) saturate(1.15)' }, { filter: 'brightness(1) saturate(1)', ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
