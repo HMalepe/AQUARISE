@@ -85,7 +85,7 @@ Then delete the `<span class="ph-note">`.
 - [ ] Social links in the footer
 - [ ] OG tags + `assets/og.jpg` (1200×630), favicon, canonical URL — `PROMPTS.md #8`
 - [ ] Real photos/video for every `.ph` (optional now: every one has a rendered clip)
-- [ ] Confirm the spring-source line in the SPRING section (`[Confirm source details]`)
+- [ ] Confirm the spring-source line in the SPRING section ("Drawn from the source. Bottled at first light. Nothing added on the way.")
 - [ ] Privacy policy, terms, shipping & returns pages (POPIA)
 
 ## Accessibility and fallbacks
