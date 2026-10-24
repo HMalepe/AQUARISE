@@ -114,6 +114,14 @@ Checkout posts the cart to `api/checkout.js` (a Vercel function). It prices ever
 - Change a price in **both** `lib/catalogue.js` (what is charged) and `js/main.js` (what is shown).
 - Still to do: `payfast-notify.js` only logs paid orders (see Vercel → Logs). Save orders and email confirmations before launch.
 
+## Performance check
+
+```bash
+node tools/perf/flick.mjs                 # fast flicks top↔bottom, fails if any frame > 50ms
+PERF_BUDGET=33 node tools/perf/flick.mjs  # stricter
+```
+Run it on a normal laptop after any motion change. Rules it protects are in MOTION_SPEC.md → Performance rules.
+
 ## Deploy
 
 **Vercel**: `npx vercel` in this folder (framework preset "Other", no build command, output dir `.`).

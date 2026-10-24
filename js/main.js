@@ -240,38 +240,7 @@
     el.innerHTML = words.map(w => `<span class="w"><span class="wi">${esc(w)}</span></span>`).join(' ');
   });
 
-  /* ── C1 · WAVE CLIP primitive: a wobbling water edge that floods an element from a side ── */
-  const waves = [];
-  function makeWave(el, dir, o = {}) {
-    const w = { el, dir, p: 0, amp: o.amp ?? 6, freq: o.freq ?? 1.2, state: null };
-    waves.push(w); drawWave(w, 0); return w;
-  }
-  function wavePoly(dir, p, t, amp, freq) {
-    const A = amp * (.35 + .65 * Math.sin(Math.PI * Math.min(Math.max(p, 0), 1)));
-    const base = p * (100 + amp * 2) - amp;
-    const wob = u => A * (.62 * Math.sin((u * freq + t * .32) * Math.PI * 2) + .38 * Math.sin((u * freq * 1.9 - t * .47) * Math.PI * 2 + 1.3));
-    const n = 32, pts = [];
-    for (let i = 0; i <= n; i++) {
-      const u = i / n, e = wob(u);
-      if (dir === 'bottom') pts.push(`${(u * 100).toFixed(2)}% ${(100 - base + e).toFixed(2)}%`);
-      else if (dir === 'top') pts.push(`${(u * 100).toFixed(2)}% ${(base + e).toFixed(2)}%`);
-      else if (dir === 'left') pts.push(`${(base + e).toFixed(2)}% ${(u * 100).toFixed(2)}%`);
-      else pts.push(`${(100 - base + e).toFixed(2)}% ${(u * 100).toFixed(2)}%`);
-    }
-    const caps = { bottom: ['0% 100%', '100% 100%'], top: ['0% 0%', '100% 0%'], left: ['0% 0%', '0% 100%'], right: ['100% 0%', '100% 100%'] }[dir];
-    return `polygon(${caps[0]}, ${pts.join(', ')}, ${caps[1]})`;
-  }
-  function drawWave(w, t) {
-    if (w.p <= 0) { if (w.state !== 0) { w.el.style.clipPath = wavePoly(w.dir, 0, 0, w.amp, w.freq); w.state = 0; } return; }
-    if (w.p >= 1) { if (w.state !== 1) { w.el.style.clipPath = 'none'; w.state = 1; } return; }
-    w.state = 'm'; w.el.style.clipPath = wavePoly(w.dir, w.p, t, w.amp, w.freq);
-  }
-
-  // one ticker for every water surface
-  gsap.ticker.add(time => { for (const w of waves) drawWave(w, time); });
-
   /* ── C2 · LOADER → letterbox opens → hero intro ── */
-  const loaderWave = makeWave($('.loader-water'), 'bottom', { amp: 5 });
   const heroWords = $$('.hero-title .wi');
   gsap.set(heroWords, { yPercent: 118 });
   gsap.set('.hero-pill', { scale: 0 });
@@ -284,7 +253,7 @@
   const counter = { v: 0 }, num = $('.loader-num');
   gsap.timeline({ delay: .2 })
     .to(counter, { v: 100, duration: 1.8, ease: 'power2.inOut', onUpdate: () => { num.textContent = Math.round(counter.v); } })
-    .to(loaderWave, { p: 1, duration: 1.8, ease: 'power2.inOut' }, 0)
+    .fromTo('.loader-water', { yPercent: 100 }, { yPercent: 0, duration: 1.8, ease: 'power2.inOut' }, 0)
     .to('.lm-sun', { y: 0, duration: 1.7, ease: 'power3.out' }, 0)                 // the sun rises over the wave: AQUA·RISE
     .to('.lm-rays', { scale: 1, autoAlpha: 1, duration: .7, ease: 'back.out(2.4)' }, 1.15)
     .to('.loader', { yPercent: -100, duration: 1.1, ease: 'expo.inOut' }, '+=.15')
@@ -307,7 +276,9 @@
   gsap.set(spring, { autoAlpha: 0 });
   // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre (--r) while the SPRING frame inside
   // it starts magnified and settles (scale 1.7 → 1) and the outside dims, like light bending through the bottle.
-  const lens = $('.hero-portal');
+  const lens = $('.hero-portal'), lensEl = $('.lens'), lensIn = $('.lens-in'), lensC = { p: .001 };
+  // the circle grows with transform only (cheap); the picture inside is counter-scaled so it doesn't grow with it
+  const lensDraw = () => { const k = Math.max(lensC.p, .04); gsap.set(lensEl, { scale: k }); gsap.set(lensIn, { scale: 1 / k }); };
   // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
   // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
   const ZOOM_FROM = Math.log(.55), ZOOM_RATE = -ZOOM_FROM, lensZoom = { z: ZOOM_FROM };
@@ -325,13 +296,15 @@
     .to('.hero-offer', { y: -40, autoAlpha: 0, duration: .08, ease: 'power1.in' }, .4)                               // ...holds, then the dive
     // start states live in the timeline so scrubbing back always restores them
     .set('.hero-dim', { autoAlpha: 0 }, 0)
-    .set(lens, { autoAlpha: 0, '--r': '0%' }, 0)
+    .set(lens, { autoAlpha: 0 }, 0)
+    .set(lensC, { p: .001 }, 0)
     .set('.hero-portal .spring-word, .hero-portal-frame', { autoAlpha: .55 }, 0)
+    .add(lensDraw, 0)
     .set(lensZoom, { z: ZOOM_FROM }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
     .set(lens, { autoAlpha: 1 }, .52)
-    .to(lens, { '--r': '160%', ease: 'power2.inOut', duration: .44 }, .52)                                          // the lens opens small → full
+    .to(lensC, { p: 1, ease: 'power2.inOut', duration: .44, onUpdate: lensDraw }, .52)                                          // the lens opens small → full
     .to('.hero-portal .spring-word, .hero-portal-frame', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
     .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
@@ -411,10 +384,10 @@
   // One timeline unit = one screen of scrolling: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills.
   // Each beat finishes in the first ~60% of its screen and then holds, so nothing rushes past on a single flick.
   const featureSeq = st => gsap.timeline({ scrollTrigger: st })
-    .fromTo('.feature-visual', { clipPath: 'inset(14% 18% 14% 18% round 48px)' }, { clipPath: 'inset(0% 0% 0% 0% round 20px)', ease: 'power1.inOut', duration: .9 }, 0)
-    .fromTo('.feature-video', { scale: 1.25 }, { scale: 1, ease: 'power1.inOut', duration: .9 }, 0)
+    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .9 }, 0)
+    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .9 }, 0)
     .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power2.out', duration: .6, stagger: 1 }, 1)
-    .fromTo('.feature .lw', { autoAlpha: .1, y: 12, filter: 'blur(6px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', ease: 'power1.out', duration: .15, stagger: .02 }, 4)
+    .fromTo('.feature .lw', { autoAlpha: .1, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 4)
     .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 4.35)
     .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 4.4)
     .to({}, { duration: .2 });
@@ -430,7 +403,7 @@
   });
 
   /* ── C8 · SHOP: arch straightens; the bottle glides on a sunlit stage ── */
-  gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: 1 } });
+  gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: true } });
   const stage = $('.slide-stage');
   gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top 75%', once: true } })
     .fromTo('.stage-glow, .stage-mist', { autoAlpha: 0, scale: .8 }, { autoAlpha: 1, scale: 1, duration: 1.6, ease: 'expo.out' })
@@ -480,11 +453,11 @@
   /* ── C9 · BUNDLES: cards fill with water, bottles drop in, prices count up; tilt, glare and perk chips on hover ── */
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
   $$('[data-reveal-wave]').forEach(card => {
-    const w = makeWave(card, 'bottom', { amp: 6 });
-    const kids = [...card.children].filter(c => !c.matches('.bundle-glare'));
+    const cover = document.createElement('i'); cover.className = 'reveal-cover'; card.appendChild(cover);
+    const kids = [...card.children].filter(c => !c.matches('.bundle-glare, .reveal-cover'));
     const count = $('[data-count]', card);
     const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
-      .to(w, { p: 1, duration: 1.6, ease: 'power2.out' })
+      .fromTo(cover, { yPercent: 0 }, { yPercent: -105, duration: 1.6, ease: 'power2.out' })
       .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
     const trio = $$('.bundle-bottles .bottle', card), freq = $('.freq', card);
     if (trio.length) tl.fromTo(trio, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: 'expo.out', stagger: .1 }, .5);   // calm rise, no bounce
@@ -497,16 +470,19 @@
   if (canHover) $$('[data-tilt]').forEach(card => {
     const rx = gsap.quickTo(card, 'rotationX', { duration: .6, ease: 'power3' }), ry = gsap.quickTo(card, 'rotationY', { duration: .6, ease: 'power3' });
     gsap.set(card, { transformPerspective: 1000 });
+    let r = null;
+    card.addEventListener('pointerenter', () => { r = card.getBoundingClientRect(); });
     card.addEventListener('pointermove', e => {
-      const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      if (!r) r = card.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
       rx((.5 - y) * 4); ry((x - .5) * 5);   // subtle depth, not a wobble
       card.style.setProperty('--mx', x * 100 + '%'); card.style.setProperty('--my', y * 100 + '%');
     });
-    card.addEventListener('pointerleave', () => { rx(0); ry(0); });
+    card.addEventListener('pointerleave', () => { rx(0); ry(0); r = null; });
     // magnetic button
     const btn = $('.pill', card), bx = gsap.quickTo(btn, 'x', { duration: .4, ease: 'power3' }), by = gsap.quickTo(btn, 'y', { duration: .4, ease: 'power3' });
-    btn.addEventListener('pointermove', e => { const r = btn.getBoundingClientRect(); bx((e.clientX - r.left - r.width / 2) * .3); by((e.clientY - r.top - r.height / 2) * .4); });
-    btn.addEventListener('pointerleave', () => { bx(0); by(0); });
+    let br = null; btn.addEventListener('pointerenter', () => { br = btn.getBoundingClientRect(); });
+    btn.addEventListener('pointermove', e => { const r = br || (br = btn.getBoundingClientRect()); bx((e.clientX - r.left - r.width / 2) * .3); by((e.clientY - r.top - r.height / 2) * .4); });
+    btn.addEventListener('pointerleave', () => { bx(0); by(0); br = null; });
   });
   // adding a bundle: the bottles jump and a "+1" floats up from the button
   $$('.bundle [data-add]').forEach(btn => btn.addEventListener('click', () => {
@@ -521,6 +497,10 @@
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
   gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true } });   // no lag: at the very bottom of the page the word is fully up
+
+  /* ── C12b · switch blend/blur layers off in sections more than a screen away ── */
+  const perfIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('perf-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+  ['.hero', '.shop', '.bundles'].forEach(sel => { const el = $(sel); el && perfIO.observe(el); });
 
   /* ── C13 · ordering + refresh ── */
   ScrollTrigger.sort();

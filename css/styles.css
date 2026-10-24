@@ -70,7 +70,7 @@ section { position: relative; }
 
 /* split-word masks (built by JS) */
 .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
-.wi { display: inline-block; will-change: transform; }
+.wi { display: inline-block; }
 
 /* pill buttons */
 .pill {
@@ -102,7 +102,7 @@ section { position: relative; }
 .pill:focus-visible, .round-btn:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--aqua); outline-offset: 3px; }
 
 /* water surfaces */
-.flood { position: absolute; inset: 0; overflow: hidden; will-change: clip-path; }
+.flood { position: absolute; inset: 0; overflow: hidden; }
 .caustics {
   position: absolute; inset: -30%; pointer-events: none; opacity: .32; mix-blend-mode: soft-light;
   background:
@@ -164,7 +164,7 @@ video { background: var(--deep); }
   animation: safetyHide .01s 5s forwards; /* safety: never trap the page */
 }
 @keyframes safetyHide { to { opacity: 0; visibility: hidden; pointer-events: none; } }
-.loader-water { position: absolute; inset: 0; }
+.loader-water { position: absolute; left: 0; right: 0; bottom: 0; height: 104%; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30 C150 0 300 0 450 30 S750 60 900 30 S1100 0 1200 30 V60 H0Z'/%3E%3C/svg%3E") 0 0 / 100% 4% no-repeat, linear-gradient(#000,#000) 0 100% / 100% 96.5% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30 C150 0 300 0 450 30 S750 60 900 30 S1100 0 1200 30 V60 H0Z'/%3E%3C/svg%3E") 0 0 / 100% 4% no-repeat, linear-gradient(#000,#000) 0 100% / 100% 96.5% no-repeat; }   /* rises with transform; wavy top is a static mask */
 .loader-water-inner { position: absolute; inset: 0; background: linear-gradient(180deg, var(--aqua), var(--tide) 60%, var(--deep)); }
 .loader-logo { position: relative; display: grid; justify-items: center; gap: 1svh; }
 .loader-mark { width: clamp(180px, 28vw, 340px); height: auto; overflow: visible; }
@@ -226,9 +226,13 @@ video { background: var(--deep); }
 .hero-offer { position: absolute; left: 50%; bottom: 14svh; z-index: 3; transform: translateX(-50%); width: min(820px, 100% - var(--gutter) * 2); display: grid; justify-items: center; gap: .8rem; text-align: center; }
 .hero-offer-btn { font-size: 1.15rem; padding: 1.05em 2.2em; box-shadow: 0 14px 40px rgba(4,18,31,.45); }
 .hero-dim { position: absolute; inset: 0; z-index: 4; background: var(--abyss); visibility: hidden; pointer-events: none; }
-.hero-portal { --r: 0%; position: absolute; inset: 0; z-index: 5; isolation: isolate; visibility: hidden; pointer-events: none; background: var(--abyss);   /* the zooming frame starts smaller than the screen: keep the space around it black */
-  -webkit-mask: radial-gradient(circle at 50% 46%, #000 calc(var(--r) * .78), transparent var(--r)); mask: radial-gradient(circle at 50% 46%, #000 calc(var(--r) * .78), transparent var(--r)); }
+.hero-portal { position: absolute; inset: 0; z-index: 5; overflow: hidden; visibility: hidden; pointer-events: none; }
+/* fisheye lens: a soft-edged circle (static mask) scaled with transform; .lens-in is counter-scaled so the picture stays put */
+.lens { position: absolute; left: 50%; top: 46%; width: 220vmax; height: 220vmax; margin: -110vmax 0 0 -110vmax; border-radius: 50%; overflow: hidden; background: var(--abyss); isolation: isolate;
+  -webkit-mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); transform: scale(0); }
+.lens-in { position: absolute; left: calc(110vmax - 50vw); top: calc(110vmax - 46svh); width: 100vw; height: 100svh; transform-origin: 50% 46%; }
 .hero-portal-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-portal .hero-portal-frame { -webkit-mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(transparent, #000 14%, #000 86%, transparent); -webkit-mask-composite: source-in; mask: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-composite: intersect; }   /* feathered edges: no box while it is smaller than the screen */
 /* brightening layer (screen blend) — composited, unlike a CSS filter on video which re-filters every frame */
 .spring-glow { position: absolute; inset: 0; background: rgba(255,236,214,.22); mix-blend-mode: screen; pointer-events: none; }
 .spring-stage .spring-glow { z-index: 1; }
@@ -261,7 +265,6 @@ video { background: var(--deep); }
 .feature-visual { position: relative; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius); }   /* clip-path alone does not stop the scaled clip widening the page on phones */
 .feature-video { width: 100%; max-height: min(78svh, 720px); aspect-ratio: 1; object-fit: cover; object-position: 55% 15%; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
 .feature-lead .lw { display: inline-block; }
-.feature-visual { will-change: clip-path; }
 .shimmer-word { background: linear-gradient(100deg, var(--foam) 40%, var(--lemon) 50%, var(--foam) 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 5s ease-in-out infinite 2s; }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -50% 0; } }
 .feature-copy .h-xl { margin-bottom: 1.4rem; }
@@ -308,7 +311,7 @@ video { background: var(--deep); }
 .round-btn svg { width: 40%; }
 .prev { left: var(--gutter); } .next { right: var(--gutter); }
 .slide-tabs { position: absolute; left: 0; right: 0; bottom: 10px; z-index: 3; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0 var(--gutter); }   /* sits on the floor, right under the bottle */
-.slide-tabs button { border: 1px solid var(--line); background: rgba(4,18,31,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: .9rem; }
+.slide-tabs button { border: 1px solid var(--line); background: rgba(4,18,31,.8); border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: .9rem; }
 .slide-tabs button[aria-selected="true"] { background: var(--aqua); color: var(--ink); border-color: var(--aqua); box-shadow: 0 8px 24px rgba(63,184,232,.35); }
 
 /* 06 bundles */
@@ -317,6 +320,7 @@ video { background: var(--deep); }
 .sec-head.center { text-align: center; justify-items: center; }
 .sec-head.split { grid-template-columns: 1.4fr 1fr; align-items: end; }
 .bundle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.reveal-cover { position: absolute; left: -2px; right: -2px; top: -2px; height: calc(100% + 40px); z-index: 5; pointer-events: none; background: var(--deep); -webkit-mask: linear-gradient(#000,#000) 0 0 / 100% calc(100% - 38px) no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30 C150 0 300 0 450 30 S750 60 900 30 S1100 0 1200 30 V60 H0Z'/%3E%3C/svg%3E") 0 100% / 100% 40px no-repeat; mask: linear-gradient(#000,#000) 0 0 / 100% calc(100% - 38px) no-repeat, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 30 C150 0 300 0 450 30 S750 60 900 30 S1100 0 1200 30 V60 H0Z'/%3E%3C/svg%3E") 0 100% / 100% 40px no-repeat; }
 .bundle { position: relative; border-radius: var(--radius); padding: clamp(28px, 4vw, 52px); text-align: center; display: grid; justify-items: center; align-content: space-evenly; gap: 14px; overflow: hidden; }
 .bundle h3 { font-family: var(--display); font-size: clamp(2.2rem, 4.4vw, 4rem); line-height: .95;  font-weight: 400;}
 .bundle-note { font-weight: 700; font-size: .9rem; color: var(--lemon); }
@@ -479,7 +483,8 @@ video { background: var(--deep); }
 /* 7 ─ STATIC MODE (reduced motion, or GSAP failed to load) ──────────────── */
 .static .loader, .static .letterbox { display: none !important; }
 .static .hero-offer { display: none; } /* no scroll phase here; the title already carries a Shop pill */
-.static .static .spring-mask, .static .hero-portal, .static .hero-dim, .static .spring-glow { display: none; }
+.static .perf-off .stage-mist, .perf-off .hero-ripples, .perf-off .bundle-glare { display: none; }   /* blend layers off when their section is far away */
+.static .spring-mask, .static .hero-portal, .static .hero-dim, .static .spring-glow { display: none; }
 .static .static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }
 .static .bubbles { display: none; }
 @media (prefers-reduced-motion: reduce) {

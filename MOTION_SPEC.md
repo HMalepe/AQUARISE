@@ -15,14 +15,8 @@ The source of truth for every animation. If you port to Next.js or another stack
 
 ## Reusable primitives
 
-### 1. Wave clip (the core water effect)
-`makeWave(el, dir, { amp, freq })` returns an object with `p` (0→1). Tween `p` with GSAP. A single `gsap.ticker` callback redraws a `clip-path: polygon()` with 33 points along a wobbling edge.
-
-- `dir`: `bottom` (water rises), `top` (water pours down), `left`, `right` (water sweeps across)
-- Edge position: `p * (100 + 2·amp) − amp` percent, so `p=0` is fully hidden and `p=1` is fully covered
-- Wobble: two summed sines over the edge, time-animated (`t·0.32` and `t·0.47` cycles/s). Amplitude swells mid-flow: `amp · (0.35 + 0.65·sin(π·p))`
-- At `p=0` or `p=1` the clip-path is written once and the element is skipped (no per-frame cost)
-- Knobs: `amp` (edge height in %, default 6), `freq` (number of crests across the edge, default 1.2)
+### 1. Water reveal (transform only)
+A layer with a wave-shaped edge (static SVG mask) is moved with `transform`, never a per-frame clip-path. Loader: `.loader-water` rises `yPercent 100 → 0`. Bundle cards: a `.reveal-cover` in the section colour with a wavy bottom edge slides up `yPercent 0 → −105`, uncovering the card from the bottom.
 
 ### 2. Masked word rise
 `[data-split]` → `span.w > span.wi` per word. `.wi` goes `yPercent 118 → 0`, `expo.out`, 1.2s, stagger 0.07, trigger `top 88%`, once.
@@ -71,7 +65,7 @@ Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: true` (no extra 
 | .4 → .48 | offer lifts away `y −40`, fades |
 | .42 → .92 | gentle push into the bottle: `.hero-media` `scale → 1.5`, `sine.inOut` |
 | .46 → .86 | `.hero-dim` fades to `.9`, `sine.inOut` |
-| .52 → 1 | **fisheye lens**: `.hero-portal` mask `--r 0% → 160%` (soft-edged circle, solid core at 78% of the radius, centred on the bottle at 50% 46%), `power2.inOut`. Inside it the SPRING frame (canvas + word) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
+| .52 → 1 | **fisheye lens**: a soft-edged circle `.lens` (static radial mask, 220vmax, centred at 50% 46%) scales `0.04 → 1` with transform, `power2.inOut`; `.lens-in` is counter-scaled (1/scale) so the picture doesn't grow with the circle, and the lens video has feathered edges. Inside it the SPRING frame (canvas + word) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
 | end | no hold (.01): SPRING's own zoom takes over at the same scroll position |
 Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal paints SPRING's live video frame every tick while visible, so the hand-off matches on every pass.
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases. `.spring` is shown/hidden by the hero timeline's own scrub-smoothed progress (`> .999`), not the raw scroll position, so a fast scroll can never swap sections before the lens has finished (or, going up, started closing).
@@ -95,15 +89,15 @@ Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0
 One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 5 × innerHeight`, `scrub: true`; timeline units = screens. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
 | Screen | Beat (finishes in the first ~60%, then holds) |
 |---|---|
-| 1 (0 → .9) | the picture opens (`clip-path inset(14% 18% round 48px) → inset(0 round 20px)`, clip `scale 1.25 → 1`, `power1.inOut`) |
+| 1 (0 → .9) | the picture opens: card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
 | 2 (1 → 1.6) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
 | 3 (2 → 2.6) | "CRISP." |
 | 4 (3 → 3.6) | "ALIVE." (then keeps its lemon shimmer) |
-| 5 (4 → 4.85) | the paragraph writes in word by word, then the pills fade up one by one with their icons turning in |
+| 5 (4 → 4.85) | the paragraph writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
 No scroll-snapping on purpose: the page never fights the user's scroll.
 
 ### 05 Shop
-- Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`
+- Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, `top 90%` → `top 30%`, `scrub: true`
 - Stage: the HD bottle packshot (cut from a Real-ESRGAN 4× upscale; every non-label colour neutralised to clear, faintly cool water, clarity curve + light sharpening; only the blue label keeps its colour) backlit by `.stage-glow` (warm radial, like the photo's sunrise), on `.stage-floor` (glossy line + sheen) with a flipped, masked reflection (`.b-reflect`) and a contact shadow
 - Behind the bottle, `.stage-glow` is a cool white light and `.stage-mist` plays `mist` (white-grey steam, desaturated from the waterfall clip, 0.7× speed, forward-then-reverse ~14s loop) with `mix-blend-mode: screen` and a radial mask, so only the glowing steam and rays show
 - Entrance (`top 75%`, once): glow and mist `autoAlpha 0 → 1`, `scale .8 → 1`, 1.6s `expo.out`; bottle `y 80 → 0`, fades in, 1.4s `expo.out` at .1
@@ -140,6 +134,10 @@ Word rises and fade-ups only. The join button uses the shared water-fill hover (
 | Footage look | edit the GLSL in `tools/footage/films.js`, re-render (see README) |
 
 ## Performance rules (smooth one-flick scrolling)
+- Budget: `node tools/perf/flick.mjs` (3 fast flicks each way, fails if any frame > `PERF_BUDGET`, default 50ms). Run on a normal laptop; GPU-less CI boxes are 2–4× slower.
+- Blend/blur layers in the hero, shop and bundles are switched off (`.perf-off`) when their section is more than a screen away.
+- Hover effects measure their element once on `pointerenter`, not on every `pointermove`.
+- `will-change` only on elements that animate continuously (the SPRING word).
 - No CSS `filter` animated on full-screen layers or videos; use an overlay's opacity instead (`.spring-glow`). Bake fixed looks into the video file (mist contrast/blur is baked).
 - No `blur()` tweens on full-screen layers; fade opacity instead.
 - Never seek a video that is on screen; never `drawImage` video frames per tick.
