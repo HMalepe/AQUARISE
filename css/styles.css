@@ -86,6 +86,15 @@ section { position: relative; }
 .pill:hover::before, .pill:focus-visible::before { transform: translateY(0); animation: slosh 2.4s ease-in-out .75s infinite; }
 @keyframes slosh { 50% { border-radius: 54% 46% 0 0 / 24% 24% 0 0; } }
 .pill:hover, .pill:focus-visible { color: var(--ink); }
+/* same water fill on the shop tabs, the Weekly/Monthly switch and the round arrows */
+.slide-tabs button, .freq span, .round-btn { position: relative; overflow: hidden; isolation: isolate; transition: color .3s, border-color .3s, transform .4s var(--ease-out); }
+.slide-tabs button::before, .freq span::before, .round-btn::before { content: ""; position: absolute; left: -15%; right: -15%; top: -45%; bottom: -10%; z-index: -1; pointer-events: none;
+  background: var(--aqua); border-radius: 46% 54% 0 0 / 24% 24% 0 0; transform: translateY(105%); transition: transform .75s var(--ease-out); }
+.slide-tabs button:hover::before, .slide-tabs button:focus-visible::before, .slide-tabs button[aria-selected="true"]::before,
+.freq label:hover span::before, .freq input:focus-visible + span::before, .freq input:checked + span::before,
+.round-btn:hover::before, .round-btn:focus-visible::before, .round-btn:active::before { transform: translateY(0); animation: slosh 2.4s ease-in-out .75s infinite; }
+.slide-tabs button:hover, .freq label:hover span, .round-btn:hover { color: var(--ink); border-color: var(--aqua); }
+.freq input:checked + span { background: none; }
 .pill-dark { background: var(--abyss); color: var(--foam); }
 .pill-light { background: var(--foam); color: var(--ink); }
 .pill:focus-visible, .round-btn:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--aqua); outline-offset: 3px; }

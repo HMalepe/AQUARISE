@@ -37,7 +37,7 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 `[data-speed]`: `y = speed·180 → −speed·180` px across its section, scrubbed (`scrub: true`).
 
 ### 5a. Water-fill CTAs
-Every `.pill` fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete, then sloshes gently (border-radius swap, 2.4s). Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
+Every `.pill` — and the shop tabs (also the selected tab), the Weekly/Monthly switch (also the checked option) and the round arrows (also while pressed) — fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete, then sloshes gently (border-radius swap, 2.4s). Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
 
 ### 5b. Shine
 `.shine::after`: a white glint sweeps across a pill every 3.2s (CSS). Static mode stops it.
