@@ -92,15 +92,15 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
 
 ### 03 Feature
-Picture first, then the copy one piece at a time. Desktop (≥961px wide, ≥600px tall): pinned, `top top` → `+= 4 × innerHeight`, `scrub: true`. Phones / short screens (section taller than the screen): not pinned, `top 85%` → `bottom 45%`, same timeline.
-| Timeline pos | Tween |
+One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 5 × innerHeight`, `scrub: true`; timeline units = screens. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
+| Screen | Beat (finishes in the first ~60%, then holds) |
 |---|---|
-| 0 → 1.2 | `.feature-visual` opens `clip-path inset(14% 18% round 48px) → inset(0 round 20px)`; the `sip` clip eases `scale 1.25 → 1` |
-| 1.3 → 2.6 | "PURE." "CRISP." "ALIVE." rise one at a time (`yPercent 120 → 0`, `rotate 7° → 0`, `power3.out`, stagger .4) |
-| 2.6 → 3.7 | the paragraph writes in word by word (`opacity .1 → 1`, `y 12 → 0`, `blur 6px → 0`, stagger .035) |
-| 3.7 → 4.95 | the four pills fade up one at a time (`y 30 → 0`, `power3.out`, stagger .3); icons turn in (`rotate −90° → 0`) |
-| end | hold .4 |
-"ALIVE." keeps a slow lemon shimmer (CSS). The section is `min-height: 100svh` and centred so it fills the pinned screen.
+| 1 (0 → .9) | the picture opens (`clip-path inset(14% 18% round 48px) → inset(0 round 20px)`, clip `scale 1.25 → 1`, `power1.inOut`) |
+| 2 (1 → 1.6) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
+| 3 (2 → 2.6) | "CRISP." |
+| 4 (3 → 3.6) | "ALIVE." (then keeps its lemon shimmer) |
+| 5 (4 → 4.85) | the paragraph writes in word by word, then the pills fade up one by one with their icons turning in |
+No scroll-snapping on purpose: the page never fights the user's scroll.
 
 ### 05 Shop
 - Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`
