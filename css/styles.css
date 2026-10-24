@@ -393,7 +393,7 @@ video { background: var(--deep); }
 .socials a { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; text-decoration: none; font-weight: 800; font-size: .8rem; transition: background-color .3s, color .3s; }
 .socials a:hover { background: var(--foam); color: var(--ink); }
 .socials svg { width: 20px; height: 20px; }
-.foot-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.foot-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .foot-cols h4 { font-family: var(--body); font-weight: 800; font-size: .85rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .8rem; }
 .foot-cols a { display: block; text-decoration: none; opacity: .8; padding: 4px 0; }
 .foot-cols a:hover { opacity: 1; color: var(--aqua); }
