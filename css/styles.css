@@ -89,13 +89,14 @@ section { position: relative; }
 @keyframes slosh { 50% { border-radius: 54% 46% 0 0 / 24% 24% 0 0; } }
 .pill:hover, .pill:focus-visible, .pill:active { color: var(--ink); }
 /* same water fill on the shop tabs, the Weekly/Monthly switch and the round arrows */
-.slide-tabs button, .freq span, .round-btn { position: relative; overflow: hidden; isolation: isolate; transition: color .3s, border-color .3s, transform .4s var(--ease-out); }
-.slide-tabs button::before, .freq span::before, .round-btn::before { content: ""; position: absolute; left: -15%; right: -15%; top: -45%; bottom: -10%; z-index: -1; pointer-events: none;
+.pills li, .slide-tabs button, .freq span, .round-btn { position: relative; overflow: hidden; isolation: isolate; transition: color .3s, border-color .3s, transform .4s var(--ease-out); }
+.pills li::before, .slide-tabs button::before, .freq span::before, .round-btn::before { content: ""; position: absolute; left: -15%; right: -15%; top: -45%; bottom: -10%; z-index: -1; pointer-events: none;
   background: var(--aqua); border-radius: 46% 54% 0 0 / 24% 24% 0 0; transform: translateY(105%); transition: transform .75s var(--ease-out); }
-.slide-tabs button:hover::before, .slide-tabs button:focus-visible::before, .slide-tabs button[aria-selected="true"]::before,
+.pills li:hover::before, .slide-tabs button:hover::before, .slide-tabs button:focus-visible::before, .slide-tabs button[aria-selected="true"]::before,
 .freq label:hover span::before, .freq input:focus-visible + span::before, .freq input:checked + span::before,
 .round-btn:hover::before, .round-btn:focus-visible::before, .round-btn:active::before { transform: translateY(0); animation: slosh 2.4s ease-in-out .75s infinite; }
-.slide-tabs button:hover, .freq label:hover span, .round-btn:hover { color: var(--ink); border-color: var(--aqua); }
+.slide-tabs button:hover, .freq label:hover span, .round-btn:hover, .pills li:hover { color: var(--ink); border-color: var(--aqua); }
+.pills li:hover svg { color: var(--ink); }
 .freq input:checked + span { background: none; }
 .pill-dark { background: var(--abyss); color: var(--foam); }
 .pill-light { background: var(--foam); color: var(--ink); }
@@ -265,8 +266,11 @@ video { background: var(--deep); }
 .feature-visual { position: relative; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius); }   /* clip-path alone does not stop the scaled clip widening the page on phones */
 .feature-video { width: 100%; max-height: min(78svh, 720px); aspect-ratio: 1; object-fit: cover; object-position: 55% 15%; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
 .feature-lead .lw { display: inline-block; }
-.shimmer-word { background: linear-gradient(100deg, var(--foam) 40%, var(--lemon) 50%, var(--foam) 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 5s ease-in-out infinite 2s; }
-@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -50% 0; } }
+.shimmer-word { --shine: var(--lemon); background: linear-gradient(100deg, var(--foam) 40%, var(--shine) 50%, var(--foam) 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 6s ease-in-out infinite; }
+.sw-0 { --shine: var(--aqua); animation-delay: 1s; }   /* PURE: clear water blue */
+.sw-1 { --shine: var(--mist); animation-delay: 3s; }   /* CRISP: icy light blue */
+.sw-2 { --shine: var(--lemon); animation-delay: 5s; }  /* ALIVE: the logo's sun */
+@keyframes shimmer { 0% { background-position: 100% 0; } 25%, 100% { background-position: -50% 0; } }   /* quick sweep, then ~4.5s rest */
 .feature-copy .h-xl { margin-bottom: 1.4rem; }
 .pills { list-style: none; margin: 2.2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, max-content); gap: 14px; }
 .pills li { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border: 1px solid var(--line); border-radius: 999px; font-weight: 600; }
