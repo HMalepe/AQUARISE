@@ -256,7 +256,7 @@ video { background: var(--deep); }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
 /* 03 feature */
-.feature { padding: clamp(80px, 14vw, 180px) 0; background: radial-gradient(38% 55% at 27% 50%, rgba(63,184,232,.10), transparent 70%), var(--abyss); }   /* faint glow behind the clip, echoing the shop stage */
+.feature { padding: clamp(80px, 14vw, 180px) 0; min-height: 100svh; display: grid; align-items: center; background: radial-gradient(38% 55% at 27% 50%, rgba(63,184,232,.10), transparent 70%), var(--abyss); }   /* faint glow behind the clip, echoing the shop stage */
 .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
 .feature-visual { position: relative; display: grid; place-items: center; overflow: hidden; border-radius: var(--radius); }   /* clip-path alone does not stop the scaled clip widening the page on phones */
 .feature-video { width: 100%; max-height: min(78svh, 720px); aspect-ratio: 1; object-fit: cover; object-position: 55% 15%; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,.45); }

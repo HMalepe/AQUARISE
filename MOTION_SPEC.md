@@ -92,14 +92,15 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
 
 ### 03 Feature
-One scrubbed timeline, trigger `.feature`, `top 80%` → `center 55%`, `scrub: .6` (the copy writes itself in as you scroll, and reverses on the way back):
+Picture first, then the copy one piece at a time. Desktop (≥961px wide, ≥600px tall): pinned, `top top` → `+= 4 × innerHeight`, `scrub: true`. Phones / short screens (section taller than the screen): not pinned, `top 85%` → `bottom 45%`, same timeline.
 | Timeline pos | Tween |
 |---|---|
-| 0 → 1 | `.feature-visual` opens `clip-path inset(14% 18% round 48px) → inset(0 round 20px)`; the `sip` clip inside eases `scale 1.25 → 1` |
-| .08 → | heading words rise `yPercent 120 → 0`, `rotate 7° → 0`, stagger .14 |
-| .4 → | the lead paragraph, split into `.lw` words, comes up one word at a time: `opacity .1 → 1`, `y 12 → 0`, `blur 6px → 0`, stagger .025 |
-| .72 → | pills pop `y 34`, `scale .85 → 1`, `back.out(2)`, stagger .07; their icons spin in `rotate −120° → 0`, `scale 0 → 1` |
-Then "ALIVE." (`.shimmer-word`) runs a slow lemon highlight sweep every 5s (CSS). The feature is excluded from the generic C4 reveals.
+| 0 → 1.2 | `.feature-visual` opens `clip-path inset(14% 18% round 48px) → inset(0 round 20px)`; the `sip` clip eases `scale 1.25 → 1` |
+| 1.3 → 2.6 | "PURE." "CRISP." "ALIVE." rise one at a time (`yPercent 120 → 0`, `rotate 7° → 0`, `power3.out`, stagger .4) |
+| 2.6 → 3.7 | the paragraph writes in word by word (`opacity .1 → 1`, `y 12 → 0`, `blur 6px → 0`, stagger .035) |
+| 3.7 → 4.95 | the four pills fade up one at a time (`y 30 → 0`, `power3.out`, stagger .3); icons turn in (`rotate −90° → 0`) |
+| end | hold .4 |
+"ALIVE." keeps a slow lemon shimmer (CSS). The section is `min-height: 100svh` and centred so it fills the pinned screen.
 
 ### 05 Shop
 - Arch heading: `#archPath` `d` morphs from curved (`Q 500 −10`) to flat, scrubbed `top 90%` → `top 30%`

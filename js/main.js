@@ -406,13 +406,19 @@
   /* ── C6 · FEATURE: the copy writes itself in as you scroll, the clip opens up beside it ── */
   const lead = $('.feature-lead');
   lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="lw">${esc(w)}</span>`).join(' ');
-  gsap.timeline({ scrollTrigger: { trigger: '.feature', start: 'top 80%', end: 'center 55%', scrub: .6 } })
-    .fromTo('.feature-visual', { clipPath: 'inset(14% 18% 14% 18% round 48px)' }, { clipPath: 'inset(0% 0% 0% 0% round 20px)', ease: 'power2.out', duration: 1 }, 0)
-    .fromTo('.feature-video', { scale: 1.25 }, { scale: 1, ease: 'power2.out', duration: 1 }, 0)
-    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power3.out', duration: .45, stagger: .14 }, .08)
-    .fromTo('.feature .lw', { autoAlpha: .1, y: 12, filter: 'blur(6px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', ease: 'power1.out', duration: .2, stagger: .025 }, .4)
-    .fromTo('.pills li', { autoAlpha: 0, y: 34, scale: .85 }, { autoAlpha: 1, y: 0, scale: 1, ease: 'back.out(2)', duration: .25, stagger: .07 }, .72)
-    .fromTo('.pills li svg', { rotate: -120, scale: 0 }, { rotate: 0, scale: 1, ease: 'back.out(2.4)', duration: .25, stagger: .07 }, .76);
+  // Picture first, then each headline word, the paragraph word by word, then the pills one at a time. Desktop pins the
+  // section for ~4 screens so it plays in place; phones (section taller than the screen) scroll it through, same order.
+  const featureSeq = st => gsap.timeline({ scrollTrigger: st })
+    .fromTo('.feature-visual', { clipPath: 'inset(14% 18% 14% 18% round 48px)' }, { clipPath: 'inset(0% 0% 0% 0% round 20px)', ease: 'power2.out', duration: 1.2 }, 0)
+    .fromTo('.feature-video', { scale: 1.25 }, { scale: 1, ease: 'power2.out', duration: 1.2 }, 0)
+    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power3.out', duration: .5, stagger: .4 }, 1.3)
+    .fromTo('.feature .lw', { autoAlpha: .1, y: 12, filter: 'blur(6px)' }, { autoAlpha: 1, y: 0, filter: 'blur(0px)', ease: 'power1.out', duration: .3, stagger: .035 }, 2.6)
+    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .4, stagger: .3 }, 3.7)
+    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .4, stagger: .3 }, 3.75)
+    .to({}, { duration: .4 });
+  gsap.matchMedia()
+    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4, pin: true, scrub: true, invalidateOnRefresh: true }); })
+    .add('(max-width: 960px), (max-height: 599px)', () => { featureSeq({ trigger: '.feature', start: 'top 85%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true }); });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').slice(-1).forEach(w => w.classList.add('shimmer-word'));
 
