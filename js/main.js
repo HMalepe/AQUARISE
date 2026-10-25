@@ -384,21 +384,36 @@
   /* ── C6 · FEATURE: the copy writes itself in as you scroll, the clip opens up beside it ── */
   const lead = $('.feature-lead');
   lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="lw">${esc(w)}</span>`).join(' ');
-  // Picture first, then each headline word, the paragraph word by word, then the pills one at a time. Desktop pins the
-  // section for ~4 screens so it plays in place; phones (section taller than the screen) scroll it through, same order.
-  // One timeline unit = one screen of scrolling: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills.
+  // The picture grows to full size while the section scrolls in (before the pin), so the first scroll inside the pin
+  // already brings in the words. Desktop then pins the section; phones (section taller than the screen) scroll it through.
+  // One timeline unit = one screen of scrolling: 1 PURE, 2 CRISP, 3 ALIVE, 4 paragraph + pills.
   // Each beat finishes in the first ~60% of its screen and then holds, so nothing rushes past on a single flick.
-  const featureSeq = st => gsap.timeline({ scrollTrigger: st })
-    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
-    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
-    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power2.out', duration: .6, stagger: 1 }, .55)
-    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 3.55)
-    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 3.9)
-    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 3.95)
+  const featureEnter = st => gsap.timeline({ scrollTrigger: { ...st, scrub: true, invalidateOnRefresh: true } })
+    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.out', duration: 1 }, 0)
+    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.out', duration: 1 }, 0);
+  const featureSeq = st => {
+    // explicit start states: a staggered fromTo in a scrubbed timeline only pre-renders its first target, so CRISP/ALIVE
+    // (and later paragraph words and pills) showed before their turn on phones
+    gsap.set('.feature .h-xl .wi', { yPercent: 120, rotate: 7 });
+    gsap.set('.feature .lw', { autoAlpha: 0, y: 12 });
+    gsap.set('.pills li', { autoAlpha: 0, y: 30 });
+    gsap.set('.pills li svg', { rotate: -90, scale: .4 });
+    return gsap.timeline({ scrollTrigger: st })
+    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power2.out', duration: .6, stagger: 1 }, 0)
+    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 3)
+    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 3.35)
+    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 3.4)
     .to({}, { duration: .2 });
+  };
   gsap.matchMedia()
-    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4.5, pin: true, scrub: true, invalidateOnRefresh: true }); })
-    .add('(max-width: 960px), (max-height: 599px)', () => { featureSeq({ trigger: '.feature', start: 'top 85%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true }); });
+    .add('(min-width: 961px) and (min-height: 600px)', () => {
+      featureEnter({ trigger: '.feature', start: 'top bottom', end: 'top top' });   // full size by the time the pin starts
+      featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4, pin: true, scrub: true, invalidateOnRefresh: true });
+    })
+    .add('(max-width: 960px), (max-height: 599px)', () => {
+      featureEnter({ trigger: '.feature-visual', start: 'top bottom', end: 'center center' });
+      featureSeq({ trigger: '.feature-copy', start: 'top 90%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true });   // words as the copy (below the picture) comes up
+    });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').forEach((w, i) => w.classList.add('shimmer-word', 'sw-' + i));   // PURE aqua, CRISP ice-white, ALIVE lemon, one after another
 
