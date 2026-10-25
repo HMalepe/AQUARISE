@@ -7,7 +7,7 @@ The source of truth for every animation. If you port to Next.js or another stack
 | Setting | Value |
 |---|---|
 | In-page links | Nav and menu links jump instantly (Lenis `immediate`) behind a .2s abyss veil (`.jump-veil`), skipping the pinned scenes in between; Shop lands on the product name so name, price, bottle and tabs are all on screen |
-| Smooth scroll | Lenis `lerp: .09`, `smoothWheel: true`, driven by `gsap.ticker` (`lagSmoothing(0)`) |
+| Smooth scroll | Lenis `lerp: .1`, `wheelMultiplier: .9`, `smoothWheel: true`, `autoRaf: false`, driven by `gsap.ticker` (`lagSmoothing(500, 33)`) |
 | ScrollTrigger | `config({ ignoreMobileResize: true })`, `ScrollTrigger.sort()` after all triggers, refresh after `document.fonts.ready` and `window.load` |
 | Signature eases | `expo.out` (entrances), `expo.inOut` (curtains), `power2.inOut` (water floods), `none` (scrubbed parallax) |
 | Units | Sections use `svh`; pinned durations are functions of `innerHeight` with `invalidateOnRefresh: true` |
@@ -32,7 +32,7 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 `[data-speed]`: `y = speed·180 → −speed·180` px across its section, scrubbed (`scrub: true`).
 
 ### 5a. Water-fill CTAs
-Every `.pill` — and the shop tabs (also the selected tab), the Weekly/Monthly switch (also the checked option) and the round arrows (also while pressed) — fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete, then sloshes gently (border-radius swap, 2.4s). Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
+Every `.pill` — and the shop tabs (also the selected tab), the Weekly/Monthly switch (also the checked option) and the round arrows (also while pressed) — fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete. Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
 
 ### 5b. Shine
 `.shine::after`: a white glint sweeps across a pill every 3.2s (CSS). Static mode stops it.
