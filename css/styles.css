@@ -247,7 +247,8 @@ video { background: var(--deep); }
 .spring-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: translateZ(0); }
 .spring-stage::after { content: ""; position: absolute; inset: 40% 0 0 0; z-index: 1; background: linear-gradient(180deg, transparent, rgba(4,18,31,.8)); pointer-events: none; }
 .spring-mask { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; background: var(--abyss); color: #fff; mix-blend-mode: multiply; pointer-events: none; }
-.spring-word { display: block; font-family: var(--display); font-size: 30vw; line-height: .8; white-space: nowrap; will-change: transform;  font-weight: 400;}
+.spring-word { display: block; font-family: var(--display); font-size: 30vw; line-height: .8; white-space: nowrap;  font-weight: 400;}
+.hero-portal .spring-word { will-change: transform; }   /* SPRING's own word gets it from JS only while its pin can zoom it */
 .spring-copy { position: absolute; inset: auto 0 0 0; z-index: 2; display: grid; justify-items: center; gap: .7rem; padding: 0 var(--gutter) 12svh; text-align: center; }
 .spring-mark { width: clamp(90px, 9vw, 130px); aspect-ratio: 282 / 174; height: auto; --mark-wave: var(--foam); }
 .spring-kicker { font-size: .8rem; font-weight: 800; letter-spacing: .42em; text-transform: uppercase; color: var(--lemon); text-shadow: 0 2px 14px rgba(4,18,31,.7); }
@@ -344,9 +345,9 @@ video { background: var(--deep); }
 .bundle:hover .bundle-bottles .bottle:nth-child(1) img { translate: -6px -4px; rotate: -3deg; }
 .bundle:hover .bundle-bottles .bottle:nth-child(2) img { translate: 0 -6px; scale: 1.02; }
 .bundle:hover .bundle-bottles .bottle:nth-child(3) img { translate: 6px -4px; rotate: 3deg; }
-.bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; mix-blend-mode: soft-light;
+.bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s;
   background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(255,255,255,.75), transparent 60%); }
-.bundle:hover .bundle-glare { opacity: 1; }
+.bundle:hover .bundle-glare, .bundle:focus-within .bundle-glare { opacity: 1; mix-blend-mode: soft-light; }   /* blend only while shown: an idle blend layer still costs a composite pass */
 .bundle .pill { transition: transform .4s var(--ease-out), box-shadow .4s, color .3s; }
 .b-aqua .pill::before { background: var(--tide); }   /* aqua would vanish into the aqua card */
 .b-deep .pill::before { background: var(--lemon); }   /* the deep card is already blue: lemon water reads clearly */

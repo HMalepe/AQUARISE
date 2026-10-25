@@ -309,6 +309,7 @@
     .set(lensZoom, { z: ZOOM_FROM }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
+    .set(lens, { autoAlpha: .001 }, .42)                                                                         // on screen but invisible: the portal clip decodes its first frames before the lens shows
     .set(lens, { autoAlpha: 1 }, .52)
     .to(lensC, { p: 1, ease: 'power2.inOut', duration: .44, onUpdate: lensDraw }, .52)                                          // the lens opens small → full
     .to('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
@@ -321,11 +322,11 @@
   const pv = $('.hero-portal-frame'), vid = $('.spring-video');
   let springOn = true;
   function syncFalls() {   // hoisted: the hero timeline can call it on creation
-    const dive = heroP > .45 && springOn, portalOn = dive && heroP < .999;
+    const dive = heroP > .42 && springOn, portalOn = dive && heroP < .999;
     if (heroP > .3 && pv.preload !== 'auto') { pv.preload = vid.preload = 'auto'; pv.load(); vid.load(); }   // fetch just ahead of the dive
     if (!dive) { pv.paused || pv.pause(); vid.paused || vid.pause(); return; }
-    if (vid.paused) { if (heroP < .5) pv.currentTime = vid.currentTime; playV(vid); }
-    if (portalOn && pv.paused) { if (heroP < .5) pv.currentTime = vid.currentTime; playV(pv); }
+    if (vid.paused) { if (heroP < .52) pv.currentTime = vid.currentTime; playV(vid); }
+    if (portalOn && pv.paused) { if (heroP < .52) pv.currentTime = vid.currentTime; playV(pv); }
     if (!portalOn && !pv.paused) pv.pause();
   }
   ScrollTrigger.create({ trigger: '.spring', start: 'top bottom', end: 'bottom top', onToggle: st => { springOn = st.isActive; syncFalls(); } });
@@ -377,11 +378,20 @@
   };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true } })
-    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => { const sc = Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3); gsap.set(sWord, { scale: sc }); sMask.style.visibility = sc > 22 ? 'hidden' : ''; } }, 0)   // past ~17x the I's stem fills the screen: hide the giant text instead of rasterising it at 48x   // picks up the lens' zoom rate, then accelerates to 48×
+  // picks up the lens' zoom rate, then accelerates to 48×
+  const springScale = p => Math.exp(ZOOM_RATE * p + (Math.log(48) - ZOOM_RATE) * p ** 3);
+  let pHide = 0, pHi = 1;   // progress where the scale passes 22× (bisection; the curve only rises)
+  for (let i = 0; i < 30; i++) { const m = (pHide + pHi) / 2; springScale(m) < 22 ? pHide = m : pHi = m; }
+  const wordLayer = on => { sWord.style.willChange = on ? 'transform' : 'auto'; };
+  wordLayer(true);   // the page starts above SPRING, which zooms right after the hero
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true,
+      onToggle: st => wordLayer(st.isActive || st.progress === 0) } })
+    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => gsap.set(sWord, { scale: springScale(springZoom.p) }) }, 0)
+    // past ~17× the I's stem fills the screen: the text goes transparent at 22× (a fixed point, opacity only: no repaint)
+    .fromTo(sMask, { opacity: 1 }, { opacity: 0, duration: .001, immediateRender: false }, pHide * 1.04)
     .fromTo('.spring-stage .spring-glow', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
-    .to('.spring-stage .spring-mask', { autoAlpha: 0, duration: .08 }, 1.04)
+    .fromTo(sMask, { visibility: 'inherit' }, { visibility: 'hidden', duration: .001, immediateRender: false }, 1.04)   // already transparent: just drop it from rendering
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
     .to({}, { duration: .3 });
 
@@ -505,10 +515,11 @@
   }));
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
-  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true } });   // no lag: at the very bottom of the page the word is fully up
+  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true,
+    onToggle: st => { $('.foot-mark').style.willChange = st.isActive ? 'transform' : 'auto'; } } });   // no lag: at the very bottom of the page the word is fully up
 
   /* ── C12b · switch blend/blur layers off in sections more than a screen away ── */
-  const perfIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('perf-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+  const perfIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('perf-off', !e.isIntersecting)), { rootMargin: '25% 0px' });
   ['.hero', '.spring', '.feature', '.promise', '.shop', '.bundles', '.join', '.footer'].forEach(sel => { const el = $(sel); el && perfIO.observe(el); });
 
   /* ── C13 · ordering + refresh ── */

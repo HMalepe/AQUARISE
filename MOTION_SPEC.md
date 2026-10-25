@@ -68,7 +68,7 @@ Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: true` (no extra 
 | .46 → .86 | `.hero-dim` fades to `.9`, `sine.inOut` |
 | .52 → 1 | **fisheye lens**: a soft-edged circle `.lens` (static radial mask, 220vmax, centred at 50% 46%) scales `0.04 → 1` with transform, `power2.inOut`; `.lens-in` is counter-scaled (1/scale) so the picture doesn't grow with the circle, and the lens video has feathered edges. Inside it the SPRING frame (canvas + word) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
 | end | no hold (.01): SPRING's own zoom takes over at the same scroll position |
-Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal paints SPRING's live video frame every tick while visible, so the hand-off matches on every pass.
+Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal and SPRING play the same waterfall in two `<video>`s, started together (synced) at hero .42 while the lens sits on screen at opacity .001 so its first frames are decoded before it shows at .52. The portal pauses the frame SPRING becomes visible (.999), and both pause when SPRING leaves. Only one decodes outside the dive.
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases. `.spring` is shown/hidden by the hero timeline's own scrub-smoothed progress (`> .999`), not the raw scroll position, so a fast scroll can never swap sections before the lens has finished (or, going up, started closing).
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 The old water flood ("Drawn from the deep") and the 02 Tides section were removed.
@@ -142,5 +142,5 @@ Word rises and fade-ups only. The join button uses the shared water-fill hover (
 - No CSS `filter` animated on full-screen layers or videos; use an overlay's opacity instead (`.spring-glow`). Bake fixed looks into the video file (mist contrast/blur is baked).
 - No `blur()` tweens on full-screen layers; fade opacity instead.
 - Never seek a video that is on screen; never `drawImage` video frames per tick.
-- Hide giant scaled text once it covers the screen (`.spring-mask` hidden past 22×) so the browser never rasterises it at 48×.
+- Hide giant scaled text once it covers the screen (`.spring-mask` goes to opacity 0 at the timeline position where scale reaches 22×, computed once, not toggled in `onUpdate`; `visibility: hidden` at 1.04). `will-change: transform` on SPRING's word only while its pin can zoom it; `.foot-mark` only while its trigger is active. `.bundle-glare` blends only while hovered so the browser never rasterises it at 48×.
 - MP4 (H.264, hardware-decoded) is listed before WebM in every `<video>`.
