@@ -279,29 +279,31 @@
   tuckSpring();
   ScrollTrigger.addEventListener('refreshInit', tuckSpring);
   gsap.set(spring, { autoAlpha: 0 });
-  // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre (--r) while the SPRING frame inside
-  // it starts magnified and settles (scale 1.7 → 1) and the outside dims, like light bending through the bottle.
-  const lens = $('.hero-portal'), lensEl = $('.lens'), lensIn = $('.lens-in'), lensC = { p: .001 };
-  // the circle grows with transform only (cheap); the picture inside is counter-scaled so it doesn't grow with it
-  const lensDraw = () => { const k = Math.max(lensC.p, .04); gsap.set(lensEl, { scale: k }); gsap.set(lensIn, { scale: 1 / k }); };
+  // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre while the SPRING frame inside
+  // it starts magnified and settles (scale .55 → 1) and the outside dims, like light bending through the bottle.
+  // The circle is a clip-path on the portal, so the picture inside never moves: a scaled wrapper with a counter-scaled
+  // picture (the old way) snapped each layer to whole pixels separately and the picture jittered by ~.5px every frame.
+  // The soft rim is a small radial-gradient ring scaled with transform (no content inside it).
+  const lens = $('.hero-portal'), ring = $('.lens-ring'), lensC = { p: 0 };
+  const lensDraw = () => {
+    const r = lensC.p <= 0 ? 0 : Math.max(lensC.p, .04) * Math.max(innerWidth, innerHeight) * 1.1;   // 110vmax when fully open
+    lens.style.clipPath = `circle(${r.toFixed(1)}px at 50% 46%)`;
+    gsap.set(ring, { scale: r / 256 });   // the ring is 512px across, its rim at 78–100% of the radius
+  };
   // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
   // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
   const ZOOM_FROM = Math.log(.55), ZOOM_RATE = -ZOOM_FROM, lensZoom = { z: ZOOM_FROM };
   // SPRING is revealed by the hero timeline's progress. Both pinned timelines use scrub: true (Lenis already smooths the
   // scroll), so that progress is exactly the pin position: no scrub lag can leave the lens on screen after the hero unpins
   // (that made SPRING drop ~100px at the hand-off), and the two zooms meet at the same frame.
-  let heroP = 0;
-  const heroVid = $('.hero-img');
-  let covered = false, diving = false;
+  let heroP = 0, diving = false;
   const showSpring = tl => {
     heroP = tl.progress(); gsap.set(spring, { autoAlpha: heroP > .999 ? 1 : 0 }); syncFalls();
-    // the lens covers the hero clip from ~.96: stop decoding it (resume below .9; the gap stops it flapping)
-    if (!covered && heroP > .96) { covered = true; heroVid.dataset.hold = 1; heroVid.pause(); }
-    else if (covered && heroP < .9) { covered = false; delete heroVid.dataset.hold; reduce || playV(heroVid); }
     if (diving !== heroP > .42) { diving = !diving; hero.classList.toggle('is-diving', diving); }   // ripple blend layer off during the dive
   };
-  const heroLayers = on => gsap.set('.hero-media, .lens, .lens-in', { willChange: on ? 'transform' : 'auto' });
-  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1, fastScrollEnd: true, onToggle: st => heroLayers(st.isActive) } })
+  const heroLayers = on => gsap.set('.hero-media, .lens-ring, .hero-portal-frame, .lens-vig', { willChange: on ? 'transform' : 'auto' });
+  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true, onToggle: st => heroLayers(st.isActive),
+      onRefresh: lensDraw } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
@@ -312,32 +314,53 @@
     // start states live in the timeline so scrubbing back always restores them
     .set('.hero-dim', { autoAlpha: 0 }, 0)
     .set(lens, { autoAlpha: 0 }, 0)
-    .set(lensC, { p: .001 }, 0)
+    .set(lensC, { p: 0 }, 0)
     .set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: .55 }, 0)
     .add(lensDraw, 0)
     .set(lensZoom, { z: ZOOM_FROM }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
-    .set(lens, { autoAlpha: .001 }, .42)                                                                         // on screen but invisible: the portal clip decodes its first frames before the lens shows
-    .set(lens, { autoAlpha: 1 }, .52)
+    .set(lens, { autoAlpha: 1 }, .42)   // shown but clipped to a 0px circle until .52: the portal clip is already playing when the lens opens
     .to(lensC, { p: 1, ease: 'power2.inOut', duration: .44, onUpdate: lensDraw }, .52)                                          // the lens opens small → full
     .to('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
     .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
     .fromTo('.lens-vig', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'none', duration: .2, immediateRender: false }, .8)   // edges brighten gradually to match SPRING
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
-  // The portal and SPRING show the same waterfall in two <video>s. Neither decodes before the dive: both start together
-  // (synced while the lens is still hidden) when the hero reaches .45, the portal stops once SPRING has taken over,
-  // and both stop when SPRING is off screen. No seeks while either is visible: an on-screen seek stalls the page.
-  const pv = $('.hero-portal-frame'), vid = $('.spring-video');
-  let springOn = true;
+  // Video budget: one clip decoding at a time through the dive.
+  //   hero clip  plays until .50 (behind a ~90% dim by then), resumes below .46
+  //   portal     plays .42 → .999 (the lens is open .52 → 1)
+  //   SPRING     plays from .999 (the frame it becomes visible); the portal pauses in the same call
+  // Both waterfalls are synced to 0 once while both are hidden (.30–.40). Near the hand-off the hidden one is kept
+  // paused a moment ahead of the visible one (a seek on a hidden clip is harmless), so swapping shows the same frame.
+  // play() is never re-issued while pending, and nothing seeks a clip that is on screen.
+  const pv = $('.hero-portal-frame'), vid = $('.spring-video'), heroVid = $('.hero-img');
+  const want = (v, on) => {
+    if (on) {
+      if (!v.paused || v._pending) return;
+      v._pending = true; const pr = v.play();
+      pr ? pr.then(() => { v._pending = false; }, () => { v._pending = false; }) : (v._pending = false);
+    } else if (!v.paused || v._pending) v.pause();
+  };
+  let springOn = true, synced = false, heroHeld = false, springP = 0, lastSeek = 0;
+  const shadow = (hidden, src) => {   // park the hidden clip just ahead of the visible one
+    const now = performance.now(), d = src.duration;
+    if (!d || hidden.seeking || now - lastSeek < 250 || Math.abs(hidden.currentTime - src.currentTime) < .25) return;
+    lastSeek = now; hidden.currentTime = (src.currentTime + .15) % d;
+  };
   function syncFalls() {   // hoisted: the hero timeline can call it on creation
-    const dive = heroP > .42 && springOn, portalOn = dive && heroP < .999;
-    if (heroP > .3 && pv.preload !== 'auto') { pv.preload = vid.preload = 'auto'; pv.load(); vid.load(); }   // fetch just ahead of the dive
-    if (!dive) { pv.paused || pv.pause(); vid.paused || vid.pause(); return; }
-    if (vid.paused) { if (heroP < .52) pv.currentTime = vid.currentTime; playV(vid); }
-    if (portalOn && pv.paused) { if (heroP < .52) pv.currentTime = vid.currentTime; playV(pv); }
-    if (!portalOn && !pv.paused) pv.pause();
+    const p = heroP;
+    if (!heroHeld && p > .5) { heroHeld = true; heroVid.dataset.hold = 1; want(heroVid, false); }
+    else if (heroHeld && p < .46) { heroHeld = false; delete heroVid.dataset.hold; reduce || want(heroVid, true); }
+    if (p < .3) synced = false;
+    else if (!synced && p < .4) { synced = true; want(pv, false); want(vid, false); pv.currentTime = vid.currentTime = 0; }
+    want(pv, springOn && p >= .42 && p < .999);
+    want(vid, springOn && p >= .999);
   }
+  gsap.ticker.add(() => {
+    if (!springOn) return;
+    if (heroP > .9 && heroP < .999) shadow(vid, pv);          // SPRING still hidden: keep it on the portal's frame
+    else if (heroP >= .999 && springP < .15) shadow(pv, vid); // the hero is under SPRING: keep the portal ready for a scroll back
+  });
   ScrollTrigger.create({ trigger: '.spring', start: 'top bottom', end: 'bottom top', onToggle: st => { springOn = st.isActive; syncFalls(); } });
 
   // pointer ripples on the hero water
@@ -392,15 +415,16 @@
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
   // picks up the lens' zoom rate, then accelerates to 48×
   const springScale = p => Math.exp(ZOOM_RATE * p + (Math.log(48) - ZOOM_RATE) * p ** 3);
-  let pHide = 0, pHi = 1;   // progress where the scale passes 22× (bisection; the curve only rises)
-  for (let i = 0; i < 30; i++) { const m = (pHide + pHi) / 2; springScale(m) < 22 ? pHide = m : pHi = m; }
+  let pHide = 0, pHi = 1;   // progress where the scale passes 10× (bisection; the curve only rises)
+  for (let i = 0; i < 30; i++) { const m = (pHide + pHi) / 2; springScale(m) < 10 ? pHide = m : pHi = m; }
   const wordLayer = on => { sWord.style.willChange = on ? 'transform' : 'auto'; };
   wordLayer(true);   // the page starts above SPRING, which zooms right after the hero
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1, fastScrollEnd: true,
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true,
       onToggle: st => wordLayer(st.isActive || st.progress === 0) } })
-    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => gsap.set(sWord, { scale: springScale(springZoom.p) }) }, 0)
-    // past ~17× the I's stem fills the screen: the text goes transparent at 22× (a fixed point, opacity only: no repaint)
-    .fromTo(sMask, { opacity: 1 }, { opacity: 0, duration: .001, immediateRender: false }, pHide * 1.04)
+    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => { springP = springZoom.p; gsap.set(sWord, { scale: Math.min(springScale(springZoom.p), springScale(Math.min(1, pHide + .08))) }); } }, 0)
+    // the word is never drawn past ~10×: from there the mask fades out over .08 while the waterfall itself carries the push
+    .fromTo(sMask, { opacity: 1 }, { opacity: 0, ease: 'none', duration: .08, immediateRender: false }, pHide * 1.04)
+    .fromTo('.spring-video', { scale: 1 }, { scale: 1.12, ease: 'none', duration: 1.04 - pHide * 1.04, immediateRender: false }, pHide * 1.04)
     .fromTo('.spring-stage .spring-glow', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
     .fromTo(sMask, { visibility: 'inherit' }, { visibility: 'hidden', duration: .001, immediateRender: false }, 1.04)   // already transparent: just drop it from rendering
@@ -423,7 +447,7 @@
     .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 4.45)
     .to({}, { duration: .05 });
   gsap.matchMedia()
-    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 3.2, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1, fastScrollEnd: true }); })
+    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 3.2, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true }); })
     .add('(max-width: 960px), (max-height: 599px)', () => { featureSeq({ trigger: '.feature', start: 'top 85%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true }); });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').forEach((w, i) => w.classList.add('shimmer-word', 'sw-' + i));   // PURE aqua, CRISP ice-white, ALIVE lemon, one after another

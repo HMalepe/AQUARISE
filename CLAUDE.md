@@ -19,7 +19,7 @@
 ## Motion gotchas
 - Never hide content with CSS start states. Set start states with `gsap.set` or `fromTo` so static mode and no-JS still show everything.
 - When an element's start state was set earlier by another tween (e.g. the intro), use `fromTo` with explicit values and `immediateRender: false` inside scrubbed timelines. A plain `.to()`/`.from()` records the wrong start value.
-- Animate only `transform` and `opacity`. Water reveals are a wave-edged layer moved with transform (static CSS mask for the wave). No animated clip-path, mask, filter/blur or box-shadow on large elements. Run `node tools/perf/flick.mjs` after motion changes (see README).
+- Animate only `transform` and `opacity`. Water reveals are a wave-edged layer moved with transform (static CSS mask for the wave). No animated clip-path, mask, filter/blur or box-shadow on large elements. One exception: the hero lens is a `clip-path: circle()` on `.hero-portal` (a scaled wrapper with a counter-scaled picture jittered by ~.5px per frame); its soft rim is a small transform-scaled ring. Run `node tools/perf/flick.mjs` after motion changes (see README).
 - Any element with z-indexed children stacked under another layer needs `isolation: isolate` (see `.scene`).
 - Pinned durations: function values + `invalidateOnRefresh: true`. Size pinned focus elements in `svh`.
 - Every new animation needs a `.static` fallback that shows the final state.

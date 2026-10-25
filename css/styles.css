@@ -227,14 +227,15 @@ video { background: var(--deep); }
 .hero-offer-btn { font-size: 1.15rem; padding: 1.05em 2.2em; box-shadow: 0 14px 40px rgba(4,18,31,.45); }
 .hero-dim { position: absolute; inset: 0; z-index: 4; background: var(--abyss); visibility: hidden; pointer-events: none; }
 .hero-portal { position: absolute; inset: 0; z-index: 5; overflow: hidden; visibility: hidden; pointer-events: none; }
-/* fisheye lens: a soft-edged circle (static mask) scaled with transform; .lens-in is counter-scaled so the picture stays put */
-.lens { position: absolute; left: 50%; top: 46%; width: 220vmax; height: 220vmax; margin: -110vmax 0 0 -110vmax; border-radius: 50%; overflow: hidden; background: var(--abyss); isolation: isolate;
-  -webkit-mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); transform: scale(0); }
-.lens-in { position: absolute; left: calc(110vmax - 50vw); top: calc(110vmax - 46svh); width: 100vw; height: 100svh; transform-origin: 50% 46%; }
+/* fisheye lens: the portal is clipped to a circle (clip-path set per frame from JS); the picture inside never scales with it */
+.hero-portal { clip-path: circle(0px at 50% 46%); background: var(--abyss); }   /* the lens interior is solid abyss around the picture, as before */
+.lens-ring { position: absolute; left: 50%; top: 46%; width: 512px; height: 512px; margin: -256px 0 0 -256px; z-index: 6; pointer-events: none; transform: scale(0);
+  background: radial-gradient(circle closest-side, transparent 78%, var(--abyss) 100%); }   /* the soft rim; transform only, nothing inside */
 .hero-portal-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .lens-vig { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--abyss), transparent 14%, transparent 86%, var(--abyss)), linear-gradient(var(--abyss), transparent 14%, transparent 86%, var(--abyss)); }   /* soft edges while the picture is smaller than the screen; fades out before the hand-off */
-/* brightening layer (screen blend) — composited, unlike a CSS filter on video which re-filters every frame */
-.spring-glow { position: absolute; inset: 0; background: rgba(255,236,214,.22); mix-blend-mode: screen; pointer-events: none; }
+/* brightening layer: a plain warm overlay. A screen blend of the same colour differs by <4% (blue channel) but forced a
+   blend pass over the playing video every frame */
+.spring-glow { position: absolute; inset: 0; background: rgba(255,236,214,.22); pointer-events: none; }
 .spring-stage .spring-glow { z-index: 1; }
 /* a glint sweeps across the button every few seconds */
 .shine::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%); transform: translateX(-120%); animation: shine 3.2s var(--ease-out) infinite 1s; }
