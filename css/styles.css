@@ -494,6 +494,8 @@ video { background: var(--deep); }
 .static .spring-mask, .static .hero-portal, .static .hero-dim, .static .spring-glow { display: none; }
 .static .static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }
 .static .bubbles { display: none; }
+/* one-way scroll: after scrolling back up, scroll animations are taken down; these overlays only exist for them */
+.scroll-frozen .hero-offer, .scroll-frozen .hero-portal, .scroll-frozen .hero-dim, .scroll-frozen .spring-stage .spring-mask { display: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

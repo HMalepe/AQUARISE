@@ -244,6 +244,11 @@
     el.innerHTML = words.map(w => `<span class="w"><span class="wi">${esc(w)}</span></span>`).join(' ');
   });
 
+  // Scroll-driven (scrubbed/pinned) animations are registered as builders and built together in one gsap.context, so they
+  // can be taken down and rebuilt: scrolling back up never plays them in reverse (see C13).
+  const scrollBuilds = [];
+  let heroST = null, featureMM = null;
+
   /* ── C2 · LOADER → letterbox opens → hero intro ── */
   const heroWords = $$('.hero-title .wi');
   gsap.set(heroWords, { yPercent: 118 });
@@ -274,10 +279,9 @@
   // Then the camera dives into the bottle and a portal opens onto SPRING's first frame. SPRING is pulled up under
   // the hero (negative margin) and stays invisible until the hero lets go, so the hand-off has no scroll at all.
   const hero = $('.hero'), spring = $('.spring');
-  const tuckSpring = () => { spring.style.marginTop = -hero.offsetHeight + 'px'; };
+  const tuckSpring = () => { spring.style.marginTop = html.classList.contains('scroll-frozen') ? '' : -hero.offsetHeight + 'px'; };
   tuckSpring();
   ScrollTrigger.addEventListener('refreshInit', tuckSpring);
-  gsap.set(spring, { autoAlpha: 0 });
   // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre (--r) while the SPRING frame inside
   // it starts magnified and settles (scale 1.7 → 1) and the outside dims, like light bending through the bottle.
   const lens = $('.hero-portal'), lensEl = $('.lens'), lensIn = $('.lens-in'), lensC = { p: .001 };
@@ -290,7 +294,9 @@
   // scroll), so that progress is exactly the pin position: no scrub lag can leave the lens on screen after the hero unpins
   // (that made SPRING drop ~100px at the hand-off), and the two zooms meet at the same frame.
   const showSpring = tl => gsap.set(spring, { autoAlpha: tl.progress() > .999 ? 1 : 0 });
-  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true } })
+  scrollBuilds.push(() => {
+  gsap.set(spring, { autoAlpha: 0 });
+  heroST = gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
@@ -312,7 +318,9 @@
     .to('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
     .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
     .fromTo('.lens-vig', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'none', duration: .2, immediateRender: false }, .8)   // edges brighten gradually to match SPRING
-    .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
+    .to({}, { duration: .01 })   // no hold: SPRING's own zoom takes over at the same moment
+    .scrollTrigger;
+  });
   // The portal shows the same waterfall as SPRING in its own <video>. Both loops start together and keep playing side by
   // side (same clip, same length), so they stay in step without seeking; any drift is corrected only while the lens is
   // hidden, because a seek on screen stalls the page (and copying frames into a canvas did too).
@@ -373,13 +381,13 @@
   };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true } })
+  scrollBuilds.push(() => gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true } })
     .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => { const sc = Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3); gsap.set(sWord, { scale: sc }); sMask.style.visibility = sc > 22 ? 'hidden' : ''; } }, 0)   // past ~17x the I's stem fills the screen: hide the giant text instead of rasterising it at 48x   // picks up the lens' zoom rate, then accelerates to 48×
     .fromTo('.spring-stage .spring-glow', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
     .to('.spring-stage .spring-mask', { autoAlpha: 0, duration: .08 }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
-    .to({}, { duration: .3 });
+    .to({}, { duration: .3 }));
 
   /* ── C6 · FEATURE: the copy writes itself in as you scroll, the clip opens up beside it ── */
   const lead = $('.feature-lead');
@@ -405,7 +413,7 @@
     .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 3.4)
     .to({}, { duration: .2 });
   };
-  gsap.matchMedia()
+  scrollBuilds.push(() => { featureMM = gsap.matchMedia(); featureMM
     .add('(min-width: 961px) and (min-height: 600px)', () => {
       featureEnter({ trigger: '.feature', start: 'top bottom', end: 'top top' });   // full size by the time the pin starts
       featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4, pin: true, scrub: true, invalidateOnRefresh: true });
@@ -413,17 +421,17 @@
     .add('(max-width: 960px), (max-height: 599px)', () => {
       featureEnter({ trigger: '.feature-visual', start: 'top bottom', end: 'center center' });
       featureSeq({ trigger: '.feature-copy', start: 'top 90%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true });   // words as the copy (below the picture) comes up
-    });
+    }); });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').forEach((w, i) => w.classList.add('shimmer-word', 'sw-' + i));   // PURE aqua, CRISP ice-white, ALIVE lemon, one after another
 
-  $$('[data-speed]').forEach(el => {
+  scrollBuilds.push(() => $$('[data-speed]').forEach(el => {
     const s = parseFloat(el.dataset.speed) || 0;
     gsap.fromTo(el, { y: () => s * 180 }, { y: () => -s * 180, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top bottom', end: 'bottom top', scrub: true, invalidateOnRefresh: true } });
-  });
+  }));
 
   /* ── C8 · SHOP: arch straightens; the bottle glides on a sunlit stage ── */
-  gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: true } });
+  scrollBuilds.push(() => gsap.fromTo('#archPath', { attr: { d: 'M 80 230 Q 500 -10 920 230' } }, { attr: { d: 'M 40 205 Q 500 205 960 205' }, ease: 'none', scrollTrigger: { trigger: '.arch', start: 'top 90%', end: 'top 30%', scrub: true } }));
   const stage = $('.slide-stage');
   gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top 75%', once: true } })
     .fromTo('.stage-glow, .stage-mist', { autoAlpha: 0, scale: .8 }, { autoAlpha: 1, scale: 1, duration: 1.6, ease: 'expo.out' })
@@ -516,13 +524,45 @@
   }));
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
-  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true } });   // no lag: at the very bottom of the page the word is fully up
+  scrollBuilds.push(() => gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true } }));   // no lag: at the very bottom of the page the word is fully up
 
   /* ── C12b · switch blend/blur layers off in sections more than a screen away ── */
   const perfIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('perf-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
   ['.hero', '.shop', '.bundles'].forEach(sel => { const el = $(sel); el && perfIO.observe(el); });
 
-  /* ── C13 · ordering + refresh ── */
+  /* ── C13 · one-way scroll: build, take down on the way up, rebuild at the top ── */
+  // Scrolling down plays every pinned/scrubbed animation. The moment you scroll up from anywhere past the hero, they are all
+  // reverted at once (gsap.context): pins collapse to the sections' normal height and everything shows in its plain, fully
+  // visible layout, with the viewport held on the same section, so the way back up is short and nothing plays in reverse.
+  // Back at the very top, everything is rebuilt and plays again on the next scroll down. Inside the hero pin it still
+  // scrubs both ways (that is the hero itself).
+  let scrollCtx = null, frozen = false;
+  const buildScroll = () => { scrollCtx = gsap.context(() => scrollBuilds.forEach(b => b())); };
+  const anchorOf = () => ['.hero', '.spring', '.feature', '.promise', '.shop', '.bundles', '.join', '.footer'].map(q => $(q)).find(el => el && el.getBoundingClientRect().bottom > 1);
+  const freeze = () => {
+    frozen = true;
+    const anchor = anchorOf(), before = anchor ? anchor.getBoundingClientRect().top : 0;
+    featureMM && featureMM.revert(); scrollCtx.revert();
+    html.classList.add('scroll-frozen'); tuckSpring();
+    ScrollTrigger.refresh();
+    const y = Math.max(0, scrollY + (anchor ? anchor.getBoundingClientRect().top - before : 0));
+    lenis ? lenis.scrollTo(y, { immediate: true, force: true }) : scrollTo(0, y);
+  };
+  const rebuild = () => {
+    frozen = false;
+    html.classList.remove('scroll-frozen'); tuckSpring();
+    buildScroll(); ScrollTrigger.sort(); ScrollTrigger.refresh();
+  };
+  let lastY = scrollY;
+  const oneWay = () => {
+    const y = lenis ? lenis.scroll : scrollY, up = y < lastY - .5; lastY = y;
+    if (!frozen && up && heroST && y > heroST.end + 2) freeze();
+    else if (frozen && y <= 1) rebuild();
+  };
+  buildScroll();
+  lenis ? lenis.on('scroll', oneWay) : addEventListener('scroll', oneWay, { passive: true });
+
+  /* ── C13b · ordering + refresh ── */
   ScrollTrigger.sort();
   document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
   addEventListener('load', () => { scrollTo(0, 0); lenis && lenis.scrollTo(0, { immediate: true }); ScrollTrigger.refresh(); });   // a refresh always starts at the hero

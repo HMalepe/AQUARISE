@@ -144,3 +144,12 @@ Word rises and fade-ups only. The join button uses the shared water-fill hover (
 - Never seek a video that is on screen; never `drawImage` video frames per tick.
 - Hide giant scaled text once it covers the screen (`.spring-mask` hidden past 22×) so the browser never rasterises it at 48×.
 - MP4 (H.264, hardware-decoded) is listed before WebM in every `<video>`.
+
+## One-way scroll (no reverse playback)
+Scroll-driven animations (hero pin, SPRING pin, feature enter + pin/scrub, `[data-speed]` parallax, shop arch, footer wordmark) are registered as builders and built in one `gsap.context` (`js/main.js` C13).
+- Scrolling **down** plays them as specified above.
+- The first scroll **up** from anywhere past the hero's pin end takes them all down at once (`featureMM.revert()` + `scrollCtx.revert()`): pins collapse to the sections' normal heights, everything shows in its plain, fully visible layout, and the page is scrolled so the section at the top of the screen stays exactly where it was (no jump). `html.scroll-frozen` hides the scroll-only overlays (hero offer, portal, dim, SPRING's word mask) and un-tucks SPRING from under the hero. Nothing plays in reverse and the way back up is short.
+- Back at the very top (`scrollY ≤ 1`) everything is rebuilt and plays again on the next scroll down.
+- Inside the hero pin itself it still scrubs both ways.
+- Once-only reveals (`once: true`) are unaffected.
+
