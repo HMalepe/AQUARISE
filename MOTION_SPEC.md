@@ -83,18 +83,18 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 | 0 → 1 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
 | 0 / 1.04 | mask `set autoAlpha 1` at 0 (so rewinding always restores it), then `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
-| end | hold .3 |
+| end | hold .05 (the feature follows straight on) |
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
 
 ### 03 Feature
-One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 4.5 × innerHeight`, `scrub: true`; timeline units = screens. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
-| Screen | Beat (finishes in the first ~60%, then holds) |
+One beat per timeline unit (~.63 screen). Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 3.2 × innerHeight`, `scrub: true`, `anticipatePin: 1`, `fastScrollEnd: true`; 5.05 units total, end hold .05. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
+| Unit | Beat (fills ~85% of its slot, so something always moves) |
 |---|---|
-| ½ (0 → .45) | the picture opens (one short scroll): card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
-| 2 (.55 → 1.15) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
-| 3 (1.55 → 2.15) | "CRISP." |
-| 4 (2.55 → 3.15) | "ALIVE." Then each word keeps its own colour sweep, one after another on a 6s cycle with a rest between: PURE aqua (1s), CRISP icy mist (3s), ALIVE aqua–mist blend (5s). The pills fill with water on hover, like the CTAs. |
-| 5 (3.55 → 4.4) | the paragraph (invisible until now) writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
+| 1 (0 → .85) | the picture opens: card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
+| 2 (1 → 1.85) | "PURE." rises (`yPercent 120 → 0`, `power2.out`) |
+| 3 (2 → 2.85) | "CRISP." |
+| 4 (3 → 3.85) | "ALIVE." Then each word keeps its own colour sweep, one after another on a 6s cycle with a rest between: PURE aqua (1s), CRISP icy mist (3s), ALIVE aqua–mist blend (5s). The pills fill with water on hover, like the CTAs. |
+| 5 (4 → 5) | the paragraph (invisible until now) writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
 No scroll-snapping on purpose: the page never fights the user's scroll.
 
 ### 05 Shop
@@ -142,5 +142,7 @@ Word rises and fade-ups only. The join button uses the shared water-fill hover (
 - No CSS `filter` animated on full-screen layers or videos; use an overlay's opacity instead (`.spring-glow`). Bake fixed looks into the video file (mist contrast/blur is baked).
 - No `blur()` tweens on full-screen layers; fade opacity instead.
 - Never seek a video that is on screen; never `drawImage` video frames per tick.
+- Hero: idle ripple drops only at rest (progress < .02) or within 1.5s of pointer movement; none past .3; the empty canvas is `visibility: hidden` and `.hero.is-diving` (> .42) drops it entirely. The hero clip pauses once the lens covers it (> .96) and resumes below .9. `will-change` on `.hero-media`, `.lens`, `.lens-in` only while the hero pin is active.
+- Bundles: cards stagger .12s, start `top 80%`; the price count-up writes only when the rounded value changes, in a tabular-nums inline-block. Bundle bottles decode when the shop enters.
 - Hide giant scaled text once it covers the screen (`.spring-mask` goes to opacity 0 at the timeline position where scale reaches 22×, computed once, not toggled in `onUpdate`; `visibility: hidden` at 1.04). `will-change: transform` on SPRING's word only while its pin can zoom it; `.foot-mark` only while its trigger is active. `.bundle-glare` blends only while hovered so the browser never rasterises it at 48×.
 - MP4 (H.264, hardware-decoded) is listed before WebM in every `<video>`.

@@ -218,7 +218,7 @@
   if (!motion) { const sv = $('.spring-video'); reduce ? sv.pause() : playV(sv); }
   if (reduce) videos.forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   else if ('IntersectionObserver' in window) {
-    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? playV(e.target) : e.target.pause()), { rootMargin: '25% 0px' });
+    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? (e.target.dataset.hold || playV(e.target)) : e.target.pause()), { rootMargin: '25% 0px' });
     videos.forEach(v => vio.observe(v));
   }
 
@@ -291,8 +291,17 @@
   // scroll), so that progress is exactly the pin position: no scrub lag can leave the lens on screen after the hero unpins
   // (that made SPRING drop ~100px at the hand-off), and the two zooms meet at the same frame.
   let heroP = 0;
-  const showSpring = tl => { heroP = tl.progress(); gsap.set(spring, { autoAlpha: heroP > .999 ? 1 : 0 }); syncFalls(); };
-  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true } })
+  const heroVid = $('.hero-img');
+  let covered = false, diving = false;
+  const showSpring = tl => {
+    heroP = tl.progress(); gsap.set(spring, { autoAlpha: heroP > .999 ? 1 : 0 }); syncFalls();
+    // the lens covers the hero clip from ~.96: stop decoding it (resume below .9; the gap stops it flapping)
+    if (!covered && heroP > .96) { covered = true; heroVid.dataset.hold = 1; heroVid.pause(); }
+    else if (covered && heroP < .9) { covered = false; delete heroVid.dataset.hold; reduce || playV(heroVid); }
+    if (diving !== heroP > .42) { diving = !diving; hero.classList.toggle('is-diving', diving); }   // ripple blend layer off during the dive
+  };
+  const heroLayers = on => gsap.set('.hero-media, .lens, .lens-in', { willChange: on ? 'transform' : 'auto' });
+  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1, fastScrollEnd: true, onToggle: st => heroLayers(st.isActive) } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
@@ -334,18 +343,21 @@
   // pointer ripples on the hero water
   (() => {
     const cv = $('.hero-ripples'), ctx = cv.getContext('2d'), hero = $('.hero');
-    let w = 0, h = 0, active = true, last = 0, auto = 0;
+    let w = 0, h = 0, active = true, last = 0, auto = 0, moved = -1e9, shown = true;
     const rings = [];
     const size = () => { const d = Math.min(devicePixelRatio || 1, 1.5); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
     size(); addEventListener('resize', size);
     hero.addEventListener('pointermove', e => {
-      const now = performance.now(); if (now - last < 70) return; last = now;
+      const now = performance.now(); moved = now; if (now - last < 70) return; last = now;
       const r = cv.getBoundingClientRect(); rings.push({ x: e.clientX - r.left, y: e.clientY - r.top, r: 3, a: .5 });
     });
     ScrollTrigger.create({ trigger: hero, start: 'top bottom', end: 'bottom top', onToggle: s => { active = s.isActive; } });
     gsap.ticker.add(() => {
-      if (!active || heroP > .4) { if (rings.length) { rings.length = 0; ctx.clearRect(0, 0, w, h); } return; }   // nothing to see once the dive starts
-      if (++auto % 50 === 0) rings.push({ x: rand(.15, .85) * w, y: rand(.72, .95) * h, r: 2, a: .35 });
+      if (!active || heroP > .3) rings.length = 0;   // nothing to see once the scroll is under way
+      // idle drops only while the hero sits at rest (or the pointer moved in the last 1.5s)
+      else if ((heroP < .02 || performance.now() - moved < 1500) && ++auto % 50 === 0) rings.push({ x: rand(.15, .85) * w, y: rand(.72, .95) * h, r: 2, a: .35 });
+      // an empty canvas is hidden, so its screen-blend layer costs nothing over the playing video
+      if (shown !== !!rings.length) { shown = !shown; cv.style.visibility = shown ? '' : 'hidden'; if (!shown) ctx.clearRect(0, 0, w, h); }
       if (!rings.length) return;
       ctx.clearRect(0, 0, w, h);
       for (let i = rings.length - 1; i >= 0; i--) {
@@ -384,7 +396,7 @@
   for (let i = 0; i < 30; i++) { const m = (pHide + pHi) / 2; springScale(m) < 22 ? pHide = m : pHi = m; }
   const wordLayer = on => { sWord.style.willChange = on ? 'transform' : 'auto'; };
   wordLayer(true);   // the page starts above SPRING, which zooms right after the hero
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true,
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1, fastScrollEnd: true,
       onToggle: st => wordLayer(st.isActive || st.progress === 0) } })
     .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => gsap.set(sWord, { scale: springScale(springZoom.p) }) }, 0)
     // past ~17× the I's stem fills the screen: the text goes transparent at 22× (a fixed point, opacity only: no repaint)
@@ -393,25 +405,25 @@
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
     .fromTo(sMask, { visibility: 'inherit' }, { visibility: 'hidden', duration: .001, immediateRender: false }, 1.04)   // already transparent: just drop it from rendering
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
-    .to({}, { duration: .3 });
+    .to({}, { duration: .05 });   // barely any hold: the feature follows straight on
 
   /* ── C6 · FEATURE: the copy writes itself in as you scroll, the clip opens up beside it ── */
   const lead = $('.feature-lead');
   lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="lw">${esc(w)}</span>`).join(' ');
   // Picture first, then each headline word, the paragraph word by word, then the pills one at a time. Desktop pins the
   // section for ~4 screens so it plays in place; phones (section taller than the screen) scroll it through, same order.
-  // One timeline unit = one screen of scrolling: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills.
-  // Each beat finishes in the first ~60% of its screen and then holds, so nothing rushes past on a single flick.
+  // One timeline unit = one beat: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills (~.63 screen each on desktop).
+  // Each beat fills ~85% of its slot, so there is always something moving under the scroll.
   const featureSeq = st => gsap.timeline({ scrollTrigger: st })
-    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
-    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
-    .fromTo('.feature .h-xl .wi', { yPercent: 120 }, { yPercent: 0, ease: 'power2.out', duration: .6, stagger: 1 }, .55)
-    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 3.55)
-    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 3.9)
-    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 3.95)
-    .to({}, { duration: .2 });
+    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .85 }, 0)
+    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .85 }, 0)
+    .fromTo('.feature .h-xl .wi', { yPercent: 120 }, { yPercent: 0, ease: 'power2.out', duration: .85, stagger: 1 }, 1)
+    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 4)
+    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 4.4)
+    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 4.45)
+    .to({}, { duration: .05 });
   gsap.matchMedia()
-    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4.5, pin: true, scrub: true, invalidateOnRefresh: true }); })
+    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 3.2, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1, fastScrollEnd: true }); })
     .add('(max-width: 960px), (max-height: 599px)', () => { featureSeq({ trigger: '.feature', start: 'top 85%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true }); });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').forEach((w, i) => w.classList.add('shimmer-word', 'sw-' + i));   // PURE aqua, CRISP ice-white, ALIVE lemon, one after another
@@ -470,20 +482,21 @@
   })();
 
   /* ── C9 · BUNDLES: cards fill with water, bottles drop in, prices count up; tilt, glare and perk chips on hover ── */
+  ScrollTrigger.create({ trigger: '.shop', start: 'top bottom', once: true, onEnter: () => $$('.bundle img').forEach(i => i.decode && i.decode().catch(() => {})) });
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  $$('[data-reveal-wave]').forEach(card => {
+  $$('[data-reveal-wave]').forEach((card, ci) => {
     const cover = document.createElement('i'); cover.className = 'reveal-cover'; card.appendChild(cover);
     const kids = [...card.children].filter(c => !c.matches('.bundle-glare, .reveal-cover'));
     const count = $('[data-count]', card);
-    const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
+    const tl = gsap.timeline({ delay: ci * .12, scrollTrigger: { trigger: card, start: 'top 80%', once: true } })   // cards side by side don't all start on one frame
       .fromTo(cover, { yPercent: 0 }, { yPercent: -105, duration: 1.6, ease: 'power2.out' })
       .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
     const trio = $$('.bundle-bottles .bottle', card), freq = $('.freq', card);
     if (trio.length) tl.fromTo(trio, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: 'expo.out', stagger: .1 }, .5);   // calm rise, no bounce
     if (freq) tl.fromTo(freq, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .9, ease: 'power3.out' }, .7);
     if (count) {   // price counts up from zero
-      const n = { v: 0 }, end = +count.dataset.count;
-      tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
+      const n = { v: 0 }, end = +count.dataset.count; let shownV = -1;
+      tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { const v = Math.round(n.v); if (v !== shownV && count.isConnected) { shownV = v; count.textContent = 'R' + v; } } }, .7);
     }
   });
   if (canHover) $$('[data-tilt]').forEach(card => {
