@@ -227,10 +227,14 @@ video { background: var(--deep); }
 .hero-offer-btn { font-size: 1.15rem; padding: 1.05em 2.2em; box-shadow: 0 14px 40px rgba(4,18,31,.45); }
 .hero-dim { position: absolute; inset: 0; z-index: 4; background: var(--abyss); visibility: hidden; pointer-events: none; }
 .hero-portal { position: absolute; inset: 0; z-index: 5; overflow: hidden; visibility: hidden; pointer-events: none; }
-/* fisheye lens: the portal is clipped to a circle (clip-path set per frame from JS); the picture inside never scales with it */
-.hero-portal { clip-path: circle(0px at 50% 46%); background: var(--abyss); }   /* the lens interior is solid abyss around the picture, as before */
-.lens-ring { position: absolute; left: 50%; top: 46%; width: 512px; height: 512px; margin: -256px 0 0 -256px; z-index: 6; pointer-events: none; transform: scale(0);
-  background: radial-gradient(circle closest-side, transparent 78%, var(--abyss) 100%); }   /* the soft rim; transform only, nothing inside */
+/* fisheye lens: a soft-edged circle (static mask) scaled with transform; .lens-in is counter-scaled so the picture stays put.
+   Both scales are written at full precision from JS (GSAP rounds scale to 4 decimals, and at the lens' small start scale
+   that rounding made the picture wobble ~1px). Nothing is repainted per frame: no animated clip-path. */
+.lens { position: absolute; left: 50%; top: 46%; width: 220vmax; height: 220vmax; margin: -110vmax 0 0 -110vmax; border-radius: 50%; overflow: hidden; background: var(--abyss); isolation: isolate;
+  -webkit-mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); transform: scale(0); }
+.lens-in { position: absolute; left: calc(110vmax - 50vw); top: calc(110vmax - 46svh); width: 100vw; height: 100svh; transform-origin: 50% 46%; }
+.lens-open .lens { left: 0; top: 0; width: 100%; height: 100%; margin: 0; border-radius: 0; -webkit-mask: none; mask: none; transform: none; }
+.lens-open .lens-in { left: 0; top: 0; transform: none; }
 .hero-portal-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .lens-vig { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--abyss), transparent 14%, transparent 86%, var(--abyss)), linear-gradient(var(--abyss), transparent 14%, transparent 86%, var(--abyss)); }   /* soft edges while the picture is smaller than the screen; fades out before the hand-off */
 /* brightening layer: a plain warm overlay. A screen blend of the same colour differs by <4% (blue channel) but forced a

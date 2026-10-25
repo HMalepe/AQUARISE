@@ -281,14 +281,19 @@
   gsap.set(spring, { autoAlpha: 0 });
   // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre while the SPRING frame inside
   // it starts magnified and settles (scale .55 → 1) and the outside dims, like light bending through the bottle.
-  // The circle is a clip-path on the portal, so the picture inside never moves: a scaled wrapper with a counter-scaled
-  // picture (the old way) snapped each layer to whole pixels separately and the picture jittered by ~.5px every frame.
-  // The soft rim is a small radial-gradient ring scaled with transform (no content inside it).
-  const lens = $('.hero-portal'), ring = $('.lens-ring'), lensC = { p: 0 };
+  // The circle (.lens, static mask) grows with transform; the picture inside (.lens-in) is counter-scaled around the same
+  // centre so it stays put. Both are composited and written at full precision, so k × 1/k is exactly 1 on screen:
+  // GSAP rounds scale to 4 decimals, which at k ≈ .04 left a ~1px wobble. No clip-path (that repainted every frame).
+  const lens = $('.hero-portal'), lensEl = $('.lens'), lensIn = $('.lens-in'), lensC = { p: 0 };
+  // Once the circle's solid part (78% of its radius) covers the farthest screen corner, the circle is swapped for a plain
+  // full-screen box (.lens-open: no mask, no scale): the picture lands on the same pixels and the huge masked layer is gone.
+  let lensOpen = false;
   const lensDraw = () => {
-    const r = lensC.p <= 0 ? 0 : Math.max(lensC.p, .04) * Math.max(innerWidth, innerHeight) * 1.1;   // 110vmax when fully open
-    lens.style.clipPath = `circle(${r.toFixed(1)}px at 50% 46%)`;
-    gsap.set(ring, { scale: r / 256 });   // the ring is 512px across, its rim at 78–100% of the radius
+    const k = Math.max(lensC.p, .04), vmax = Math.max(innerWidth, innerHeight);
+    const open = k * 1.1 * vmax * .78 >= Math.hypot(innerWidth / 2, innerHeight * .54) + 2;
+    if (open !== lensOpen) { lensOpen = open; lens.classList.toggle('lens-open', open); }
+    if (open) { lensEl.style.transform = lensIn.style.transform = ''; return; }
+    lensEl.style.transform = `scale(${k})`; lensIn.style.transform = `scale(${1 / k})`;
   };
   // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
   // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
@@ -296,12 +301,14 @@
   // SPRING is revealed by the hero timeline's progress. Both pinned timelines use scrub: true (Lenis already smooths the
   // scroll), so that progress is exactly the pin position: no scrub lag can leave the lens on screen after the hero unpins
   // (that made SPRING drop ~100px at the hand-off), and the two zooms meet at the same frame.
+  const zoomEls = $$('.hero-portal .spring-word, .hero-portal-frame, .lens-vig');
+  zoomEls.forEach(e => { e.style.transform = `scale(${Math.exp(ZOOM_FROM)})`; });
   let heroP = 0, diving = false;
   const showSpring = tl => {
     heroP = tl.progress(); gsap.set(spring, { autoAlpha: heroP > .999 ? 1 : 0 }); syncFalls();
     if (diving !== heroP > .42) { diving = !diving; hero.classList.toggle('is-diving', diving); }   // ripple blend layer off during the dive
   };
-  const heroLayers = on => gsap.set('.hero-media, .lens-ring, .hero-portal-frame, .lens-vig', { willChange: on ? 'transform' : 'auto' });
+  const heroLayers = on => gsap.set('.hero-media, .lens, .lens-in, .hero-portal-frame, .lens-vig', { willChange: on ? 'transform' : 'auto' });
   gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true, onToggle: st => heroLayers(st.isActive),
       onRefresh: lensDraw } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
@@ -318,12 +325,14 @@
     .set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: .55 }, 0)
     .add(lensDraw, 0)
     .set(lensZoom, { z: ZOOM_FROM }, 0)
+    .add(() => { const t = `scale(${Math.exp(lensZoom.z)})`; zoomEls.forEach(e => { e.style.transform = t; }); }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
-    .set(lens, { autoAlpha: 1 }, .42)   // shown but clipped to a 0px circle until .52: the portal clip is already playing when the lens opens
+    .set(lens, { autoAlpha: .001 }, .42)   // on screen but invisible: the portal clip is already playing when the lens opens
+    .set(lens, { autoAlpha: 1 }, .52)
     .to(lensC, { p: 1, ease: 'power2.inOut', duration: .44, onUpdate: lensDraw }, .52)                                          // the lens opens small → full
     .to('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
-    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
+    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => { const t = `scale(${Math.exp(lensZoom.z)})`; zoomEls.forEach(e => { e.style.transform = t; }); } }, .52)   // constant-rate push forward into the hand-off
     .fromTo('.lens-vig', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'none', duration: .2, immediateRender: false }, .8)   // edges brighten gradually to match SPRING
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
   // Video budget: one clip decoding at a time through the dive.
