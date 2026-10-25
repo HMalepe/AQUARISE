@@ -85,7 +85,8 @@ section { position: relative; }
 .pill { position: relative; overflow: hidden; isolation: isolate; }
 .pill::before { content: ""; position: absolute; left: -15%; right: -15%; top: -45%; bottom: -10%; z-index: -1; pointer-events: none;
   background: var(--aqua); border-radius: 46% 54% 0 0 / 24% 24% 0 0; transform: translateY(105%); transition: transform .75s var(--ease-out); }
-.pill:hover::before, .pill:focus-visible::before, .pill:active::before { transform: translateY(0); }
+.pill:hover::before, .pill:focus-visible::before, .pill:active::before { transform: translateY(0); animation: slosh 2.4s ease-in-out .75s infinite; }
+@keyframes slosh { 50% { border-radius: 54% 46% 0 0 / 24% 24% 0 0; } }
 .pill:hover, .pill:focus-visible, .pill:active { color: var(--ink); }
 /* same water fill on the shop tabs, the Weekly/Monthly switch and the round arrows */
 .pills li, .slide-tabs button, .freq span, .round-btn { position: relative; overflow: hidden; isolation: isolate; transition: color .3s, border-color .3s, transform .4s var(--ease-out); }
@@ -93,7 +94,7 @@ section { position: relative; }
   background: var(--aqua); border-radius: 46% 54% 0 0 / 24% 24% 0 0; transform: translateY(105%); transition: transform .75s var(--ease-out); }
 .pills li:hover::before, .slide-tabs button:hover::before, .slide-tabs button:focus-visible::before, .slide-tabs button[aria-selected="true"]::before,
 .freq label:hover span::before, .freq input:focus-visible + span::before, .freq input:checked + span::before,
-.round-btn:hover::before, .round-btn:focus-visible::before, .round-btn:active::before { transform: translateY(0); }
+.round-btn:hover::before, .round-btn:focus-visible::before, .round-btn:active::before { transform: translateY(0); animation: slosh 2.4s ease-in-out .75s infinite; }
 .slide-tabs button:hover, .freq label:hover span, .round-btn:hover, .pills li:hover { color: var(--ink); border-color: var(--aqua); }
 .pills li:hover svg { color: var(--ink); }
 .freq input:checked + span { background: none; }
@@ -187,9 +188,9 @@ video { background: var(--deep); }
 .nav {
   position: fixed; inset: 0 0 auto 0; z-index: 80; height: var(--nav-h);
   display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 var(--gutter);
-  transition: background-color .4s;
+  transition: background-color .4s, backdrop-filter .4s;
 }
-.nav.is-solid { background: rgba(4, 18, 31, .85); }   /* solid, no backdrop blur: a blur over playing video re-renders every frame */
+.nav.is-solid { background: rgba(4, 18, 31, .55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--foam); }
 .logo-mark { width: 52px; height: 32px; --mark-wave: var(--foam); }
 .logo-word { width: 132px; height: 23px; }
@@ -227,19 +228,14 @@ video { background: var(--deep); }
 .hero-offer-btn { font-size: 1.15rem; padding: 1.05em 2.2em; box-shadow: 0 14px 40px rgba(4,18,31,.45); }
 .hero-dim { position: absolute; inset: 0; z-index: 4; background: var(--abyss); visibility: hidden; pointer-events: none; }
 .hero-portal { position: absolute; inset: 0; z-index: 5; overflow: hidden; visibility: hidden; pointer-events: none; }
-/* fisheye lens: a soft-edged circle (static mask) scaled with transform; .lens-in is counter-scaled so the picture stays put.
-   Both scales are written at full precision from JS (GSAP rounds scale to 4 decimals, and at the lens' small start scale
-   that rounding made the picture wobble ~1px). Nothing is repainted per frame: no animated clip-path. */
+/* fisheye lens: a soft-edged circle (static mask) scaled with transform; .lens-in is counter-scaled so the picture stays put */
 .lens { position: absolute; left: 50%; top: 46%; width: 220vmax; height: 220vmax; margin: -110vmax 0 0 -110vmax; border-radius: 50%; overflow: hidden; background: var(--abyss); isolation: isolate;
   -webkit-mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); mask: radial-gradient(circle closest-side, #000 78%, transparent 100%); transform: scale(0); }
 .lens-in { position: absolute; left: calc(110vmax - 50vw); top: calc(110vmax - 46svh); width: 100vw; height: 100svh; transform-origin: 50% 46%; }
-.lens-open .lens { left: 0; top: 0; width: 100%; height: 100%; margin: 0; border-radius: 0; -webkit-mask: none; mask: none; transform: none; }
-.lens-open .lens-in { left: 0; top: 0; transform: none; }
 .hero-portal-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .lens-vig { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--abyss), transparent 14%, transparent 86%, var(--abyss)), linear-gradient(var(--abyss), transparent 14%, transparent 86%, var(--abyss)); }   /* soft edges while the picture is smaller than the screen; fades out before the hand-off */
-/* brightening layer: a plain warm overlay. A screen blend of the same colour differs by <4% (blue channel) but forced a
-   blend pass over the playing video every frame */
-.spring-glow { position: absolute; inset: 0; background: rgba(255,236,214,.22); pointer-events: none; }
+/* brightening layer (screen blend) — composited, unlike a CSS filter on video which re-filters every frame */
+.spring-glow { position: absolute; inset: 0; background: rgba(255,236,214,.22); mix-blend-mode: screen; pointer-events: none; }
 .spring-stage .spring-glow { z-index: 1; }
 /* a glint sweeps across the button every few seconds */
 .shine::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%); transform: translateX(-120%); animation: shine 3.2s var(--ease-out) infinite 1s; }
@@ -252,8 +248,7 @@ video { background: var(--deep); }
 .spring-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: translateZ(0); }
 .spring-stage::after { content: ""; position: absolute; inset: 40% 0 0 0; z-index: 1; background: linear-gradient(180deg, transparent, rgba(4,18,31,.8)); pointer-events: none; }
 .spring-mask { position: absolute; inset: 0; z-index: 3; display: grid; place-items: center; background: var(--abyss); color: #fff; mix-blend-mode: multiply; pointer-events: none; }
-.spring-word { display: block; font-family: var(--display); font-size: 30vw; line-height: .8; white-space: nowrap;  font-weight: 400;}
-.hero-portal .spring-word { will-change: transform; }   /* SPRING's own word gets it from JS only while its pin can zoom it */
+.spring-word { display: block; font-family: var(--display); font-size: 30vw; line-height: .8; white-space: nowrap; will-change: transform;  font-weight: 400;}
 .spring-copy { position: absolute; inset: auto 0 0 0; z-index: 2; display: grid; justify-items: center; gap: .7rem; padding: 0 var(--gutter) 12svh; text-align: center; }
 .spring-mark { width: clamp(90px, 9vw, 130px); aspect-ratio: 282 / 174; height: auto; --mark-wave: var(--foam); }
 .spring-kicker { font-size: .8rem; font-weight: 800; letter-spacing: .42em; text-transform: uppercase; color: var(--lemon); text-shadow: 0 2px 14px rgba(4,18,31,.7); }
@@ -338,7 +333,6 @@ video { background: var(--deep); }
 .bundle-sub { position: relative; z-index: 3; max-width: 34ch; font-weight: 600; opacity: .85; }
 .bundle-price { font-family: var(--body); font-weight: 800; font-size: 2.4rem; letter-spacing: -.02em; }
 .bundle-price small { font-size: .45em; opacity: .8; }
-.bundle-price [data-count] { display: inline-block; min-width: 4.2ch; font-variant-numeric: tabular-nums; }   /* the count-up never changes the layout */
 .b-aqua { background: linear-gradient(170deg, var(--mist), var(--aqua)); color: var(--ink); }
 .b-deep { background: linear-gradient(170deg, var(--wave), var(--tide)); color: var(--foam); }
 .bundle-bottles { display: flex; align-items: flex-end; justify-content: center; gap: 6%; height: clamp(180px, 22vw, 260px); margin: 22px 0 8px; width: 100%; }
@@ -351,9 +345,9 @@ video { background: var(--deep); }
 .bundle:hover .bundle-bottles .bottle:nth-child(1) img { translate: -6px -4px; rotate: -3deg; }
 .bundle:hover .bundle-bottles .bottle:nth-child(2) img { translate: 0 -6px; scale: 1.02; }
 .bundle:hover .bundle-bottles .bottle:nth-child(3) img { translate: 6px -4px; rotate: 3deg; }
-.bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s;
+.bundle-glare { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; mix-blend-mode: soft-light;
   background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgba(255,255,255,.75), transparent 60%); }
-.bundle:hover .bundle-glare, .bundle:focus-within .bundle-glare { opacity: 1; mix-blend-mode: soft-light; }   /* blend only while shown: an idle blend layer still costs a composite pass */
+.bundle:hover .bundle-glare { opacity: 1; }
 .bundle .pill { transition: transform .4s var(--ease-out), box-shadow .4s, color .3s; }
 .b-aqua .pill::before { background: var(--tide); }   /* aqua would vanish into the aqua card */
 .b-deep .pill::before { background: var(--lemon); }   /* the deep card is already blue: lemon water reads clearly */
@@ -496,8 +490,6 @@ video { background: var(--deep); }
 /* 7 ─ STATIC MODE (reduced motion, or GSAP failed to load) ──────────────── */
 .static .loader, .static .letterbox { display: none !important; }
 .static .hero-offer { display: none; } /* no scroll phase here; the title already carries a Shop pill */
-.hero.is-diving .hero-ripples { display: none; }
-.perf-off *, .perf-off *::before, .perf-off *::after { animation-play-state: paused !important; }   /* off-screen loops stop ticking */
 .static .perf-off .stage-mist, .perf-off .hero-ripples, .perf-off .bundle-glare { display: none; }   /* blend layers off when their section is far away */
 .static .spring-mask, .static .hero-portal, .static .hero-dim, .static .spring-glow { display: none; }
 .static .static .caustics, .static .bubbles, .static .foot-water i, .static .hero-cue i,  .static .marquee-track, .static .shine::after, .static .shimmer-word { animation: none !important; }

@@ -34,8 +34,8 @@
   function buildBottle(el) {
     if (el.dataset.built) return;
     el.dataset.built = '1';
-    const pic = '<picture><source srcset="assets/bottle.webp" type="image/webp"><img src="assets/bottle.png" alt="" width="368" height="1400" loading="eager" decoding="async" draggable="false"></picture>';
-    el.innerHTML = pic + '<img class="b-reflect" src="assets/bottle.webp" alt="" width="368" height="1400" loading="eager" decoding="async" draggable="false">';   // reflection, shown on the shop stage only
+    const pic = '<picture><source srcset="assets/bottle.webp" type="image/webp"><img src="assets/bottle.png" alt="" width="368" height="1400" loading="lazy" decoding="async" draggable="false"></picture>';
+    el.innerHTML = pic + '<img class="b-reflect" src="assets/bottle.webp" alt="" loading="lazy" decoding="async" draggable="false">';   // reflection, shown on the shop stage only
   }
 
   /* ── A3 · bubbles inside water layers ── */
@@ -214,11 +214,10 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const motion = !reduce && !!(window.gsap && window.ScrollTrigger);
   const playV = v => { if (v.preload === 'none') v.preload = 'auto'; const pr = v.play(); pr && pr.catch(() => {}); };
-  const videos = $$('video[data-video]').filter(v => !v.matches('.spring-video'));   // the waterfall pair is driven by the dive (C3)
-  if (!motion) { const sv = $('.spring-video'); reduce ? sv.pause() : playV(sv); }
+  const videos = $$('video[data-video]');
   if (reduce) videos.forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   else if ('IntersectionObserver' in window) {
-    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? (e.target.dataset.hold || playV(e.target)) : e.target.pause()), { rootMargin: '25% 0px' });
+    const vio = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? playV(e.target) : e.target.pause()), { rootMargin: '100% 0px' }   /* pause only a full screen away: restarting a clip mid-scroll stalls the page */);
     videos.forEach(v => vio.observe(v));
   }
 
@@ -232,10 +231,10 @@
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ ignoreMobileResize: true });
   if (window.Lenis) {
-    lenis = new Lenis({ lerp: .1, wheelMultiplier: .9, smoothWheel: true, syncTouch: false, autoRaf: false });
+    lenis = new Lenis({ lerp: .09, smoothWheel: true });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(t => lenis.raf(t * 1000));
-    gsap.ticker.lagSmoothing(500, 33);   // one heavy frame no longer makes the scrub jump to catch up
+    gsap.ticker.lagSmoothing(0);
   }
 
   // word splitter for masked rises
@@ -279,38 +278,19 @@
   tuckSpring();
   ScrollTrigger.addEventListener('refreshInit', tuckSpring);
   gsap.set(spring, { autoAlpha: 0 });
-  // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre while the SPRING frame inside
-  // it starts magnified and settles (scale .55 → 1) and the outside dims, like light bending through the bottle.
-  // The circle (.lens, static mask) grows with transform; the picture inside (.lens-in) is counter-scaled around the same
-  // centre so it stays put. Both are composited and written at full precision, so k × 1/k is exactly 1 on screen:
-  // GSAP rounds scale to 4 decimals, which at k ≈ .04 left a ~1px wobble. No clip-path (that repainted every frame).
-  const lens = $('.hero-portal'), lensEl = $('.lens'), lensIn = $('.lens-in'), lensC = { p: 0 };
-  // Once the circle's solid part (78% of its radius) covers the farthest screen corner, the circle is swapped for a plain
-  // full-screen box (.lens-open: no mask, no scale): the picture lands on the same pixels and the huge masked layer is gone.
-  let lensOpen = false;
-  const lensDraw = () => {
-    const k = Math.max(lensC.p, .04), vmax = Math.max(innerWidth, innerHeight);
-    const open = k * 1.1 * vmax * .78 >= Math.hypot(innerWidth / 2, innerHeight * .54) + 2;
-    if (open !== lensOpen) { lensOpen = open; lens.classList.toggle('lens-open', open); }
-    if (open) { lensEl.style.transform = lensIn.style.transform = ''; return; }
-    lensEl.style.transform = `scale(${k})`; lensIn.style.transform = `scale(${1 / k})`;
-  };
+  // The dive is a fisheye lens: a soft-edged circle opens from the bottle's centre (--r) while the SPRING frame inside
+  // it starts magnified and settles (scale 1.7 → 1) and the outside dims, like light bending through the bottle.
+  const lens = $('.hero-portal'), lensEl = $('.lens'), lensIn = $('.lens-in'), lensC = { p: .001 };
+  // the circle grows with transform only (cheap); the picture inside is counter-scaled so it doesn't grow with it
+  const lensDraw = () => { const k = Math.max(lensC.p, .04); gsap.set(lensEl, { scale: k }); gsap.set(lensIn, { scale: 1 / k }); };
   // One continuous zoom from the lens into SPRING: both are driven in log space so the zoom *rate* leaving the lens equals the
   // rate entering SPRING (ZOOM_RATE per unit of each timeline's zoom phase), then SPRING accelerates through the I.
   const ZOOM_FROM = Math.log(.55), ZOOM_RATE = -ZOOM_FROM, lensZoom = { z: ZOOM_FROM };
   // SPRING is revealed by the hero timeline's progress. Both pinned timelines use scrub: true (Lenis already smooths the
   // scroll), so that progress is exactly the pin position: no scrub lag can leave the lens on screen after the hero unpins
   // (that made SPRING drop ~100px at the hand-off), and the two zooms meet at the same frame.
-  const zoomEls = $$('.hero-portal .spring-word, .hero-portal-frame, .lens-vig');
-  zoomEls.forEach(e => { e.style.transform = `scale(${Math.exp(ZOOM_FROM)})`; });
-  let heroP = 0, diving = false;
-  const showSpring = tl => {
-    heroP = tl.progress(); gsap.set(spring, { autoAlpha: heroP > .999 ? 1 : 0 }); syncFalls();
-    if (diving !== heroP > .42) { diving = !diving; hero.classList.toggle('is-diving', diving); }   // ripple blend layer off during the dive
-  };
-  const heroLayers = on => gsap.set('.hero-media, .lens, .lens-in, .hero-portal-frame, .lens-vig', { willChange: on ? 'transform' : 'auto' });
-  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true, onToggle: st => heroLayers(st.isActive),
-      onRefresh: lensDraw } })
+  const showSpring = tl => gsap.set(spring, { autoAlpha: tl.progress() > .999 ? 1 : 0 });
+  gsap.timeline({ onUpdate() { showSpring(this); }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, scrub: true, invalidateOnRefresh: true } })
     .to('.hl-1', { yPercent: -70, autoAlpha: 0, ease: 'none', duration: .26 }, 0)
     .to('.hl-2', { yPercent: -40, autoAlpha: 0, ease: 'none', duration: .26 }, .04)
     .fromTo('[data-hero-meta]', { autoAlpha: 1 }, { autoAlpha: 0, duration: .1, immediateRender: false }, 0)
@@ -321,76 +301,47 @@
     // start states live in the timeline so scrubbing back always restores them
     .set('.hero-dim', { autoAlpha: 0 }, 0)
     .set(lens, { autoAlpha: 0 }, 0)
-    .set(lensC, { p: 0 }, 0)
+    .set(lensC, { p: .001 }, 0)
     .set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: .55 }, 0)
     .add(lensDraw, 0)
     .set(lensZoom, { z: ZOOM_FROM }, 0)
-    .add(() => { const t = `scale(${Math.exp(lensZoom.z)})`; zoomEls.forEach(e => { e.style.transform = t; }); }, 0)
     .to('.hero-media', { scale: 1.5, yPercent: -3, ease: 'sine.inOut', duration: .5 }, .42)                        // gentle push into the bottle
     .to('.hero-dim', { autoAlpha: .9, ease: 'sine.inOut', duration: .4 }, .46)                                      // the light drains
-    .set(lens, { autoAlpha: .001 }, .42)   // on screen but invisible: the portal clip is already playing when the lens opens
     .set(lens, { autoAlpha: 1 }, .52)
     .to(lensC, { p: 1, ease: 'power2.inOut', duration: .44, onUpdate: lensDraw }, .52)                                          // the lens opens small → full
     .to('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { autoAlpha: 1, ease: 'power1.out', duration: .3 }, .52)   // opacity, not blur: blur on a full-screen layer drops frames
-    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => { const t = `scale(${Math.exp(lensZoom.z)})`; zoomEls.forEach(e => { e.style.transform = t; }); } }, .52)   // constant-rate push forward into the hand-off
+    .to(lensZoom, { z: 0, ease: 'none', duration: .48, onUpdate: () => gsap.set('.hero-portal .spring-word, .hero-portal-frame, .lens-vig', { scale: Math.exp(lensZoom.z) }) }, .52)   // constant-rate push forward into the hand-off
     .fromTo('.lens-vig', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'none', duration: .2, immediateRender: false }, .8)   // edges brighten gradually to match SPRING
     .to({}, { duration: .01 });   // no hold: SPRING's own zoom takes over at the same moment
-  // Video budget: one clip decoding at a time through the dive.
-  //   hero clip  plays until .50 (behind a ~90% dim by then), resumes below .46
-  //   portal     plays .42 → .999 (the lens is open .52 → 1)
-  //   SPRING     plays from .999 (the frame it becomes visible); the portal pauses in the same call
-  // Both waterfalls are synced to 0 once while both are hidden (.30–.40). Near the hand-off the hidden one is kept
-  // paused a moment ahead of the visible one (a seek on a hidden clip is harmless), so swapping shows the same frame.
-  // play() is never re-issued while pending, and nothing seeks a clip that is on screen.
-  const pv = $('.hero-portal-frame'), vid = $('.spring-video'), heroVid = $('.hero-img');
-  const want = (v, on) => {
-    if (on) {
-      if (!v.paused || v._pending) return;
-      v._pending = true; const pr = v.play();
-      pr ? pr.then(() => { v._pending = false; }, () => { v._pending = false; }) : (v._pending = false);
-    } else if (!v.paused || v._pending) v.pause();
-  };
-  let springOn = true, synced = false, heroHeld = false, springP = 0, lastSeek = 0;
-  const shadow = (hidden, src) => {   // park the hidden clip just ahead of the visible one
-    const now = performance.now(), d = src.duration;
-    if (!d || hidden.seeking || now - lastSeek < 250 || Math.abs(hidden.currentTime - src.currentTime) < .25) return;
-    lastSeek = now; hidden.currentTime = (src.currentTime + .15) % d;
-  };
-  function syncFalls() {   // hoisted: the hero timeline can call it on creation
-    const p = heroP;
-    if (!heroHeld && p > .5) { heroHeld = true; heroVid.dataset.hold = 1; want(heroVid, false); }
-    else if (heroHeld && p < .46) { heroHeld = false; delete heroVid.dataset.hold; reduce || want(heroVid, true); }
-    if (p < .3) synced = false;
-    else if (!synced && p < .4) { synced = true; want(pv, false); want(vid, false); pv.currentTime = vid.currentTime = 0; }
-    want(pv, springOn && p >= .42 && p < .999);
-    want(vid, springOn && p >= .999);
-  }
-  gsap.ticker.add(() => {
-    if (!springOn) return;
-    if (heroP > .9 && heroP < .999) shadow(vid, pv);          // SPRING still hidden: keep it on the portal's frame
-    else if (heroP >= .999 && springP < .15) shadow(pv, vid); // the hero is under SPRING: keep the portal ready for a scroll back
-  });
-  ScrollTrigger.create({ trigger: '.spring', start: 'top bottom', end: 'bottom top', onToggle: st => { springOn = st.isActive; syncFalls(); } });
+  // The portal shows the same waterfall as SPRING in its own <video>. Both loops start together and keep playing side by
+  // side (same clip, same length), so they stay in step without seeking; any drift is corrected only while the lens is
+  // hidden, because a seek on screen stalls the page (and copying frames into a canvas did too).
+  (() => {
+    const pv = $('.hero-portal-frame'), portal = $('.hero-portal'), vid = $('.spring-video');
+    const pair = () => { if (vid.paused) return; if (pv.paused) { pv.currentTime = vid.currentTime; playV(pv); } };
+    vid.addEventListener('playing', pair);
+    vid.addEventListener('pause', () => pv.pause());
+    setInterval(() => {
+      if (pv.paused || vid.paused || +gsap.getProperty(portal, 'autoAlpha') > 0) return;
+      if (Math.abs(pv.currentTime - vid.currentTime) > .2) pv.currentTime = vid.currentTime;
+    }, 1000);
+  })();
 
   // pointer ripples on the hero water
   (() => {
     const cv = $('.hero-ripples'), ctx = cv.getContext('2d'), hero = $('.hero');
-    let w = 0, h = 0, active = true, last = 0, auto = 0, moved = -1e9, shown = true;
+    let w = 0, h = 0, active = true, last = 0, auto = 0;
     const rings = [];
-    const size = () => { const d = Math.min(devicePixelRatio || 1, 1.5); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    const size = () => { const d = Math.min(devicePixelRatio || 1, 2); w = cv.clientWidth; h = cv.clientHeight; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
     size(); addEventListener('resize', size);
     hero.addEventListener('pointermove', e => {
-      const now = performance.now(); moved = now; if (now - last < 70) return; last = now;
+      const now = performance.now(); if (now - last < 70) return; last = now;
       const r = cv.getBoundingClientRect(); rings.push({ x: e.clientX - r.left, y: e.clientY - r.top, r: 3, a: .5 });
     });
     ScrollTrigger.create({ trigger: hero, start: 'top bottom', end: 'bottom top', onToggle: s => { active = s.isActive; } });
     gsap.ticker.add(() => {
-      if (!active || heroP > .3) rings.length = 0;   // nothing to see once the scroll is under way
-      // idle drops only while the hero sits at rest (or the pointer moved in the last 1.5s)
-      else if ((heroP < .02 || performance.now() - moved < 1500) && ++auto % 50 === 0) rings.push({ x: rand(.15, .85) * w, y: rand(.72, .95) * h, r: 2, a: .35 });
-      // an empty canvas is hidden, so its screen-blend layer costs nothing over the playing video
-      if (shown !== !!rings.length) { shown = !shown; cv.style.visibility = shown ? '' : 'hidden'; if (!shown) ctx.clearRect(0, 0, w, h); }
-      if (!rings.length) return;
+      if (!active) return;
+      if (++auto % 50 === 0) rings.push({ x: rand(.15, .85) * w, y: rand(.72, .95) * h, r: 2, a: .35 });
       ctx.clearRect(0, 0, w, h);
       for (let i = rings.length - 1; i >= 0; i--) {
         const g = rings[i]; g.r += 1.5; g.a *= .972;
@@ -422,41 +373,31 @@
   };
   springOrigin();
   ScrollTrigger.addEventListener('refreshInit', springOrigin);
-  // picks up the lens' zoom rate, then accelerates to 48×
-  const springScale = p => Math.exp(ZOOM_RATE * p + (Math.log(48) - ZOOM_RATE) * p ** 3);
-  let pHide = 0, pHi = 1;   // progress where the scale passes 10× (bisection; the curve only rises)
-  for (let i = 0; i < 30; i++) { const m = (pHide + pHi) / 2; springScale(m) < 10 ? pHide = m : pHi = m; }
-  const wordLayer = on => { sWord.style.willChange = on ? 'transform' : 'auto'; };
-  wordLayer(true);   // the page starts above SPRING, which zooms right after the hero
-  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true,
-      onToggle: st => wordLayer(st.isActive || st.progress === 0) } })
-    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => { springP = springZoom.p; gsap.set(sWord, { scale: Math.min(springScale(springZoom.p), springScale(Math.min(1, pHide + .08))) }); } }, 0)
-    // the word is never drawn past ~10×: from there the mask fades out over .08 while the waterfall itself carries the push
-    .fromTo(sMask, { opacity: 1 }, { opacity: 0, ease: 'none', duration: .08, immediateRender: false }, pHide * 1.04)
-    .fromTo('.spring-video', { scale: 1 }, { scale: 1.12, ease: 'none', duration: 1.04 - pHide * 1.04, immediateRender: false }, pHide * 1.04)
+  gsap.timeline({ scrollTrigger: { trigger: '.spring-stage', start: 'top top', end: () => '+=' + innerHeight * 1.8, pin: true, scrub: true, invalidateOnRefresh: true } })
+    .fromTo(springZoom, { p: 0 }, { p: 1, ease: 'none', duration: 1.04, onUpdate: () => { const sc = Math.exp(ZOOM_RATE * springZoom.p + (Math.log(48) - ZOOM_RATE) * springZoom.p ** 3); gsap.set(sWord, { scale: sc }); sMask.style.visibility = sc > 22 ? 'hidden' : ''; } }, 0)   // past ~17x the I's stem fills the screen: hide the giant text instead of rasterising it at 48x   // picks up the lens' zoom rate, then accelerates to 48×
     .fromTo('.spring-stage .spring-glow', { autoAlpha: 1 }, { autoAlpha: 0, ease: 'power2.in', duration: 1 }, 0)
     .set('.spring-stage .spring-mask', { autoAlpha: 1 }, 0)                         // pinned in the timeline so rewinding always restores it
-    .fromTo(sMask, { visibility: 'inherit' }, { visibility: 'hidden', duration: .001, immediateRender: false }, 1.04)   // already transparent: just drop it from rendering
+    .to('.spring-stage .spring-mask', { autoAlpha: 0, duration: .08 }, 1.04)
     .fromTo('.spring-copy > *', { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .32, stagger: .07, ease: 'power2.out' }, 1.06)
-    .to({}, { duration: .05 });   // barely any hold: the feature follows straight on
+    .to({}, { duration: .3 });
 
   /* ── C6 · FEATURE: the copy writes itself in as you scroll, the clip opens up beside it ── */
   const lead = $('.feature-lead');
   lead.innerHTML = lead.textContent.trim().split(/\s+/).map(w => `<span class="lw">${esc(w)}</span>`).join(' ');
   // Picture first, then each headline word, the paragraph word by word, then the pills one at a time. Desktop pins the
   // section for ~4 screens so it plays in place; phones (section taller than the screen) scroll it through, same order.
-  // One timeline unit = one beat: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills (~.63 screen each on desktop).
-  // Each beat fills ~85% of its slot, so there is always something moving under the scroll.
+  // One timeline unit = one screen of scrolling: 1 picture, 2 PURE, 3 CRISP, 4 ALIVE, 5 paragraph + pills.
+  // Each beat finishes in the first ~60% of its screen and then holds, so nothing rushes past on a single flick.
   const featureSeq = st => gsap.timeline({ scrollTrigger: st })
-    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .85 }, 0)
-    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .85 }, 0)
-    .fromTo('.feature .h-xl .wi', { yPercent: 120 }, { yPercent: 0, ease: 'power2.out', duration: .85, stagger: 1 }, 1)
-    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 4)
-    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 4.4)
-    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 4.45)
-    .to({}, { duration: .05 });
+    .fromTo('.feature-visual', { scale: .68 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
+    .fromTo('.feature-video', { scale: 1.45 }, { scale: 1, ease: 'power1.inOut', duration: .45 }, 0)
+    .fromTo('.feature .h-xl .wi', { yPercent: 120, rotate: 7 }, { yPercent: 0, rotate: 0, ease: 'power2.out', duration: .6, stagger: 1 }, .55)
+    .fromTo('.feature .lw', { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: .15, stagger: .02 }, 3.55)
+    .fromTo('.pills li', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: .25, stagger: .1 }, 3.9)
+    .fromTo('.pills li svg', { rotate: -90, scale: .4 }, { rotate: 0, scale: 1, ease: 'power3.out', duration: .25, stagger: .1 }, 3.95)
+    .to({}, { duration: .2 });
   gsap.matchMedia()
-    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 3.2, pin: true, scrub: true, invalidateOnRefresh: true, fastScrollEnd: true }); })
+    .add('(min-width: 961px) and (min-height: 600px)', () => { featureSeq({ trigger: '.feature', start: 'top top', end: () => '+=' + innerHeight * 4.5, pin: true, scrub: true, invalidateOnRefresh: true }); })
     .add('(max-width: 960px), (max-height: 599px)', () => { featureSeq({ trigger: '.feature', start: 'top 85%', end: 'bottom 45%', scrub: true, invalidateOnRefresh: true }); });
   // ALIVE. keeps a slow shimmer once it has landed
   $$('.feature .h-xl .wi').forEach((w, i) => w.classList.add('shimmer-word', 'sw-' + i));   // PURE aqua, CRISP ice-white, ALIVE lemon, one after another
@@ -515,21 +456,20 @@
   })();
 
   /* ── C9 · BUNDLES: cards fill with water, bottles drop in, prices count up; tilt, glare and perk chips on hover ── */
-  ScrollTrigger.create({ trigger: '.shop', start: 'top bottom', once: true, onEnter: () => $$('.bundle img').forEach(i => i.decode && i.decode().catch(() => {})) });
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  $$('[data-reveal-wave]').forEach((card, ci) => {
+  $$('[data-reveal-wave]').forEach(card => {
     const cover = document.createElement('i'); cover.className = 'reveal-cover'; card.appendChild(cover);
     const kids = [...card.children].filter(c => !c.matches('.bundle-glare, .reveal-cover'));
     const count = $('[data-count]', card);
-    const tl = gsap.timeline({ delay: ci * .12, scrollTrigger: { trigger: card, start: 'top 80%', once: true } })   // cards side by side don't all start on one frame
+    const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 85%', once: true } })
       .fromTo(cover, { yPercent: 0 }, { yPercent: -105, duration: 1.6, ease: 'power2.out' })
       .fromTo(kids, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: .08 }, .35);
     const trio = $$('.bundle-bottles .bottle', card), freq = $('.freq', card);
     if (trio.length) tl.fromTo(trio, { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: 'expo.out', stagger: .1 }, .5);   // calm rise, no bounce
     if (freq) tl.fromTo(freq, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .9, ease: 'power3.out' }, .7);
     if (count) {   // price counts up from zero
-      const n = { v: 0 }, end = +count.dataset.count; let shownV = -1;
-      tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { const v = Math.round(n.v); if (v !== shownV && count.isConnected) { shownV = v; count.textContent = 'R' + v; } } }, .7);
+      const n = { v: 0 }, end = +count.dataset.count;
+      tl.to(n, { v: end, duration: 1.4, ease: 'power3.out', onUpdate: () => { if (count.isConnected) count.textContent = 'R' + Math.round(n.v); } }, .7);
     }
   });
   if (canHover) $$('[data-tilt]').forEach(card => {
@@ -561,19 +501,14 @@
   }));
 
   /* ── C12 · FOOTER: wordmark rises out of the water ── */
-  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true,
-    onToggle: st => { $('.foot-mark').style.willChange = st.isActive ? 'transform' : 'auto'; } } });   // no lag: at the very bottom of the page the word is fully up
+  gsap.fromTo('.foot-mark', { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: '.foot-mark-wrap', start: 'top bottom', end: 'bottom bottom', scrub: true } });   // no lag: at the very bottom of the page the word is fully up
 
   /* ── C12b · switch blend/blur layers off in sections more than a screen away ── */
-  const perfIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('perf-off', !e.isIntersecting)), { rootMargin: '25% 0px' });
-  ['.hero', '.spring', '.feature', '.promise', '.shop', '.bundles', '.join', '.footer'].forEach(sel => { const el = $(sel); el && perfIO.observe(el); });
+  const perfIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('perf-off', !e.isIntersecting)), { rootMargin: '100% 0px' });
+  ['.hero', '.shop', '.bundles'].forEach(sel => { const el = $(sel); el && perfIO.observe(el); });
 
   /* ── C13 · ordering + refresh ── */
   ScrollTrigger.sort();
-  // one refresh, once fonts and media sizes are final (the loader holds the scroll until then); a reload starts at the hero
-  const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise(r => addEventListener('load', r, { once: true }));
-  Promise.all([document.fonts ? document.fonts.ready : 0, loaded]).then(() => {
-    scrollTo(0, 0); lenis && lenis.scrollTo(0, { immediate: true }); ScrollTrigger.refresh();
-    $$('.bottle img').forEach(i => i.decode && i.decode().catch(() => {}));   // decode the packshots now, not when the shop scrolls in
-  });
+  document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
+  addEventListener('load', () => { scrollTo(0, 0); lenis && lenis.scrollTo(0, { immediate: true }); ScrollTrigger.refresh(); });   // a refresh always starts at the hero
 })();

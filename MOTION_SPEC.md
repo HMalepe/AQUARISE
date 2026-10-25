@@ -7,7 +7,7 @@ The source of truth for every animation. If you port to Next.js or another stack
 | Setting | Value |
 |---|---|
 | In-page links | Nav and menu links jump instantly (Lenis `immediate`) behind a .2s abyss veil (`.jump-veil`), skipping the pinned scenes in between; Shop lands on the product name so name, price, bottle and tabs are all on screen |
-| Smooth scroll | Lenis `lerp: .1`, `wheelMultiplier: .9`, `smoothWheel: true`, `autoRaf: false`, driven by `gsap.ticker` (`lagSmoothing(500, 33)`) |
+| Smooth scroll | Lenis `lerp: .09`, `smoothWheel: true`, driven by `gsap.ticker` (`lagSmoothing(0)`) |
 | ScrollTrigger | `config({ ignoreMobileResize: true })`, `ScrollTrigger.sort()` after all triggers, refresh after `document.fonts.ready` and `window.load` |
 | Signature eases | `expo.out` (entrances), `expo.inOut` (curtains), `power2.inOut` (water floods), `none` (scrubbed parallax) |
 | Units | Sections use `svh`; pinned durations are functions of `innerHeight` with `invalidateOnRefresh: true` |
@@ -32,7 +32,7 @@ Every `.bottle` gets the real Aquarise bottle (`assets/bottle.webp` / `.png`, cu
 `[data-speed]`: `y = speed·180 → −speed·180` px across its section, scrubbed (`scrub: true`).
 
 ### 5a. Water-fill CTAs
-Every `.pill` — and the shop tabs (also the selected tab), the Weekly/Monthly switch (also the checked option) and the round arrows (also while pressed) — fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete. Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
+Every `.pill` — and the shop tabs (also the selected tab), the Weekly/Monthly switch (also the checked option) and the round arrows (also while pressed) — fills with water on hover/focus: a wave-topped aqua body (`::before`, inset `-45% -15% -10%`) rises `translateY(105% → 0)`, .75s `ease-out`; its crest sits above the button so the fill is always complete, then sloshes gently (border-radius swap, 2.4s). Text turns ink (foam on the aqua Daily Ritual card, where the fill is `--wave`).
 
 ### 5b. Shine
 `.shine::after`: a white glint sweeps across a pill every 3.2s (CSS). Static mode stops it.
@@ -66,9 +66,9 @@ Trigger `.hero`, `top top` → `+= 2.4 × innerHeight`, `scrub: true` (no extra 
 | .4 → .48 | offer lifts away `y −40`, fades |
 | .42 → .92 | gentle push into the bottle: `.hero-media` `scale → 1.5`, `sine.inOut` |
 | .46 → .86 | `.hero-dim` fades to `.9`, `sine.inOut` |
-| .52 → 1 | **fisheye lens**: a soft-edged circle `.lens` (static radial mask, 220vmax, centred at 50% 46%) scales `max(.04, p)`, `p: 0 → 1`, `power2.inOut`; `.lens-in` is counter-scaled (1/k) around the same centre so the picture never moves. Both written as full-precision `style.transform` (GSAP's 4-decimal rounding wobbled the picture ~1px at small k). When the solid 78% of the circle covers the farthest corner (~.77), `.hero-portal.lens-open` swaps it for a plain full-screen box (no mask, no scale) on the same pixels, dropping the huge masked layer. The portal is on screen at opacity .001 from .42 so its clip is decoding before the lens shows at .52. Inside it the SPRING frame (video + word + vignette, full-precision transforms) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
+| .52 → 1 | **fisheye lens**: a soft-edged circle `.lens` (static radial mask, 220vmax, centred at 50% 46%) scales `0.04 → 1` with transform, `power2.inOut`; `.lens-in` is counter-scaled (1/scale) so the picture doesn't grow with the circle, and the lens video has feathered edges. Inside it the SPRING frame (canvas + word) **zooms in** from `scale .55` to 1 at a constant log rate (`scale = e^z`, `z: ln .55 → 0`, linear), and its blur clears 4px → 0 over the first .3 |
 | end | no hold (.01): SPRING's own zoom takes over at the same scroll position |
-Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. Video budget, one clip decoding at a time: hero clip until .50 (resumes < .46); portal .42 → .999; SPRING's clip from .999, when the portal pauses in the same call. Both waterfalls are seeked to 0 once while hidden (.30–.40). From .90 the hidden SPRING clip is kept paused ~.15s ahead of the portal (throttled seeks on the hidden clip only), and after the hand-off the hidden portal is kept on SPRING's frame for a scroll back. `play()` is never re-issued while pending; nothing seeks a visible clip. Both waterfalls `preload="auto"`.
+Start states (`.hero-dim`, the lens `--r`/visibility, the inner scale/blur) are `.set` at 0 inside the timeline so scrubbing back always restores them. The portal paints SPRING's live video frame every tick while visible, so the hand-off matches on every pass.
 **Seamless hand-off**: `.spring` gets `margin-top: −heroHeight` (re-measured on `refreshInit`), so the spring stage sits exactly where the hero is when its pin releases. `.spring` is shown/hidden by the hero timeline's own scrub-smoothed progress (`> .999`), not the raw scroll position, so a fast scroll can never swap sections before the lens has finished (or, going up, started closing).
 Also: pointer ripple canvas (ellipse rings, 70ms throttle, auto-drop every 50 frames), active only while the hero is on screen.
 The old water flood ("Drawn from the deep") and the 02 Tides section were removed.
@@ -83,18 +83,18 @@ Trigger `.spring-stage`, `top top` → `+= 1.8 × innerHeight`, `scrub: 1`, `inv
 | 0 → 1 | video `filter brightness(1.25) saturate(1.15) → normal` (letters read brighter while small) |
 | 0 / 1.04 | mask `set autoAlpha 1` at 0 (so rewinding always restores it), then `autoAlpha 1 → 0` (it is already fully inside the white stem, so nothing visibly changes) |
 | 1.06 | logo, kicker, title, line rise `y 50 → 0`, stagger .07 |
-| end | hold .05 (the feature follows straight on) |
+| end | hold .3 |
 Below it, `.marquee`: two identical runs of text + logo marks, CSS `translateX(0 → −50%)`, 30s linear, infinite. Track has `padding-right` = `gap` so the halfway point is exact.
 
 ### 03 Feature
-One beat per timeline unit (~.63 screen). Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 3.2 × innerHeight`, `scrub: true`, `fastScrollEnd: true` (no `anticipatePin`: Lenis already smooths); 5.05 units total, end hold .05. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
-| Unit | Beat (fills ~85% of its slot, so something always moves) |
+One beat per screen of scrolling. Desktop (≥961px wide, ≥600px tall): pinned `top top` → `+= 4.5 × innerHeight`, `scrub: true`; timeline units = screens. Phones: unpinned, `top 85%` → `bottom 45%`, same order.
+| Screen | Beat (finishes in the first ~60%, then holds) |
 |---|---|
-| 1 (0 → .85) | the picture opens: card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
-| 2 (1 → 1.85) | "PURE." rises (`yPercent 120 → 0`, `power2.out`) |
-| 3 (2 → 2.85) | "CRISP." |
-| 4 (3 → 3.85) | "ALIVE." Then each word keeps its own colour sweep, one after another on a 6s cycle with a rest between: PURE aqua (1s), CRISP icy mist (3s), ALIVE aqua–mist blend (5s). The pills fill with water on hover, like the CTAs. |
-| 5 (4 → 5) | the paragraph (invisible until now) writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
+| ½ (0 → .45) | the picture opens (one short scroll): card `scale .68 → 1`, the clip inside `scale 1.45 → 1`, `power1.inOut` (transform only) |
+| 2 (.55 → 1.15) | "PURE." rises (`yPercent 120 → 0`, `rotate 7° → 0`, `power2.out`) |
+| 3 (1.55 → 2.15) | "CRISP." |
+| 4 (2.55 → 3.15) | "ALIVE." Then each word keeps its own colour sweep, one after another on a 6s cycle with a rest between: PURE aqua (1s), CRISP icy mist (3s), ALIVE aqua–mist blend (5s). The pills fill with water on hover, like the CTAs. |
+| 5 (3.55 → 4.4) | the paragraph (invisible until now) writes in word by word (opacity + y, no blur), then the pills fade up one by one with their icons turning in |
 No scroll-snapping on purpose: the page never fights the user's scroll.
 
 ### 05 Shop
@@ -142,7 +142,5 @@ Word rises and fade-ups only. The join button uses the shared water-fill hover (
 - No CSS `filter` animated on full-screen layers or videos; use an overlay's opacity instead (`.spring-glow`). Bake fixed looks into the video file (mist contrast/blur is baked).
 - No `blur()` tweens on full-screen layers; fade opacity instead.
 - Never seek a video that is on screen; never `drawImage` video frames per tick.
-- Hero: idle ripple drops only at rest (progress < .02) or within 1.5s of pointer movement; none past .3; the empty canvas is `visibility: hidden` and `.hero.is-diving` (> .42) drops it entirely. The hero clip pauses once the lens covers it (> .96) and resumes below .9. `will-change` on `.hero-media`, `.lens`, `.lens-in` only while the hero pin is active.
-- Bundles: cards stagger .12s, start `top 80%`; the price count-up writes only when the rounded value changes, in a tabular-nums inline-block. Bundle bottles decode when the shop enters.
-- Hide giant scaled text once it covers the screen (the word's scale is capped at ~10×: from the position where it reaches 10× (computed once) `.spring-mask` fades 1 → 0 over .08 while `.spring-video` scales 1 → 1.12 to the end of the zoom, so the push continues; `visibility: hidden` at 1.04). `will-change: transform` on SPRING's word only while its pin can zoom it; `.foot-mark` only while its trigger is active. `.bundle-glare` blends only while hovered so the browser never rasterises it at 48×.
+- Hide giant scaled text once it covers the screen (`.spring-mask` hidden past 22×) so the browser never rasterises it at 48×.
 - MP4 (H.264, hardware-decoded) is listed before WebM in every `<video>`.
