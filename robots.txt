@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /order-success.html
+Disallow: /order-cancelled.html
+
+Sitemap: https://www.aquarise.co.za/sitemap.xml
