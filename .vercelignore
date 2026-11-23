@@ -1,0 +1,5 @@
+# Repo-only files: keep them off the public site.
+aquarise-dns.csv
+*.md
+.cursorrules
+tools/

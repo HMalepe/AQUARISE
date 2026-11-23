@@ -1,4 +1,4 @@
 host,type,value,ttl,prio
 aquarise.co.za,A,216.150.1.1,3600,
 aquarise.co.za,A,216.150.16.1,3600,
-[www.aquarise.co.za,CNAME,e80a5d9f7c82f356.vercel-dns-016.com,3600](https://www.aquarise.co.za,CNAME,e80a5d9f7c82f356.vercel-dns-016.com,3600),
+www.aquarise.co.za,CNAME,e80a5d9f7c82f356.vercel-dns-016.com,3600,
