@@ -1,0 +1,27 @@
+{
+  "extraKnownMarketplaces": {
+    "holiday-ai-os": {
+      "source": {
+        "source": "github",
+        "repo": "HMalepe/holiday-ai-operating-system"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "holiday-os@holiday-ai-os": true
+  },
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npm test*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)"
+    ]
+  }
+}
