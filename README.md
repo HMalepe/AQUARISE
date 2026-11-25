@@ -82,7 +82,7 @@ Then delete the `<span class="ph-note">`.
 - [ ] Email hello@aquarise.co.za · WhatsApp +27 82 555 0123 (wa.me link in menu, footer, bulk quote, FAQ) · @aquarise.za on Instagram/TikTok
 - [ ] Delivery: Gauteng, Cape Town & Durban · 2pm cut-off for next-day · R60 delivery under R350 · 7-day replace/refund (FAQ)
 - [ ] "Never Run Dry" = 12 still + 12 sparkling · PET code 1 bottles, returnable glass
-- [ ] Footer and Terms company details: "Aquarise (Pty) Ltd", reg. 2026/123456/07, Unit 4, 12 Spring Lane, Pinetown: all invented, replace with the real CIPC details
+- [x] Footer and Terms company details: replaced with the CIPC registration (Aqua Rise Natural Spring Water, 2022/282687/07, Randfontein). Still to confirm: whether the registered name carries "(Pty) Ltd" and the trading name "Aquarise"
 - [ ] Privacy, Terms and Shipping pages are drafts: have them checked, and register your Information Officer (POPIA)
 - [ ] Not invented on purpose: customer reviews, lab results/mineral values. Add only real ones.
 
