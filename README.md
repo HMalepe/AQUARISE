@@ -106,13 +106,15 @@ Then delete the `<span class="ph-note">`.
 
 ## Payments (PayFast)
 
-Checkout posts the cart to `api/checkout.js` (a Vercel function). It prices everything from `lib/catalogue.js` (never from the browser), adds R60 delivery under R350, signs the PayFast form with the passphrase and sends the shopper to PayFast. PayFast then calls `api/payfast-notify.js`, which checks the signature and confirms with PayFast before treating the order as paid.
+Checkout posts the cart to `api/checkout.js` (a Vercel function; logic in `lib/checkout.js`). It prices everything from `lib/catalogue.js` (never from the browser), adds R60 delivery under R350, stores the order as `pending` in Supabase, signs the PayFast form with the passphrase and sends the shopper to PayFast. PayFast then calls `api/payfast-notify.js` (logic in `lib/notify.js`). An order becomes `paid` only if the signature verifies, PayFast confirms the ITN server-to-server, the merchant ID is ours **and the paid amount equals the stored order amount**. A wrong amount sets the order to `review` instead. Every ITN is recorded in `order_events` (idempotent on `pf_payment_id`).
 
-- **Test mode is on by default**, using PayFast's public sandbox merchant. Pay with the sandbox test buyer on sandbox.payfast.co.za.
-- **Going live:** in Vercel → Project → Settings → Environment Variables add `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY`, `PAYFAST_PASSPHRASE` (set the same passphrase in your PayFast dashboard) and `PAYFAST_SANDBOX=false`, then redeploy.
+- **Test mode is on by default**, using PayFast's public sandbox merchant. Pay with the sandbox test buyer on sandbox.payfast.co.za. Sandbox works without Supabase (orders just aren't recorded).
+- **Orders:** apply `supabase/migrations/*.sql` to the Supabase project, then set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (server-side only). Both tables have RLS on with no policies, so only the service key can touch them.
+- **Going live:** in Vercel → Project → Settings → Environment Variables add `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY`, `PAYFAST_PASSPHRASE` (set the same passphrase in your PayFast dashboard), `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and finally `PAYFAST_SANDBOX=false`, then redeploy. Live mode refuses to run (503) if any of them is missing; the passphrase is what stops anyone forging a cheaper payment form.
+- **Tests:** `npm test` (Node's built-in runner, no dependencies). `vercel.json` carries the security headers and a CSP that allowlists the inline scripts by hash; a test fails if you add or change an inline `<script>` without updating the hash.
 - Subscriptions (Never Run Dry) check out on their own as PayFast monthly subscriptions; the weekly plan is 4 deliveries billed R996 monthly (PayFast has no weekly billing).
 - Change a price in **both** `lib/catalogue.js` (what is charged) and `js/main.js` (what is shown).
-- Still to do: `payfast-notify.js` only logs paid orders (see Vercel → Logs). Save orders and email confirmations before launch.
+- Still to do before launch: email confirmations to the customer and the team, and book the courier when an order turns `paid`. Unusual orders (`status = 'review'`) need a human look.
 
 ## Performance check
 

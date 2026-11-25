@@ -3,3 +3,5 @@ aquarise-dns.csv
 *.md
 .cursorrules
 tools/
+test/
+supabase/
