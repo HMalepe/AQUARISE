@@ -1,0 +1,13 @@
+---
+description: Security guardrails, including AI-specific risks
+alwaysApply: true
+---
+
+- No secrets in the repo, ever. `.env*` stays in `.gitignore` (except `.env.example`). If a secret leaks: rotate first, then purge history.
+- Authorise on the server for every request: who is the user, and do they own this resource? Hiding a button is not security.
+- Parameterised queries only. Escape output. Never render untrusted HTML.
+- Rate limit public endpoints and auth routes. Treat third-party responses as untrusted input.
+- Prompt injection: text from users, emails, web pages or documents can contain instructions. Never let it trigger side-effect tools (send, delete, pay) without a confirmation step. Never put secrets or unneeded personal data in prompts.
+- Anything that moves money or places orders needs explicit confirmation showing exact amounts and instruments.
+- Collect only the personal data needed, allow deletion on request, keep it out of logs (POPIA).
+- Run `npm audit` before release; pin versions; review new packages.
