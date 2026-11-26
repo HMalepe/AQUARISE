@@ -92,10 +92,10 @@ Then delete the `<span class="ph-note">`.
 - [ ] Wire checkout (Shopify Storefront / Yoco / PayFast / Stripe) — `PROMPTS.md #3`
 - [ ] Wire the newsletter form — `PROMPTS.md #3`
 - [ ] Social links in the footer
-- [ ] OG tags + `assets/og.jpg` (1200×630), favicon, canonical URL — `PROMPTS.md #8`
+- [x] OG tags + `assets/og.jpg` (1200×630), favicon, canonical URL (done; see `<head>` of each page)
 - [ ] Real photos/video for every `.ph` (optional now: every one has a rendered clip)
 - [ ] Confirm the spring-source line in the SPRING section ("Drawn from the source. Bottled at first light. Nothing added on the way.")
-- [ ] Privacy policy, terms, shipping & returns pages (POPIA)
+- [ ] Privacy policy, terms, shipping & returns pages: lawyer review, Information Officer registered (POPIA)
 
 ## Accessibility and fallbacks
 
@@ -105,6 +105,8 @@ Then delete the `<span class="ph-note">`.
 - Focus rings on all interactive elements; Escape closes the cart and menu; the cart drawer and menu have `aria-hidden` state.
 
 ## Payments (PayFast)
+
+**Go-live switch:** on Vercel's production deployment, checkout uses the live PayFast account only if `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY` and `PAYFAST_PASSPHRASE` are all set. If any is missing, checkout returns "not connected yet" (HTTP 503) and nothing reaches PayFast. Production never falls back to the public test merchant, and `PAYFAST_SANDBOX` is ignored there. Previews and local runs use the sandbox by default.
 
 Checkout posts the cart to `api/checkout.js` (a Vercel function). It prices everything from `lib/catalogue.js` (never from the browser), adds R60 delivery under R350, signs the PayFast form with the passphrase and sends the shopper to PayFast. PayFast then calls `api/payfast-notify.js`, which checks the signature and confirms with PayFast before treating the order as paid.
 

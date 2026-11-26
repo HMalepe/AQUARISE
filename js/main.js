@@ -15,16 +15,16 @@
 
   /* ── A1 · catalogue (placeholder prices in ZAR — confirm before launch) ── */
   const PRODUCTS = [
-    { id: 'still-500',     name: 'Still 500ml',     price: 18, color: '#3FB8E8', level: .2,  label: '#0E5A8A', desc: 'The everyday bottle. Cold, clean and quietly mineral.' },
-    { id: 'still-1l',      name: 'Still 1L',        price: 29, color: '#7FD3F7', level: .16, label: '#0E5A8A', desc: 'For long days, long drives and longer meetings.' },
-    { id: 'sparkling-500', name: 'Sparkling 500ml', price: 24, color: '#CFF3FF', accent: '#F6B26B', level: .22, label: '#0E5A8A', desc: 'Sparkling Sunrise — a fine, lively bubble for warm afternoons.' },
-    { id: 'mineral-750',   name: 'Mineral+ 750ml',  price: 32, color: '#1C8FC4', level: .18, label: '#E8F6FB', desc: 'Higher natural mineral content, made for after the set.' },
-    { id: 'glass-750',     name: 'Glass 750ml',     price: 45, color: '#9BE1FF', level: .2,  label: '#0E5A8A', desc: 'The dinner-table edition, in returnable glass.' }
+    { id: 'still-500',     name: 'Still 500ml',     price: 18, color: 'var(--aqua)', level: .2,  label: 'var(--tide)', desc: 'The everyday bottle. Cold, clean and quietly mineral.' },
+    { id: 'still-1l',      name: 'Still 1L',        price: 29, color: 'var(--sky)', level: .16, label: 'var(--tide)', desc: 'For long days, long drives and longer meetings.' },
+    { id: 'sparkling-500', name: 'Sparkling 500ml', price: 24, color: 'var(--ice)', accent: 'var(--sun)', level: .22, label: 'var(--tide)', desc: 'Sparkling Sunrise — a fine, lively bubble for warm afternoons.' },
+    { id: 'mineral-750',   name: 'Mineral+ 750ml',  price: 32, color: 'var(--wave)', level: .18, label: 'var(--foam)', desc: 'Higher natural mineral content, made for after the set.' },
+    { id: 'glass-750',     name: 'Glass 750ml',     price: 45, color: 'var(--mist)', level: .2,  label: 'var(--tide)', desc: 'The dinner-table edition, in returnable glass.' }
   ];
   const EXTRAS = {
-    'ritual-24':   { name: 'Daily Ritual · 24 × 500ml', price: 289, color: '#9BE1FF' },
-    'sub-weekly':  { name: 'Never Run Dry · weekly (billed monthly)', price: 996, color: '#1C8FC4' },
-    'sub-monthly': { name: 'Never Run Dry · monthly',   price: 899, color: '#1C8FC4' }
+    'ritual-24':   { name: 'Daily Ritual · 24 × 500ml', price: 289, color: 'var(--mist)' },
+    'sub-weekly':  { name: 'Never Run Dry · weekly (billed monthly)', price: 996, color: 'var(--wave)' },
+    'sub-monthly': { name: 'Never Run Dry · monthly',   price: 899, color: 'var(--wave)' }
   };
   const FREE_SHIP = 350;
   const item = id => PRODUCTS.find(p => p.id === id) || EXTRAS[id];

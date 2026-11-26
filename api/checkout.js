@@ -3,6 +3,8 @@
 import { ITEMS, FREE_SHIP, DELIVERY_FEE } from '../lib/catalogue.js';
 import { PROCESS_URL, config, sign } from '../lib/payfast.js';
 
+const NOT_CONNECTED = 'Online checkout is not connected yet. Please order by WhatsApp or email.';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -21,7 +23,9 @@ export default async function handler(req, res) {
   const total = (goods + delivery).toFixed(2);
   const origin = `${req.headers['x-forwarded-proto'] || 'https'}://${req.headers.host}`;
   const ref = 'AQ' + Date.now().toString(36).toUpperCase();
-  const { merchant_id, merchant_key, passphrase } = config();
+  let keys;
+  try { keys = config(); } catch (e) { console.error('checkout: ' + e.message); return res.status(503).json({ error: NOT_CONNECTED }); }
+  const { merchant_id, merchant_key, passphrase } = keys;
   const summary = lines.map(l => `${l.q}× ${l.item.name}`).join(', ') + (delivery ? `, delivery R${delivery}` : '');
   const buyer = body.buyer || {};
 
