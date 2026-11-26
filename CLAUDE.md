@@ -1,5 +1,11 @@
 # Aquarise site — rules for AI assistants
 
+## AI operating system
+Standards live in https://github.com/HMalepe/holiday-ai-operating-system.
+Before starting, read intelligence/collaboration-principles.md and the engineering/ standards.
+For new work follow workflows/new-project.md or workflows/feature-development.md.
+Project-specific overrides go below and win over the defaults.
+
 ## Stack
 - Static HTML + CSS + vanilla JS. GSAP 3 + ScrollTrigger + Lenis, vendored in `js/vendor/`. No build step, no framework (unless porting via PROMPTS.md #2).
 - Fonts are self-hosted in `assets/fonts/` (Anton display, Manrope body). Don't add Google Fonts links.
